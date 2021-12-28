@@ -1,14 +1,17 @@
-#include "main_widget/iona_widget.h"
+#include "core/iona_widget.h"
 #include "ui_iona_widget.h"
 
-IonaWidget::IonaWidget(QWidget *parent) :
+using namespace IonaDesktop::Core;
+
+IonaWidget::IonaWidget(QSize &paint_scale, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::IonaWidget)
+    ui(new Ui::IonaWidget),
+    iona_paint_scale(paint_scale)
 {
     ui->setupUi(this);
     voice_on_time_checker = new QTimer(this);
     voice_on_time_checker->setInterval(500);
-    connect(voice_on_time_checker, SIGNAL(timeout()), this, SLOT(voiceOnTime_timeout()));
+    connect(voice_on_time_checker, SIGNAL(timeout()), this, SLOT(Slot_OnTimeChecker_Timeout()));
     voice_on_time_checker->start();
 
     voice_player = new QMediaPlayer(this);
@@ -44,6 +47,7 @@ void IonaWidget::mousePressEvent(QMouseEvent *event)
         break;
     }
     voice_player->play();
+    event->accept();
 }
 
 void IonaWidget::paintEvent(QPaintEvent *event)
@@ -51,14 +55,14 @@ void IonaWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     QPixmap pixmap, pixmapScaled;
     pixmap.load(":/charater/image/Iona.png");
-    pixmapScaled = pixmap.scaled(QSize(600,500), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    pixmapScaled = pixmap.scaled(iona_paint_scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     painter.drawPixmap(0,0,pixmapScaled);
     setFixedSize(pixmapScaled.size());
     setMask(pixmapScaled.mask());
     event->accept();
 }
 
-void IonaWidget::voiceOnTime_timeout()
+void IonaWidget::Slot_OnTimeChecker_Timeout()
 {
     QTime currTime = QTime::currentTime();
 //    qDebug() << "QTimer voiceOnTime interval TRIG: " << currTime;
