@@ -11,7 +11,7 @@
 #include <QtMultimedia>
 #include <QtMultimedia/qmediaplayer.h>
 
-#include "core/global_definitions.h"
+#include "core/core_global.h"
 
 namespace Ui {
 class IonaWidget;
@@ -23,21 +23,20 @@ namespace Core {
         Q_OBJECT
 
     public:
-        explicit IonaWidget(QSize &paint_scale, QWidget *parent = nullptr);
+        explicit IonaWidget(QWidget *parent = nullptr);
         ~IonaWidget();
 
     private:
         Ui::IonaWidget *ui;
-        QSize iona_paint_scale;
 
-        QTimer* voice_on_time_checker;
-        QMediaPlayer* voice_player;
+        QTimer *voice_on_time_checker_ptr;
+        QMediaPlayer *voice_player_ptr;
 
     protected:
         void mousePressEvent(QMouseEvent* event);
         void paintEvent(QPaintEvent* event);
 
-    public slots:
+    private slots:
         void Slot_OnTimeChecker_Timeout();
     };
 }

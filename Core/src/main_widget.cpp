@@ -1,6 +1,8 @@
 #include "core/main_widget.h"
 #include "ui_main_widget.h"
-
+#include <iostream>
+#include <iomanip>
+#include <QFileDialog>
 #include <QDebug>
 
 using namespace IonaDesktop::Core;
@@ -11,26 +13,30 @@ MainWidget::MainWidget(QWidget *parent) :
 {
     SetupConfig();
     SetupTrayIcon();
-    SetupPlugins();
 
     ui->setupUi(this);
-    iona_widget_ptr = new IonaWidget(iona_paint_scale, this);
-//    setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_TranslucentBackground);
-    setWindowFlag(Qt::Window, true);
+    // Set as independent window
+    setWindowFlag(Qt::Window);
     setWindowFlag(Qt::NoDropShadowWindowHint);
+    // Hide taskbar icon
     setWindowFlag(Qt::Tool);
+    // No frame
     setWindowFlag(Qt::FramelessWindowHint, true);
+    // Stay on top
     setWindowFlag(Qt::WindowStaysOnTopHint, true);
 //    setWindowFlag(Qt::WindowTitleHint, false);
-    setGeometry(main_window_geometry);
-    iona_widget_ptr->move(iona_window_position);
+    setGeometry(main_window_posLT.x(), main_window_posLT.y(), 650, 500);
+    iona_widget_ptr = new IonaWidget(this);
+    iona_widget_ptr->show();
+    SetupPlugins();
 }
 
 MainWidget::~MainWidget()
 {
     delete ui;
-    qDebug() << "Main widget destructed.";
+    delete iona_widget_ptr;
+    delete tray_icon_ptr;
 }
 
 /* Tray Icon */
@@ -70,12 +76,9 @@ void MainWidget::Slot_TrayIcon_Activated(QSystemTrayIcon::ActivationReason reaso
 }
 void MainWidget::Slot_TrayMenu_ResetGeometry()
 {
-    main_window_geometry = default_main_window_geometry;
-    I401_paint_scale = default_I401_paint_scale;
-    iona_window_position = default_iona_window_position;
-    iona_paint_scale = default_iona_paint_scale;
-    setGeometry(main_window_geometry);
-    repaint();
+    main_window_posLT = default_main_window_posLT;
+    move(main_window_posLT.x(), main_window_posLT.y());
+    update();
 }
 void MainWidget::Slot_TrayMenu_Exit()
 {
@@ -129,7 +132,7 @@ void MainWidget::mouseMoveEvent(QMouseEvent *event)
     if(m_left_pressed && (event->buttons() & Qt::LeftButton))
     {
         move(event->globalPos() - m_left_click_position);
-        main_window_geometry = geometry();
+        main_window_posLT = QPoint(geometry().left(), geometry().top());
         event->accept();
     }
 }
@@ -147,21 +150,31 @@ void MainWidget::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     QPixmap pixmap, pixmapScaled;
     pixmap.load(":/charater/image/I-401.png");
-    pixmapScaled = pixmap.scaled(I401_paint_scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    painter.drawPixmap(0, 100, pixmapScaled);
-//    setFixedSize(533, 400);
+    pixmapScaled = pixmap.scaled(600,350, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    painter.drawPixmap(0, height() / 2 - 175, pixmapScaled);
 //    setMask(pixmapScaled.mask());
     event->accept();
 }
 
 /* Config - Json File Processing */
+bool MainWidget::JsonArrayToIntArray(QJsonArray &json_array, int *array_ptr, int size)
+{
+    if(json_array.size() == size) {
+            bool isValid = true;
+            for(int i = 0; i < size; i++) {
+                QJsonValue value = json_array.at(i);
+                if(value.isDouble())
+                    array_ptr[i] = static_cast<int>(value.toDouble());
+                else { isValid = false; break; }
+            }
+            return isValid;
+    }
+    return false;
+}
 int MainWidget::SetupConfig()
 {
     /* Setup Config */
-    main_window_geometry = default_main_window_geometry;
-    I401_paint_scale = default_I401_paint_scale;
-    iona_window_position = default_iona_window_position;
-    iona_paint_scale = default_iona_paint_scale;
+    main_window_posLT = default_main_window_posLT;
     // Read File and cast to Object
     // find if there is a config file, if not, create one.
     QDir config_dir("config");
@@ -188,87 +201,14 @@ int MainWidget::SetupConfig()
     QJsonObject root_object = json_document.object();
 
     // get Core params
-    if(root_object.contains("main_window_geometry")) {
-        QJsonValue param_value = root_object.value("main_window_geometry");
+    if(root_object.contains("Exit_posLT")) {
+        QJsonValue param_value = root_object.value("Exit_posLT");
         if(param_value.isArray()) {
-            QJsonArray array = param_value.toArray();
-            if(array.size() == 4) {
-                bool isValid = true;
-                int geo_param[4];
-                for(int i = 0; i < 4; i++) {
-                    QJsonValue value = array.at(i);
-                    if(value.isDouble())
-                        geo_param[i] = static_cast<int>(value.toDouble());
-                    else
-                        isValid = false;
-                }
-                if(isValid) {
-                    main_window_geometry = QRect(geo_param[0], geo_param[1], geo_param[2], geo_param[3]);
-                    qDebug() << "Valid param main_window_geometry. Set.";
-                }
-            }
-        }
-    }
-    if(root_object.contains("I401_paint_scale")) {
-        QJsonValue param_value = root_object.value("I401_paint_scale");
-        if(param_value.isArray()) {
-            QJsonArray array = param_value.toArray();
-            if(array.size() == 2) {
-                bool isValid = true;
-                int size_param[2];
-                for(int i = 0; i < 2; i++) {
-                    QJsonValue value = array.at(i);
-                    if(value.isDouble())
-                        size_param[i] = static_cast<int>(value.toDouble());
-                    else
-                        isValid = false;
-                }
-                if(isValid) {
-                    I401_paint_scale = QSize(size_param[0], size_param[1]);
-                    qDebug() << "Valid param I401_paint_scale. Set.";
-                }
-            }
-        }
-    }
-    if(root_object.contains("iona_window_position")) {
-        QJsonValue param_value = root_object.value("iona_window_position");
-        if(param_value.isArray()) {
-            QJsonArray array = param_value.toArray();
-            if(array.size() == 2) {
-                bool isValid = true;
-                int size_param[2];
-                for(int i = 0; i < 2; i++) {
-                    QJsonValue value = array.at(i);
-                    if(value.isDouble())
-                        size_param[i] = static_cast<int>(value.toDouble());
-                    else
-                        isValid = false;
-                }
-                if(isValid) {
-                    iona_window_position = QPoint(size_param[0], size_param[1]);
-                    qDebug() << "Valid param iona_window_position. Set.";
-                }
-            }
-        }
-    }
-    if(root_object.contains("iona_paint_scale")) {
-        QJsonValue param_value = root_object.value("iona_paint_scale");
-        if(param_value.isArray()) {
-            QJsonArray array = param_value.toArray();
-            if(array.size() == 2) {
-                bool isValid = true;
-                int size_param[2];
-                for(int i = 0; i < 2; i++) {
-                    QJsonValue value = array.at(i);
-                    if(value.isDouble())
-                        size_param[i] = static_cast<int>(value.toDouble());
-                    else
-                        isValid = false;
-                }
-                if(isValid) {
-                    iona_paint_scale = QSize(size_param[0], size_param[1]);
-                    qDebug() << "Valid param iona_paint_scale. Set.";
-                }
+            int point_param[2];
+            QJsonArray json_array = param_value.toArray();
+            if(JsonArrayToIntArray(json_array, point_param, 2)) {
+                main_window_posLT = QPoint(point_param[0], point_param[1]);
+                qDebug() << "Valid param main_window_posLT. Set.";
             }
         }
     }
@@ -287,7 +227,7 @@ int MainWidget::SetupConfig()
                         if(plugin_id_value.isDouble()) {
                             __int64 plugin_id = static_cast<__int64>(plugin_id_value.toDouble());
                             M_config.insert(std::make_pair(plugin_id, plugin_obj));
-                            qDebug() << "Valid param plugin_" << plugin_id << ". Set.";
+                            qDebug() << "Valid param plugin-" << plugin_id << ". Set.";
                         }
                     }
                 }
@@ -300,24 +240,10 @@ void MainWidget::SaveConfig()
 {
     // Save Core config
     QJsonObject root_object;
-    QJsonArray main_window_geometry_array;
-    main_window_geometry_array.append(main_window_geometry.left());
-    main_window_geometry_array.append(main_window_geometry.top());
-    main_window_geometry_array.append(main_window_geometry.width());
-    main_window_geometry_array.append(main_window_geometry.height());
-    root_object.insert("main_window_geometry", main_window_geometry_array);
-    QJsonArray I401_paint_scale_array;
-    I401_paint_scale_array.append(I401_paint_scale.width());
-    I401_paint_scale_array.append(I401_paint_scale.height());
-    root_object.insert("I401_paint_scale", I401_paint_scale_array);
-    QJsonArray iona_window_position_array;
-    iona_window_position_array.append(iona_window_position.x());
-    iona_window_position_array.append(iona_window_position.y());
-    root_object.insert("iona_window_position", iona_window_position_array);
-    QJsonArray iona_paint_scale_array;
-    iona_paint_scale_array.append(iona_paint_scale.width());
-    iona_paint_scale_array.append(iona_paint_scale.height());
-    root_object.insert("iona_paint_scale", iona_paint_scale_array);
+    QJsonArray main_window_posLT_array;
+    main_window_posLT_array.append(main_window_posLT.x());
+    main_window_posLT_array.append(main_window_posLT.y());
+    root_object.insert("Exit_posLT", main_window_posLT_array);
 
     // Save Plugins' config
     if(!M_plugins.empty()) {
@@ -348,6 +274,16 @@ int MainWidget::SetupPlugins()
     QDir plugins_dir("./lib");
     if(plugins_dir.entryList(QDir::Files).isEmpty())
         qDebug() << "No Plugin.";
+    QStringList suffix_filter_str;
+#ifdef Q_OS_WIN
+    suffix_filter_str << QString("*.dll");
+#endif
+#ifdef  Q_OS_LINUX
+    filter << QString("*.so");
+#endif
+    plugins_dir.setFilter(QDir::Files | QDir::NoSymLinks);
+    plugins_dir.setNameFilters(suffix_filter_str);
+
     foreach(QString filename, plugins_dir.entryList(QDir::Files))
     {
         auto plugin_ptr = QSharedPointer<PluginInstance>
@@ -368,12 +304,16 @@ int MainWidget::SetupPlugins()
 }
 MainWidget::PluginInstance::PluginInstance(QObject* parent, QString path)
 {
+    thread_ptr = new QThread;
     loader_ptr = QSharedPointer<QPluginLoader>(new QPluginLoader(path));
     QObject* pluginObjPtr = loader_ptr->instance();
     if(pluginObjPtr)
     {
         plugin_handler = qobject_cast<PluginBase*>(pluginObjPtr);
         if(plugin_handler){
+            plugin_handler->moveToThread(thread_ptr);
+            connect(thread_ptr, &QThread::finished, plugin_handler, &QObject::deleteLater);
+            thread_ptr->start();
             this->plugin_handler->onInit(parent);
             qDebug() << "Load Plugin: " << this->plugin_handler->getName();
         }
@@ -381,7 +321,9 @@ MainWidget::PluginInstance::PluginInstance(QObject* parent, QString path)
 }
 MainWidget::PluginInstance::~PluginInstance()
 {
-    delete plugin_handler;
+//    delete plugin_handler;
+    thread_ptr->quit();
+    thread_ptr->wait();
     loader_ptr->unload();
     qDebug() << "Unload Plugin: " << this->plugin_handler->getName();
 }

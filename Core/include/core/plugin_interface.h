@@ -1,14 +1,14 @@
 #ifndef IONADESKTOP_CORE_PLUGIN_INTERFACE_H
 #define IONADESKTOP_CORE_PLUGIN_INTERFACE_H
 
-#pragma once
 #include <QObject>
 #include <QString>
 #include <QJsonObject>
 #include <QPluginLoader>
 
-class PluginBase
+class PluginBase : public QObject
 {
+    Q_OBJECT
 public:
     // Destructor
     virtual ~PluginBase(){}
@@ -30,8 +30,11 @@ public:
     { return; }
     void setConfig(QJsonObject* cfg)
     { config = cfg; }
+    QJsonObject* getConfig() const
+    { return config; }
 private:
     QJsonObject *config;
+protected:
     QString name;
     QString version;
     QString description;

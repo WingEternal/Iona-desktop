@@ -1,4 +1,6 @@
-QT += core gui widgets multimedia
+QT += core gui multimedia
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 
@@ -6,7 +8,7 @@ INCLUDEPATH += \
     ./include \
 
 HEADERS += \
-    include/core/global_definitions.h \
+    include/core/core_global.h \
     include/core/iona_widget.h \
     include/core/main_widget.h \
     include/core/plugin_interface.h
@@ -22,3 +24,5 @@ FORMS += \
 
 RESOURCES += \
     assets/resource.qrc
+
+DESTDIR = ../bin

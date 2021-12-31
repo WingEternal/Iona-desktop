@@ -13,11 +13,12 @@
 #include <QBitmap>
 #include <QPixmap>
 #include <QMenu>
+#include <QThread>
 #include <QtMultimedia>
 #include<QSystemTrayIcon>
 #include <QtMultimedia/qmediaplayer.h>
 
-#include "core/global_definitions.h"
+#include "core/core_global.h"
 #include "core/iona_widget.h"
 #include "core/plugin_interface.h"
 namespace Ui {
@@ -36,16 +37,10 @@ namespace Core {
         IonaWidget *iona_widget_ptr;
 
         // Core Params
-        QRect main_window_geometry;
-        QSize I401_paint_scale;
-        QPoint iona_window_position;
-        QSize iona_paint_scale;
+        QPoint main_window_posLT;
 
         // Tray-menu vars
         QSystemTrayIcon *tray_icon_ptr;
-//        QMenu *tray_menu_ptr;
-//        QAction *act_tray_reset_location_ptr;
-//        QAction *act_tray_exit_ptr;
         int SetupTrayIcon();
 
     //    QMenu* m_right_click_menu;
@@ -54,9 +49,10 @@ namespace Core {
         bool m_left_pressed;
 
         // Json Config
+        bool JsonArrayToIntArray(QJsonArray &json_array, int *array_ptr, int size);
         int SetupConfig();
-        std::map<__int64, QJsonObject> M_config;
         void SaveConfig();
+        std::map<__int64, QJsonObject> M_config;
 
         // Plugin Handlers
         class PluginInstance
@@ -67,6 +63,7 @@ namespace Core {
             inline PluginBase* getHandler()
             { return plugin_handler; }
         private:
+            QThread *thread_ptr;
             QSharedPointer<QPluginLoader> loader_ptr;
             PluginBase* plugin_handler;
         };
