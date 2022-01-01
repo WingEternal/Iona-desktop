@@ -58,12 +58,11 @@ namespace Core {
         class PluginInstance
         {
         public:
-            PluginInstance(QObject* parent, QString path);
+            PluginInstance(QWidget* parent, QString path);
             ~PluginInstance();
             inline PluginBase* getHandler()
             { return plugin_handler; }
         private:
-            QThread *thread_ptr;
             QSharedPointer<QPluginLoader> loader_ptr;
             PluginBase* plugin_handler;
         };

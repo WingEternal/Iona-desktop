@@ -24,7 +24,7 @@ public:
     virtual QString getVersion() const
     { return version; }
     // Plugin start API
-    virtual int onInit(QObject* parent) = 0;
+    virtual int onInit(QWidget* parent) = 0;
     // Update Config Json when called. It is designed as a public method instead of a slot function, because it is necessary to ensure that the plugin's config is updated before saving, but the slot function is executed on the plugin's own thread and cannot block the main thread.
     virtual void updateConfig()
     { return; }

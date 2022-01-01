@@ -29,15 +29,15 @@ void GeneralWorker::Slot_StatisticsCpuUsage()
     curr_time = (user_time.dwHighDateTime << 31) | user_time.dwLowDateTime;
     __int64 user_diff = curr_time - prev_time;
 
-    int cpu_usage = static_cast<int>((kernel_diff + user_diff - idle_diff) * 100 / (kernel_diff + user_diff));
+    double cpu_usage = (kernel_diff + user_diff - idle_diff) * 100 / (kernel_diff + user_diff);
     prev_idle_time = idle_time;
     prev_kernel_time = kernel_time;
     prev_user_time= user_time;
 #endif
 
 #ifdef Q_OS_LINUX
-    static __int64 prev_cpu_total = 0;
-    static __int64 prev_cpu_idle = 0;
+    static double prev_cpu_total = 0;
+    static double prev_cpu_idle = 0;
     /* in /proc/stat: user | nice | system | idle | iowait | irq | softirq */
     QProcess process;
     process.start("cat /proc/stat");
@@ -48,13 +48,13 @@ void GeneralWorker::Slot_StatisticsCpuUsage()
     auto cpu_time = stat_str.split(" ");
     if(cpu_time.size() >= 7)
     {
-        __int64 cpu_total = 0;
+        double cpu_total = 0;
         for(int i = 1; i < cpu_time.size(); i++)
-            cpu_total += static_cast<__int64>(cpu_time[i].toDouble());
-        __int64 cpu_idle = static_cast<__int64>(cpu_time[3].toDouble());
+            cpu_total += cpu_time[i].toDouble();
+       double cpu_idle = cpu_time[3].toDouble();
         if(cpu_total - prev_cpu_total > 0)
         {
-            int cpu_usage = static_cast<int>(1 - (cpu_idle - prev_cpu_idle) / (cpu_total - prev_cpu_total));
+            double cpu_usage = (1 - (cpu_idle - prev_cpu_idle) / (cpu_total - prev_cpu_total)) * 100;
             prev_cpu_total = cpu_total;
             prev_cpu_idle = cpu_idle;
         }
@@ -78,6 +78,6 @@ void GeneralWorker::Slot_StatisticsMemUsage()
     double mem_free = mem_stat.ullAvailPhys / 1024. / 1024.;
     double mem_total = mem_stat.ullTotalPhys / 1024. / 1024.;
     double mem_used = mem_total - mem_free;
-    emit MemUsageResultReady(static_cast<int>(mem_used * 100 / mem_total));
+    emit MemUsageResultReady(mem_used * 100 / mem_total);
 #endif
 }

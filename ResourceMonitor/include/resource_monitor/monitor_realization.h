@@ -20,8 +20,8 @@ namespace ResourceMonitor {
         ~GeneralWorker(){}
     protected:
     signals:
-        void CpuUsageResultReady(const int cpu_usage);
-        void MemUsageResultReady(const int mem_usage);
+        void CpuUsageResultReady(const double cpu_usage);
+        void MemUsageResultReady(const double mem_usage);
     public slots:
         void Slot_StatisticsCpuUsage();
         void Slot_StatisticsMemUsage();

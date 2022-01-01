@@ -152,7 +152,6 @@ void MainWidget::paintEvent(QPaintEvent *event)
     pixmap.load(":/charater/image/I-401.png");
     pixmapScaled = pixmap.scaled(600,350, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     painter.drawPixmap(0, height() / 2 - 175, pixmapScaled);
-//    setMask(pixmapScaled.mask());
     event->accept();
 }
 
@@ -287,8 +286,7 @@ int MainWidget::SetupPlugins()
     foreach(QString filename, plugins_dir.entryList(QDir::Files))
     {
         auto plugin_ptr = QSharedPointer<PluginInstance>
-                (new PluginInstance(qobject_cast<QObject*>(this),
-                plugins_dir.absoluteFilePath(filename)));
+                (new PluginInstance(this, plugins_dir.absoluteFilePath(filename)));
         if(plugin_ptr != nullptr) {
             __int64 unique_id = plugin_ptr->getHandler()->getID();
             M_plugins.insert(std::make_pair(unique_id, plugin_ptr));
@@ -302,18 +300,14 @@ int MainWidget::SetupPlugins()
     }
     return 0;
 }
-MainWidget::PluginInstance::PluginInstance(QObject* parent, QString path)
+MainWidget::PluginInstance::PluginInstance(QWidget* parent, QString path)
 {
-    thread_ptr = new QThread;
     loader_ptr = QSharedPointer<QPluginLoader>(new QPluginLoader(path));
     QObject* pluginObjPtr = loader_ptr->instance();
     if(pluginObjPtr)
     {
         plugin_handler = qobject_cast<PluginBase*>(pluginObjPtr);
         if(plugin_handler){
-            plugin_handler->moveToThread(thread_ptr);
-            connect(thread_ptr, &QThread::finished, plugin_handler, &QObject::deleteLater);
-            thread_ptr->start();
             this->plugin_handler->onInit(parent);
             qDebug() << "Load Plugin: " << this->plugin_handler->getName();
         }
@@ -321,9 +315,7 @@ MainWidget::PluginInstance::PluginInstance(QObject* parent, QString path)
 }
 MainWidget::PluginInstance::~PluginInstance()
 {
-//    delete plugin_handler;
-    thread_ptr->quit();
-    thread_ptr->wait();
+    delete plugin_handler;
     loader_ptr->unload();
     qDebug() << "Unload Plugin: " << this->plugin_handler->getName();
 }
