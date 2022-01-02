@@ -32,6 +32,7 @@ namespace Core {
         ~MainWidget();
     private:
         IonaWidget *iona_widget_ptr;
+        QPixmap pix_I401;
 
         // Core Params
         QPoint main_window_posLT;

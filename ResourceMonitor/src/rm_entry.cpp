@@ -34,7 +34,7 @@ int ResourceMonitor::onInit(QWidget* parent)
 
     // Timer SIG-SLOT
     connect(&refresh_timer, SIGNAL(timeout()), this, SLOT(Slot_Refresh_Timeout()));
-    refresh_timer.start(800);
+    refresh_timer.start(1000);
     return 0;
 }
 void ResourceMonitor::SetupWidgets(QWidget* parent)

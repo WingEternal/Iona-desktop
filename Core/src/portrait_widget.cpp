@@ -1,5 +1,4 @@
-#include <QBitmap>
-#include <QPixmap>
+
 #include <QPainter>
 #include <QPaintEvent>
 #include <QDebug>
@@ -10,18 +9,20 @@
 using namespace IonaDesktop::Core;
 
 PortraitWidget::PortraitWidget(QWidget *parent)
-    : QWidget (parent){}
+    : QWidget (parent)
+{
+    QPixmap pix_origin;
+    pix_origin.load(":/charater/image/Iona.png");
+    pix_portrait = pix_origin.scaled(500, 500, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    mask_portrait = pix_portrait.mask();
+}
 PortraitWidget::~PortraitWidget(){}
 void PortraitWidget::paintEvent(QPaintEvent *ev)
 {
     QPainter painter(this);
-    QPixmap pixmap, pixmapScaled;
-    pixmap.load(":/charater/image/Iona.png");
-    pixmapScaled = pixmap.scaled(width(), height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    painter.drawPixmap(0, 0, pixmapScaled);
-    qDebug() << "Iona - drawSized: " << pixmapScaled.rect();
-    setFixedSize(pixmapScaled.size());
-    setMask(pixmapScaled.mask());
+    painter.drawPixmap(0, 0, pix_portrait);
+    qDebug() << "portrait-draw size: " << pix_portrait.rect();
+    setMask(mask_portrait);
 #ifdef DEBUG_WINDOW_POSITION
     QPainter painter(this);
     painter.setPen(Qt::white);

@@ -2,6 +2,8 @@
 #define IONADESKTOP_CORE_PORTRAIT_WIDGET_H
 
 #include <QWidget>
+#include <QBitmap>
+#include <QPixmap>
 
 namespace IonaDesktop {
 namespace Core {
@@ -15,6 +17,8 @@ namespace Core {
     signals:
         void mousePress();
     protected:
+        QPixmap pix_portrait;
+        QBitmap mask_portrait;
         void paintEvent(QPaintEvent *ev);
         void mousePressEvent(QMouseEvent* ev);
     };

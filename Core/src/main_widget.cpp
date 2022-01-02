@@ -24,6 +24,7 @@ MainWidget::MainWidget(QWidget *parent) :
     setWindowFlag(Qt::WindowStaysOnTopHint, true);
 //    setWindowFlag(Qt::WindowTitleHint, false);
     setGeometry(main_window_posLT.x(), main_window_posLT.y(), 650, 500);
+    pix_I401.load(":/charater/image/I-401.png");
     iona_widget_ptr = new IonaWidget(this);
     iona_widget_ptr->show();
     SetupPlugins();
@@ -92,35 +93,6 @@ void MainWidget::mousePressEvent(QMouseEvent *event)
         m_left_click_position = event->globalPos() - this->pos();
         event->accept();
     }
-    if (event->button() == Qt::RightButton)
-    {
-//        QMenu* mRightClickMenu = new QMenu(this);
-//        QAction* actChangeImage = mRightClickMenu->addAction("Change Image");
-//        QMenu* changeImageSubMenu = new QMenu(this);
-//        QAction* actChangeImageNormal = changeImageSubMenu->addAction("normal");
-//        QAction* actChangeImageAnniversary = changeImageSubMenu->addAction("anniversary");
-//        QAction* actChangeImageValentine = changeImageSubMenu->addAction("valentine");
-//        QAction* actChangeImageSwimsuit = changeImageSubMenu->addAction("swimsuit");
-//        QAction* actChangeImageHalloween = changeImageSubMenu->addAction("halloween");
-//        actChangeImage->setMenu(changeImageSubMenu);
-
-//        connect(actChangeImageNormal, &QAction::triggered, this, [=](){
-//            imageFileName = "normal";
-//            this->repaint();});
-//        connect(actChangeImageAnniversary, &QAction::triggered, this, [=](){
-//            imageFileName = "anniversary";
-//            this->repaint();});
-//        connect(actChangeImageValentine, &QAction::triggered, this, [=](){
-//            imageFileName = "valentine";
-//            this->repaint();});
-//        connect(actChangeImageSwimsuit, &QAction::triggered, this, [=](){
-//            imageFileName = "swimsuit";
-//            this->repaint();});
-//        connect(actChangeImageHalloween, &QAction::triggered, this, [=](){
-//            imageFileName = "halloween";
-//            this->repaint();});
-//        mRightClickMenu->exec(QCursor::pos());
-     }
 }
 void MainWidget::mouseMoveEvent(QMouseEvent *event)
 {
@@ -144,10 +116,8 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *event)
 void MainWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    QPixmap pixmap, pixmapScaled;
-    pixmap.load(":/charater/image/I-401.png");
-    pixmapScaled = pixmap.scaled(600,350, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    painter.drawPixmap(0, height() / 2 - 175, pixmapScaled);
+//    pixmapScaled = pixmap.scaled(600,350, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    painter.drawPixmap(0, height() / 2 - 175, pix_I401);
     event->accept();
 }
 

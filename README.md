@@ -14,9 +14,10 @@
 * [Ubuntu] 查询roscore状态，快捷启动菜单
 * ResourceMonitor里的HexagonWidget估计之后很多插件会用得上（做悬浮窗状态），考虑把它整合到Core上，或打包成插件
 ## 正在施工的项目(TODO)
-* QMenu菜单美化
-* Plugin Widget的展开动效
-* RecoureMonitor Ticked的时候会导致窗口卡一下，按理说已经在新线程上跑了，待修
+* `QMenu`菜单美化
+* `RecoureMonitor` Ticked的时候会导致窗口卡一下，按理说已经在新线程上跑了；
+* 而且开久了会卡主线程（GUI），目前的测试结果是，每次`ResourceMonitor`更新都会调用重绘，久了之后`main_widget`的`paintEvent`跟不上了，从而主线程事件循环出现问题。
+  * 临时解决方案：把所有图都降采样了一遍，而且载入过程改到`widget`构造函数里执行，`ResourceMonitor`刷新周期降低到1hz
 ## 流水账
 
 * 20220102
