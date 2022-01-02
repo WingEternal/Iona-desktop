@@ -3,6 +3,7 @@
 #include "resource_monitor/rm_global.h"
 
 ResourceMonitor::ResourceMonitor() :
+    refresh_timer(this),
     hexagon_size(80),
     spacing_size(8)
 {
@@ -31,9 +32,9 @@ int ResourceMonitor::onInit(QWidget* parent)
     connect(&worker_thread, SIGNAL(finished()), general_worker_ptr, SLOT(deleteLater()));
     worker_thread.start();
 
-    refresh_timer_ptr = new QTimer(this);
-    connect(refresh_timer_ptr, SIGNAL(timeout()), this, SLOT(Slot_Refresh_Timeout()));
-    refresh_timer_ptr->start(800);
+    // Timer SIG-SLOT
+    connect(&refresh_timer, SIGNAL(timeout()), this, SLOT(Slot_Refresh_Timeout()));
+    refresh_timer.start(800);
     return 0;
 }
 void ResourceMonitor::SetupWidgets(QWidget* parent)

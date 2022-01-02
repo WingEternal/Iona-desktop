@@ -21,9 +21,7 @@
 #include "core/core_global.h"
 #include "core/iona_widget.h"
 #include "core/plugin_interface.h"
-namespace Ui {
-    class MainWidget;
-}
+
 namespace IonaDesktop{
 namespace Core {
     class MainWidget : public QWidget
@@ -33,7 +31,6 @@ namespace Core {
         explicit MainWidget(QWidget *parent = nullptr);
         ~MainWidget();
     private:
-        Ui::MainWidget *ui;
         IonaWidget *iona_widget_ptr;
 
         // Core Params

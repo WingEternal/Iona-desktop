@@ -16,9 +16,9 @@ namespace ResourceMonitor {
 
     protected:
         double rate;
-        QLabel *rate_label_ptr;
+        QLabel rate_label;
         QString name;
-        QLabel *name_label_ptr;
+        QLabel name_label;
 
         // genHexagon() can be executed only once because hexagon size dont't change in this plugin
         QPainterPath hexagon_path;

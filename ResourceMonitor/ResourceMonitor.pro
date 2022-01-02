@@ -41,8 +41,7 @@ HEADERS += \
     include/resource_monitor/monitor_realization.h \
     include/resource_monitor/rm_global.h
 
-FORMS += \
-    monitor_widget.ui
+FORMS +=
 
 DESTDIR = ../bin/lib
 

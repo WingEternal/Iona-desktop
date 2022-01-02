@@ -7,6 +7,7 @@
 
 namespace IonaDesktop {
 namespace Core {
+//    #define DEBUG_WINDOW_POSITION
     // Default values
     const QPoint default_main_window_posLT(1300, 560);
 }

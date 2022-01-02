@@ -33,7 +33,7 @@ private:
     QThread worker_thread;
     GeneralWorker *general_worker_ptr;
 
-    QTimer *refresh_timer_ptr;
+    QTimer refresh_timer;
 
     void SetupWidgets(QWidget* parent);
     const int hexagon_size;

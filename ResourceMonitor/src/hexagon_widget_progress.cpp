@@ -8,7 +8,9 @@
 using namespace IonaDesktop::ResourceMonitor;
 
 HexagonProgressWidget::HexagonProgressWidget(const QString &widget_name, QWidget *parent) :
-    HexagonWidgetBase(parent), rate(0), name(widget_name)
+    HexagonWidgetBase(parent),
+    rate(0), rate_label(this),
+     name(widget_name), name_label(this)
 {
     QPalette general_label_palette;
     general_label_palette.setColor(QPalette::WindowText, Qt::white);
@@ -16,26 +18,20 @@ HexagonProgressWidget::HexagonProgressWidget(const QString &widget_name, QWidget
     QFont rate_font;
     rate_font.setFamily("微软雅黑");
     rate_font.setPixelSize(30);
-    rate_label_ptr = new QLabel(this);
-    rate_label_ptr->setAlignment(Qt::AlignCenter);
-    rate_label_ptr->setPalette(general_label_palette);
-    rate_label_ptr->setFont(rate_font);
-    rate_label_ptr->show();
+    rate_label.setAlignment(Qt::AlignCenter);
+    rate_label.setPalette(general_label_palette);
+    rate_label.setFont(rate_font);
+    rate_label.show();
 
     QFont name_font;
     name_font.setFamily("微软雅黑");
     name_font.setPixelSize(12);
-    name_label_ptr = new QLabel(this);
-    name_label_ptr->setAlignment(Qt::AlignCenter);
-    name_label_ptr->setPalette(general_label_palette);
-    name_label_ptr->setFont(name_font);
-    name_label_ptr->show();
+    name_label.setAlignment(Qt::AlignCenter);
+    name_label.setPalette(general_label_palette);
+    name_label.setFont(name_font);
+    name_label.show();
 }
-HexagonProgressWidget::~HexagonProgressWidget()
-{
-    delete rate_label_ptr;
-    delete name_label_ptr;
-}
+HexagonProgressWidget::~HexagonProgressWidget(){}
 void HexagonProgressWidget::setName(const QString &widget_name)
 { name = widget_name; }
 void HexagonProgressWidget::paintEvent(QPaintEvent *event)
@@ -64,11 +60,11 @@ void HexagonProgressWidget::paintEvent(QPaintEvent *event)
     painter.setBrush(brush);
     painter.drawPath(hex_progress_path);
 
-    name_label_ptr->setText(name);
-    name_label_ptr->setGeometry(0, static_cast<int>(0.3 * height()), width(), height());
+    name_label.setText(name);
+    name_label.setGeometry(0, static_cast<int>(0.3 * height()), width(), height());
 
-    rate_label_ptr->setText(QString("%1").arg(QString::number(rate, 'g', 3)));
-    rate_label_ptr->setGeometry(0, 0, width(), height());
+    rate_label.setText(QString("%1").arg(QString::number(rate, 'g', 3)));
+    rate_label.setGeometry(0, 0, width(), height());
     event->accept();
 }
 

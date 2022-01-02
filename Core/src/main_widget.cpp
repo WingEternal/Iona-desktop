@@ -1,5 +1,4 @@
 #include "core/main_widget.h"
-#include "ui_main_widget.h"
 #include <iostream>
 #include <iomanip>
 #include <QFileDialog>
@@ -8,13 +7,11 @@
 using namespace IonaDesktop::Core;
 
 MainWidget::MainWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::MainWidget)
+    QWidget(parent)
 {
     SetupConfig();
     SetupTrayIcon();
 
-    ui->setupUi(this);
     setAttribute(Qt::WA_TranslucentBackground);
     // Set as independent window
     setWindowFlag(Qt::Window);
@@ -34,7 +31,6 @@ MainWidget::MainWidget(QWidget *parent) :
 
 MainWidget::~MainWidget()
 {
-    delete ui;
     delete iona_widget_ptr;
     delete tray_icon_ptr;
 }
