@@ -23,7 +23,7 @@ MainWidget::MainWidget(QWidget *parent) :
     // Stay on top
     setWindowFlag(Qt::WindowStaysOnTopHint, true);
 //    setWindowFlag(Qt::WindowTitleHint, false);
-    setGeometry(main_window_posLT.x(), main_window_posLT.y(), 650, 500);
+    setGeometry(main_window_posLT.x(), main_window_posLT.y(), 600, 500);
     pix_I401.load(":/charater/image/I-401.png");
     iona_widget_ptr = new IonaWidget(this);
     iona_widget_ptr->show();
@@ -190,7 +190,7 @@ int MainWidget::SetupConfig()
                     if(plugin_obj.contains("unique_id")) {
                         QJsonValue plugin_id_value = plugin_obj.value("unique_id");
                         if(plugin_id_value.isDouble()) {
-                            __int64 plugin_id = static_cast<__int64>(plugin_id_value.toDouble());
+                            int32_t plugin_id = static_cast<int32_t>(plugin_id_value.toDouble());
                             M_config.insert(std::make_pair(plugin_id, plugin_obj));
                             qDebug() << "Valid param plugin-" << plugin_id << ". Set.";
                         }
@@ -244,7 +244,7 @@ int MainWidget::SetupPlugins()
     suffix_filter_str << QString("*.dll");
 #endif
 #ifdef  Q_OS_LINUX
-    filter << QString("*.so");
+    suffix_filter_str << QString("*.so");
 #endif
     plugins_dir.setFilter(QDir::Files | QDir::NoSymLinks);
     plugins_dir.setNameFilters(suffix_filter_str);
@@ -254,7 +254,7 @@ int MainWidget::SetupPlugins()
         auto plugin_ptr = QSharedPointer<PluginInstance>
                 (new PluginInstance(this, plugins_dir.absoluteFilePath(filename)));
         if(plugin_ptr != nullptr) {
-            __int64 unique_id = plugin_ptr->getHandler()->getID();
+            int32_t unique_id = plugin_ptr->getHandler()->getID();
             M_plugins.insert(std::make_pair(unique_id, plugin_ptr));
             if(!M_config.count(unique_id)) {
                 QJsonObject empty_object;

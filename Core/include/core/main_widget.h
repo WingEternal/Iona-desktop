@@ -50,7 +50,7 @@ namespace Core {
         bool JsonArrayToIntArray(QJsonArray &json_array, int *array_ptr, int size);
         int SetupConfig();
         void SaveConfig();
-        std::map<__int64, QJsonObject> M_config;
+        std::map<int32_t, QJsonObject> M_config;
 
         // Plugin Handlers
         class PluginInstance
@@ -65,7 +65,7 @@ namespace Core {
             PluginBase* plugin_handler;
         };
         int SetupPlugins();
-        std::map<__int64, QSharedPointer<PluginInstance>> M_plugins;
+        std::map<int32_t, QSharedPointer<PluginInstance>> M_plugins;
 
     protected:
         void mouseMoveEvent(QMouseEvent* event);

@@ -16,7 +16,7 @@ public:
     virtual QString getName() const
     { return name; }
     // Unique ID is the unique identifier to distinguish different plugins, must be override
-    virtual __int64 getID() const = 0;
+    virtual int32_t getID() const = 0;
     // Plugin detail && remark
     virtual QString getDescription() const
     { return description; }

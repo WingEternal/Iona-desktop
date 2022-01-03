@@ -36,6 +36,7 @@ void GeneralWorker::Slot_StatisticsCpuUsage()
 #endif
 
 #ifdef Q_OS_LINUX
+    double cpu_usage = -1;
     static double prev_cpu_total = 0;
     static double prev_cpu_idle = 0;
     /* in /proc/stat: user | nice | system | idle | iowait | irq | softirq */
@@ -54,7 +55,7 @@ void GeneralWorker::Slot_StatisticsCpuUsage()
        double cpu_idle = cpu_time[3].toDouble();
         if(cpu_total - prev_cpu_total > 0)
         {
-            double cpu_usage = (1 - (cpu_idle - prev_cpu_idle) / (cpu_total - prev_cpu_total)) * 100;
+            cpu_usage = (1 - (cpu_idle - prev_cpu_idle) / (cpu_total - prev_cpu_total)) * 100;
             prev_cpu_total = cpu_total;
             prev_cpu_idle = cpu_idle;
         }

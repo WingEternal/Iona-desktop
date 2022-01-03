@@ -24,7 +24,7 @@ class RESOURCE_MONITOR_EXPORT  ResourceMonitor : public PluginBase
 public:
     ResourceMonitor();
     ~ResourceMonitor() override;
-    __int64 getID() const override
+    int32_t getID() const override
     { return 0x01; }
     int onInit(QWidget* parent) override;
 private:
