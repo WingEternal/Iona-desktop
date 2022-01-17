@@ -20,8 +20,8 @@ namespace ResourceMonitor {
         QString name;
         QLabel name_label;
 
-        // genHexagon() can be executed only once because hexagon size dont't change in this plugin
-        QPainterPath hexagon_path;
+        bool flag_hex_init;
+        QPainterPath hex_path;
         void paintEvent(QPaintEvent *event);
     public slots:
         void Slot_UpdateRate(const double new_rate);

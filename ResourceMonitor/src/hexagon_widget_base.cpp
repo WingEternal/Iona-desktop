@@ -31,6 +31,7 @@ void HexagonWidgetBase::genHexagonPath(QPainterPath &path)
 void HexagonWidgetBase::genHexagonProgressPath(QPainterPath &path, const double progress_rate)
 {
     updateParams();
+    path.clear();
     QPolygonF progress = QPolygonF();
     if(abs(progress_rate - 100) < 1e-5)
         progress = hexagon;
