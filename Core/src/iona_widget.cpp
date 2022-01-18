@@ -13,7 +13,7 @@ IonaWidget::IonaWidget(QWidget *parent)
     label_animation_duration(100)
 {
     // Geometry Setting
-    setGeometry(140, 10, 500, 500);
+    setGeometry(80, 10, 500, 500);
     portrait_widget_ptr = new PortraitWidget(this);
     portrait_widget_ptr->setGeometry((width() - 360) / 2, 0, 360, 500);
     // Portrait SIG-SLOT

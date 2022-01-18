@@ -25,4 +25,6 @@ FORMS +=
 RESOURCES += \
     assets/resource.qrc
 
+RC_ICONS = Core.ico
+
 DESTDIR = ../bin

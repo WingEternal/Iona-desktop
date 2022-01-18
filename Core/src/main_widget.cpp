@@ -23,8 +23,10 @@ MainWidget::MainWidget(QWidget *parent) :
     // Stay on top
     setWindowFlag(Qt::WindowStaysOnTopHint, true);
 //    setWindowFlag(Qt::WindowTitleHint, false);
-    setGeometry(main_window_posLT.x(), main_window_posLT.y(), 600, 500);
-    pix_I401.load(":/charater/image/I-401.png");
+    setGeometry(main_window_posLT.x(), main_window_posLT.y(), 550, 500);
+    QPixmap pix_I401_origin;
+    pix_I401_origin.load(":/charater/image/I-401.png");
+    pix_I401 = pix_I401_origin.scaled(550,350, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     iona_widget_ptr = new IonaWidget(this);
     iona_widget_ptr->show();
     SetupPlugins();
@@ -116,7 +118,6 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *event)
 void MainWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-//    pixmapScaled = pixmap.scaled(600,350, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     painter.drawPixmap(0, height() / 2 - 175, pix_I401);
     event->accept();
 }
