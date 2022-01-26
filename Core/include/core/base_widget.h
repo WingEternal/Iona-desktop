@@ -11,6 +11,9 @@
 
 /* DISPLAY INCLUDES */
 #include "core/gl_widget.h"
+/* MASK INCLUDES*/
+#include <QPixmap>
+#include <QBitmap>
 /* VOICE INCLUDES */
 #include <QLabel>
 #include <QtMultimedia>
@@ -47,6 +50,10 @@ namespace Core {
     private:
         void setupGLWidget();
         GLWidget *gl_widget_ptr;
+
+        /* MASK */
+    private:
+        void setupMask();
 
         /* Voice MediaPlayer & Label */
     private:

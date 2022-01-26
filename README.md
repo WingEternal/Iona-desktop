@@ -1,30 +1,30 @@
 # Project Iona-desktop
 
 * 基于Qt实现的跨平台方案，放一只伊欧娜在桌面上
-* 无技术力警告，目前本质上是优先层最高的图片展示器x
+* 无技术力警告，目前本质上是优先层最高的~~图片展示器~~现在是OpenGL展示器了
 * 素材来源：[萌娘百科-イオナ](https://zh.moegirl.org.cn/%E4%BC%8A%E6%AC%A7%E5%A8%9C)
+* fragment_shader_mix2: formula from [fifbro](https://blog.csdn.net/qq_21950929/article/details/78989215)
 ## 可能咕咕的功能
 * ~~监测系统资源占用~~（DONE）
 * 搞一台服务器玩文件备份和同步，悬浮窗展示服务器连接状态
 * 监控指定文件夹git状态
 * 提醒喝水~~提肛~~小助手
-* 一些动画效果，比如伊欧娜的计算环，401的外部灯光，可能试试Qt的2D/3D混合，~~也可能直接在别的软件里渲染完直接拖Qt里当图片播放器~~
-* 看看Live2D或者MMD能不能整起来，~~L2D可以自己试试，但是建模实在做不到了~~
+* 一些动画效果，比如伊欧娜的数据环，401的外部灯光（DONE 1/2）
+* 数据环的一些动效，比如鼠标悬浮时扩大并加快转速
 * 外接一个Stm32或者Arduino，DIY能在电脑上控制的台灯
 * [Ubuntu] 查询roscore状态，快捷启动菜单
-* ~~`ResourceMonitor`里的`HexagonWidget`估计之后很多插件会用得上（做悬浮窗状态），考虑把它整合到Core上，或打包成插件~~（DEPRECATED）
 ## 正在施工的项目(TODO)
 * `QMenu`菜单美化
-* `RecoureMonitor` Ticked的时候会导致窗口卡一下，按理说已经在新线程上跑了；
-* 而且开久了会卡主线程（GUI），目前的测试结果是，每次`ResourceMonitor`更新都会调用重绘，久了之后`main_widget`的`paintEvent`跟不上了，从而主线程事件循环出现问题。
-  * 临时解决方案：把所有图都降采样了一遍，而且载入过程改到`widget`构造函数里执行，`ResourceMonitor`刷新周期降低到1hz。~~改完之后字幕的动画效果也不卡了~~
-  * 在test_branch上测试，与插件加载无关，是资源监视器内部导致的事件问题
-  * 和CPU和MEM获取数据的实现无关，问题似乎出现在事件回调的过程上
-  * 定位问题在`hexagon_progress_widget`的`paintEvent`上，把绘制六边形的过程全部注释掉，只保留`QLabel`就不卡了
-  * ~~怀疑是`hexagon_progress_widget`的`slot`被异步调用，但是数据没写保护~~并不是
-  * ~~改用`QProgressBar`算了~~RM直接编译为独立的应用程序，百分比占用的UI实现改为`QProgressBar`
-* `iona_widget`继承于`QOpenGLWidget`实现
+* 考虑把RM直接编译为独立的应用程序，百分比占用的UI实现改为`QProgressBar`
+* 伊欧娜的Live2D~~新建文件夹~~，~~还没开始学~~
+* FBX模型加载器，把I-401重新整回来做背景
+* 计算环的泛光效果（bloom）
 ## 流水账
+
+* 20220127
+  * 为了实现这三个计算环，代码基本重构了一遍。目前主要的绘制集中在`QOpenGLWidget`上用`OpenGL`完成
+  * 异形窗口在`BaseWidget`上用了一个很粗糙的mask实现，反正每次改布局都得重新画一个，凑合先用
+  * 把`ResourceMonitor`里的`HexagonWidget`整合到Core上，现为`HexagonBase`
 
 * 20220118
   * ~~咕了是因为打别的游戏去了~~

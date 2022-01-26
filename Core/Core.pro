@@ -21,6 +21,7 @@ SOURCES += \
     src/base_widget.cpp \
     src/base_widget_config.cpp \
     src/base_widget_gl.cpp \
+    src/base_widget_mask.cpp \
     src/base_widget_move.cpp \
     src/base_widget_plugins.cpp \
     src/base_widget_tray.cpp \

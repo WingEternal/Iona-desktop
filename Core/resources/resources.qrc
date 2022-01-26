@@ -44,4 +44,7 @@
         <file>icon_anchor.png</file>
         <file>move.png</file>
     </qresource>
+    <qresource prefix="/mask">
+        <file>mask.png</file>
+    </qresource>
 </RCC>
