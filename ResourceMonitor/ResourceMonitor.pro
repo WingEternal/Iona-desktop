@@ -29,17 +29,16 @@ INCLUDEPATH += \
     ./../Core/include
 
 SOURCES += \
-    src/hexagon_widget_base.cpp \
-    src/hexagon_widget_progress.cpp \
     src/monitor_realization.cpp \
-    src/rm_entry.cpp
+    src/rm_entry.cpp \
+    src/rm_widget.cpp
 
 HEADERS += \
+    ../Core/include/core/hexagon_base.h \
     ../Core/include/core/plugin_interface.h \
-    include/resource_monitor/hexagon_widget_base.h \
-    include/resource_monitor/hexagon_widget_progress.h \
     include/resource_monitor/monitor_realization.h \
-    include/resource_monitor/rm_global.h
+    include/resource_monitor/rm_global.h \
+    include/resource_monitor/rm_widget.h
 
 FORMS +=
 

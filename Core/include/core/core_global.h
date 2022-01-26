@@ -2,6 +2,7 @@
 #define IONADESKTOP_CORE_DEFINITIONS_H
 
 #include <QtGlobal>
+#include <QDebug>
 #include <QWidget>
 #include <QRect>
 

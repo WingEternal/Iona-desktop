@@ -23,7 +23,7 @@
   * 定位问题在`hexagon_progress_widget`的`paintEvent`上，把绘制六边形的过程全部注释掉，只保留`QLabel`就不卡了
   * ~~怀疑是`hexagon_progress_widget`的`slot`被异步调用，但是数据没写保护~~并不是
   * ~~改用`QProgressBar`算了~~RM直接编译为独立的应用程序，百分比占用的UI实现改为`QProgressBar`
-* `iona_widget`尝试继承于QGLWidget实现，或者找出计算环的伪3D实现方案
+* `iona_widget`继承于`QOpenGLWidget`实现
 ## 流水账
 
 * 20220118

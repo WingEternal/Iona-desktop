@@ -11,7 +11,7 @@
 
 #include <QTimer>
 #include "core/plugin_interface.h"
-#include "resource_monitor/hexagon_widget_progress.h"
+#include "resource_monitor/rm_widget.h"
 #include "resource_monitor/monitor_realization.h"
 
 using namespace IonaDesktop::ResourceMonitor;
@@ -28,21 +28,18 @@ public:
     { return 0x01; }
     int onInit(QWidget* parent) override;
 private:
-//    MonitorWidget* monitor_widget_ptr;
-
     QThread worker_thread;
     GeneralWorker *general_worker_ptr;
 
-    QTimer refresh_timer;
+    QTimer *refresh_timer_ptr;
 
     void SetupWidgets(QWidget* parent);
     const int hexagon_size;
-    const int spacing_size;
-    HexagonProgressWidget *cpu_usage_widget_ptr;
-    HexagonProgressWidget *mem_usage_widget_ptr;
-    HexagonProgressWidget *stb_1_widget_ptr;
-    HexagonProgressWidget *stb_2_widget_ptr;
-    HexagonProgressWidget *stb_3_widget_ptr;
+    RmWidget *cpu_usage_widget_ptr;
+    RmWidget *mem_usage_widget_ptr;
+    RmWidget *stb_1_widget_ptr;
+    RmWidget *stb_2_widget_ptr;
+    RmWidget *stb_3_widget_ptr;
 signals:
     void requestCpuUsage();
     void requestMemUsage();

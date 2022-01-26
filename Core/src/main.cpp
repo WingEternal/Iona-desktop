@@ -1,11 +1,13 @@
 #include <QApplication>
-#include "core/main_widget.h"
+#include "core/base_widget.h"
+
+using namespace IonaDesktop::Core;
 
 int main(int argc, char *argv[])
 {
-    Q_INIT_RESOURCE(resource);
+    Q_INIT_RESOURCE(resources);
     QApplication a(argc, argv);
-    IonaDesktop::Core::MainWidget *main_widget_ptr = new IonaDesktop::Core::MainWidget();
-    main_widget_ptr->show();
+    BaseWidget *base_widget_ptr = new BaseWidget();
+    base_widget_ptr->show();
     return a.exec();
 }

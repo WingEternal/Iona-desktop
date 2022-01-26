@@ -1,0 +1,47 @@
+<RCC>
+    <qresource prefix="/charater/texture">
+        <file>Iona_514_723.png</file>
+        <file>ring_m_2235_65.png</file>
+        <file>ring_tb_frame_2648_75.png</file>
+        <file>ring_tb_block_2648_75.png</file>
+    </qresource>
+    <qresource prefix="/charater/shader">
+        <file>vs_general.vert</file>
+        <file>fs_general.frag</file>
+        <file>fs_mix2.frag</file>
+    </qresource>
+    <qresource prefix="/charater/voice">
+        <file>0000.mp3</file>
+        <file>0100.mp3</file>
+        <file>0200.mp3</file>
+        <file>0300.mp3</file>
+        <file>0400.mp3</file>
+        <file>0500.mp3</file>
+        <file>0600.mp3</file>
+        <file>0700.mp3</file>
+        <file>0800.mp3</file>
+        <file>0900.mp3</file>
+        <file>1000.mp3</file>
+        <file>1100.mp3</file>
+        <file>1200.mp3</file>
+        <file>1300.mp3</file>
+        <file>1400.mp3</file>
+        <file>1500.mp3</file>
+        <file>1600.mp3</file>
+        <file>1700.mp3</file>
+        <file>1800.mp3</file>
+        <file>1900.mp3</file>
+        <file>2000.mp3</file>
+        <file>2100.mp3</file>
+        <file>2200.mp3</file>
+        <file>2300.mp3</file>
+        <file>Iona01.mp3</file>
+        <file>Iona02.mp3</file>
+        <file>Iona03.mp3</file>
+        <file>Iona04.mp3</file>
+    </qresource>
+    <qresource prefix="/icon">
+        <file>icon_anchor.png</file>
+        <file>move.png</file>
+    </qresource>
+</RCC>
