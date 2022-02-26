@@ -17,9 +17,10 @@ BaseWidget::BaseWidget(QWidget *parent)
     setupMask();
 
     setupGLWidget();
-    setupPlugins();
     setupMoveWidget();
     setupVoice();
+    setupPlugins();
+    setupHitboxWidgets();
 }
 
 BaseWidget::~BaseWidget()

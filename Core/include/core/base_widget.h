@@ -33,6 +33,8 @@
 #include "core/plugin_instance.h"
 /* MOVE_WIDGET INCLUDES */
 #include "core/move_widget.h"
+/* HITBOX_WIDGET INCLUDES */
+#include "core/hitbox_widget.h"
 
 namespace IonaDesktop {
 namespace Core {
@@ -46,12 +48,12 @@ namespace Core {
          QPoint window_global_posLT;
         void paintEvent(QPaintEvent *ev);
 
-        /* MAIN DISPLAY */
+        /* Main Display */
     private:
         void setupGLWidget();
         GLWidget *gl_widget_ptr;
 
-        /* MASK */
+        /* Mask */
     private:
         void setupMask();
 
@@ -76,6 +78,7 @@ namespace Core {
         QSystemTrayIcon *tray_icon_ptr;
     private slots:
         void Slot_TrayIcon_Activated(QSystemTrayIcon::ActivationReason reason);
+        void Slot_TrayMenu_Hide();
         void Slot_TrayMenu_ResetGeometry();
         void Slot_TrayMenu_Exit();
 
@@ -94,6 +97,12 @@ namespace Core {
     private:
         void setupMoveWidget();
         MoveWidget *move_widget_ptr;
+
+        /* Hitbox_widget */
+    private:
+        void setupHitboxWidgets();
+        HitboxWidget *head_hitbox_widget;
+        HitboxWidget *body_hitbox_widget;
     };
 }
 }

@@ -13,6 +13,7 @@ HEADERS += \
     include/core/gl_widget.h \
     include/core/gl_widget_model.h \
     include/core/hexagon_base.h \
+    include/core/hitbox_widget.h \
     include/core/move_widget.h \
     include/core/plugin_instance.h \
     include/core/plugin_interface.h
@@ -21,6 +22,7 @@ SOURCES += \
     src/base_widget.cpp \
     src/base_widget_config.cpp \
     src/base_widget_gl.cpp \
+    src/base_widget_hitbox.cpp \
     src/base_widget_mask.cpp \
     src/base_widget_move.cpp \
     src/base_widget_plugins.cpp \
@@ -31,6 +33,7 @@ SOURCES += \
     src/gl_shader.cpp \
     src/gl_texture.cpp \
     src/gl_widget.cpp \
+    src/hitbox_widget.cpp \
     src/main.cpp \
     src/move_widget.cpp \
     src/plugin_instance.cpp

@@ -13,6 +13,12 @@ void BaseWidget::setupTrayIcon()
     QMenu *tray_menu_ptr = new QMenu();
     tray_icon_ptr->setContextMenu(tray_menu_ptr);
 
+    QAction *act_tray_hide_ptr = new QAction(QString("Hide"));
+    act_tray_hide_ptr->setCheckable(true);
+    act_tray_hide_ptr->setChecked(false);
+    connect(act_tray_hide_ptr, SIGNAL(triggered()), this, SLOT(Slot_TrayMenu_Hide()));
+    tray_menu_ptr->addAction(act_tray_hide_ptr);
+
     QAction *act_tray_reset_geometry_ptr = new QAction(QString("Reset Geometry"));
     connect(act_tray_reset_geometry_ptr, SIGNAL(triggered()), this, SLOT(Slot_TrayMenu_ResetGeometry()));
     tray_menu_ptr->addAction(act_tray_reset_geometry_ptr);
@@ -20,6 +26,12 @@ void BaseWidget::setupTrayIcon()
     QAction *act_tray_exit_ptr = new QAction(QString("Exit"));
     connect(act_tray_exit_ptr, SIGNAL(triggered()), this, SLOT(Slot_TrayMenu_Exit()));
     tray_menu_ptr->addAction(act_tray_exit_ptr);
+}
+
+void BaseWidget::Slot_TrayMenu_Hide()
+{
+    if(this->isHidden()) show();
+    else hide();
 }
 
 void BaseWidget::Slot_TrayIcon_Activated(QSystemTrayIcon::ActivationReason reason)

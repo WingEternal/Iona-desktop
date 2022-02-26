@@ -10,7 +10,7 @@ void BaseWidget::setupVoice()
     voice_label_ptr->setStyleSheet("font-family:微软雅黑; font-size:16px; color: black; background-color:rgb(255, 255, 255, 180); border-radius:15px;");
     voice_label_ptr->setWordWrap(true);
     voice_label_ptr->setAlignment(Qt::AlignCenter);
-    voice_label_ptr->setGeometry(260, 275, 220, 55);
+    voice_label_ptr->setGeometry(250, 265, 220, 60);
     voice_label_ptr->raise();
     // Animation effects
     label_opacity_fx = new QGraphicsOpacityEffect(voice_label_ptr);
