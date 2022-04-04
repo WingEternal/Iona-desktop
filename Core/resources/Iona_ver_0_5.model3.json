@@ -1,0 +1,28 @@
+﻿{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "Iona_ver_0_5.moc3",
+		"Textures": [
+			"texture_00.png"
+		],
+		"Physics": "Iona_ver_0_5.physics3.json",
+		"DisplayInfo": "Iona_ver_0_5.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+            "Ids": [
+                "ParamEyeLOpen",
+                "ParamEyeROpen"
+            ]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+            "Ids": [
+                "ParamMouthOpenY"
+            ]
+		}
+	]
+}

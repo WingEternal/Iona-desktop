@@ -1,4 +1,4 @@
-#include "core/base_widget.h"
+﻿#include "core/base_widget.h"
 
 using namespace IonaDesktop::Core;
 
