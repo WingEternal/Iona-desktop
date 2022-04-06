@@ -38,7 +38,7 @@ void GeneralWorker::Slot_StatisticsCpuUsage()
 #ifdef Q_OS_LINUX
     double cpu_usage = -1;
     static double prev_cpu_total = 0;
-    static double prev_cpu_idle = 0;
+    static double prev_cpu_use = 0;
     /* in /proc/stat: user | nice | system | idle | iowait | irq | softirq */
     QProcess process;
     process.start("cat /proc/stat");
@@ -52,12 +52,12 @@ void GeneralWorker::Slot_StatisticsCpuUsage()
         double cpu_total = 0;
         for(int i = 1; i < cpu_time.size(); i++)
             cpu_total += cpu_time[i].toDouble();
-       double cpu_idle = cpu_time[3].toDouble();
+        double cpu_use = cpu_time[1].toDouble() + cpu_time[2].toDouble() + cpu_time[3].toDouble();
         if(cpu_total - prev_cpu_total > 0)
         {
-            cpu_usage = (1 - (cpu_idle - prev_cpu_idle) / (cpu_total - prev_cpu_total)) * 100;
+            cpu_usage = (cpu_use - prev_cpu_use) / (cpu_total - prev_cpu_total) * 100;
             prev_cpu_total = cpu_total;
-            prev_cpu_idle = cpu_idle;
+            prev_cpu_use = cpu_use;
         }
     }
 
@@ -79,6 +79,21 @@ void GeneralWorker::Slot_StatisticsMemUsage()
     double mem_free = mem_stat.ullAvailPhys / 1024. / 1024.;
     double mem_total = mem_stat.ullTotalPhys / 1024. / 1024.;
     double mem_used = mem_total - mem_free;
-    emit MemUsageResultReady(mem_used * 100 / mem_total);
 #endif
+
+#ifdef Q_OS_LINUX
+    QProcess process;
+    process.start("free -m");
+    process.waitForFinished();
+    process.readLine();
+    QString str = process.readLine();
+    str.replace("\n"," ");
+    str.replace(QRegExp("( ){1,}")," ");
+    auto mem_status = str.split(" ");
+    if(mem_status.size() <= 6) return;
+    double mem_free = mem_status[6].toDouble() / 1024.;
+    double mem_total = mem_status[1].toDouble() / 1024.;
+    double mem_used = mem_total - mem_free;
+#endif
+    emit MemUsageResultReady(mem_used * 100 / mem_total);
 }

@@ -153,7 +153,7 @@ unix:LIBS += -lglut -lGLU
 
 win32:CONFIG(release, debug|release): LIBS += -L$$CUBISM_CORE_PATH/lib/windows/ -lLive2DCubismCore_MD
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$CUBISM_CORE_PATH/lib/windows/ -lLive2DCubismCore_MDd
-unix:!macx: LIBS +=  -L$$CUBISM_CORE_PATH/dll/linux/ -lLive2DCubismCore
+unix:!macx: LIBS +=  -L$$CUBISM_CORE_PATH/lib/linux/ -lLive2DCubismCore
 
 RESOURCES += \
     resources/resources.qrc
