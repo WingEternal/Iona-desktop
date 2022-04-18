@@ -1,4 +1,4 @@
-#ifndef IONADESKTOP_CORE_BASE_WIDGET_H
+﻿#ifndef IONADESKTOP_CORE_BASE_WIDGET_H
 #define IONADESKTOP_CORE_BASE_WIDGET_H
 
 #include "core/core_global.h"
@@ -45,8 +45,10 @@ namespace Core {
         explicit BaseWidget(QWidget *parent = nullptr);
         ~BaseWidget();
     protected:
-         QPoint window_global_posLT;
+        void moveEvent(QMoveEvent *ev);
         void paintEvent(QPaintEvent *ev);
+    signals:
+        void moveBase(const QRect geo);
 
         /* Main Display */
     private:
@@ -97,6 +99,8 @@ namespace Core {
     private:
         void setupMoveWidget();
         MoveWidget *move_widget_ptr;
+        void UpdatePosLT();
+        QPoint window_global_posLT;
 
         /* Hitbox_widget */
     private:

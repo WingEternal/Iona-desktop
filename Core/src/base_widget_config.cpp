@@ -1,4 +1,4 @@
-#include "core/base_widget.h"
+﻿#include "core/base_widget.h"
 
 namespace IonaDesktop{
 namespace Core {
@@ -89,6 +89,7 @@ void BaseWidget::saveConfig()
 {
     QJsonObject root_object;
     QJsonArray main_window_posLT_array;
+    UpdatePosLT();
     main_window_posLT_array.append(window_global_posLT.x());
     main_window_posLT_array.append(window_global_posLT.y());
     root_object.insert("Exit_posLT", main_window_posLT_array);

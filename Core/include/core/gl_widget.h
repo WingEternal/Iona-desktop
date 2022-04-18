@@ -42,6 +42,11 @@ namespace Core {
 
     private slots:
         void Slot_GLObj_RequestUpdate();
+
+    protected:
+        void mousePressEvent(QMouseEvent *ev) override;
+        void mouseMoveEvent(QMouseEvent *ev) override;
+        void mouseReleaseEvent(QMouseEvent *ev) override;
     };
 }
 }

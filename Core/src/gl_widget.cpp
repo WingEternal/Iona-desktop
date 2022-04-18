@@ -1,4 +1,5 @@
 ﻿#include "core/gl_widget.h"
+#include <QMouseEvent>
 
 using namespace IonaDesktop::Core;
 
@@ -7,7 +8,7 @@ GLWidget::GLWidget(const QRect& geo, QWidget *parent)
       widget_geo(geo)
 {
     this->setAttribute(Qt::WA_TranslucentBackground);
-    this->setAttribute(Qt::WA_TransparentForMouseEvents);
+//    this->setAttribute(Qt::WA_TransparentForMouseEvents);
     this->setGeometry(widget_geo);
     log_timer_ptr = new QElapsedTimer();
     log_timer_ptr->start();
@@ -60,3 +61,18 @@ void GLWidget::paintGL()
 
 void GLWidget::Slot_GLObj_RequestUpdate()
 { update(); }
+
+void GLWidget::mousePressEvent(QMouseEvent *ev)
+{
+    asset_iona->onTouchesBegan(ev);
+}
+
+void GLWidget::mouseMoveEvent(QMouseEvent *ev)
+{
+    asset_iona->onTouchesMoved(ev);
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent *ev)
+{
+    asset_iona->onTouchesEnd(ev);
+}

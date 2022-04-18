@@ -32,3 +32,9 @@ void BaseWidget::paintEvent(QPaintEvent *ev)
 {
     ev->accept();
 }
+
+void BaseWidget::moveEvent(QMoveEvent *ev)
+{
+    QWidget::moveEvent(ev);
+    emit moveBase(this->geometry());
+}
