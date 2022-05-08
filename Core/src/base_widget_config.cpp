@@ -1,4 +1,6 @@
 ﻿#include "core/base_widget.h"
+#include <QJsonDocument>
+#include <QByteArray>
 
 namespace IonaDesktop{
 namespace Core {
@@ -70,12 +72,17 @@ int BaseWidget::setupConfig()
                 QJsonValue plugin_value = plugins_array.at(i);
                 if(plugin_value.isObject()) {
                     QJsonObject plugin_obj = plugin_value.toObject();
-                    if(plugin_obj.contains("unique_id")) {
+                    if(plugin_obj.contains("path") && plugin_obj.contains("unique_id")) {
                         QJsonValue plugin_id_value = plugin_obj.value("unique_id");
-                        if(plugin_id_value.isDouble()) {
+                        QJsonValue plugin_path_value = plugin_obj.value("path");
+                        if(plugin_id_value.isDouble() && plugin_path_value.isString())
+                        {
                             int32_t plugin_id = static_cast<int32_t>(plugin_id_value.toDouble());
-                            M_config.insert(std::make_pair(plugin_id, plugin_obj));
-                            qDebug() << "Valid param plugin-" << plugin_id << ". Set.";
+                            QString plugin_path = static_cast<QString>(plugin_path_value.toString());
+                            if(!setupPlugin(plugin_path)) {
+                                M_config.at(plugin_id) = plugin_obj;
+                                qDebug() << "Valid param plugin-" << plugin_id << ". Set.";
+                            }
                         }
                     }
                 }
@@ -115,4 +122,31 @@ void BaseWidget::saveConfig()
     }
     json_file.write(json_byteArray);
     json_file.close();
+}
+
+int BaseWidget::setupPlugin(QString plugin_path)
+{
+#ifdef Q_OS_WIN
+    plugin_path += ".dll";
+#endif
+
+#ifdef  Q_OS_LINUX
+    plugin_path += ".so";
+#endif
+
+    auto plugin_ptr = QSharedPointer<PluginInstance>
+            (new PluginInstance(this, plugin_path));
+    if(plugin_ptr != nullptr)
+    {
+        int32_t unique_id = plugin_ptr->getHandler()->getID();
+        M_plugins.insert(std::make_pair(unique_id, plugin_ptr));
+        if(!M_config.count(unique_id)) {
+            QJsonObject empty_object;
+            empty_object.insert("unique_id", unique_id);
+            M_config.insert(std::make_pair(unique_id, empty_object));
+        }
+        plugin_ptr->getHandler()->setConfig(&M_config.at(unique_id));
+        return 0;
+    }
+    else return -1;
 }

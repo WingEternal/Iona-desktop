@@ -21,6 +21,10 @@ namespace CoreEx1 {
             { \
                 gl_FragColor = texture2D(Texture_0, Tex2f_0.st); \
             }";
+    /*
+     * fragment_shader_mix2:
+     * formula from [fifbro](https://blog.csdn.net/qq_21950929/article/details/78989215)
+    */
     static constexpr const char* fs_mix2_src =
             "uniform sampler2D Texture_0; \
             uniform sampler2D Texture_1; \

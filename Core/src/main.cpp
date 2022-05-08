@@ -1,7 +1,7 @@
 ﻿#include <QApplication>
 #include <QTextCodec>
 #include "core/base_widget.h"
-
+#include "core/native_event_filter.h"
 using namespace IonaDesktop::Core;
 
 int main(int argc, char *argv[])
@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
     QTextCodec::setCodecForLocale(codec);
 #endif
-
-    BaseWidget *base_widget_ptr = new BaseWidget();
-    base_widget_ptr->show();
+    NativeEventFilter filter;
+    a.installNativeEventFilter(&filter);
+    SingletonWarpper::getInstance()->show();
     return a.exec();
 }

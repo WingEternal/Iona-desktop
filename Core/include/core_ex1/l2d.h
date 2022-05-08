@@ -75,10 +75,7 @@ namespace CoreEx1 {
         L2dTouchManager* _touchManager;                 ///< タッチマネージャー
         Csm::CubismMatrix44* _deviceToScreen;    ///< デバイスからスクリーンへの行列
         Csm::CubismViewMatrix* _viewMatrix;      ///< viewMatrix
-        QRect base_widget_geometry;
         QRect virtual_screen_geometry;
-    private slots:
-        void Slot_WindowMove(const QRect base_geo);
 
         /* Render */
     private:

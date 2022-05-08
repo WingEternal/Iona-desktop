@@ -1,4 +1,5 @@
 ﻿#include "core/gl_widget.h"
+#include "core/base_widget.h"
 #include <QMouseEvent>
 
 using namespace IonaDesktop::Core;

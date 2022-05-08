@@ -1,4 +1,5 @@
-#include "core/base_widget.h"
+﻿#include "core/base_widget.h"
+#include <QMenu>
 
 using namespace IonaDesktop::Core;
 
@@ -56,5 +57,5 @@ void BaseWidget::Slot_TrayMenu_ResetGeometry()
 void BaseWidget::Slot_TrayMenu_Exit()
 {
     saveConfig();
-    exit(0);
+    this->~BaseWidget();
 }

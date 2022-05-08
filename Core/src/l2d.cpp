@@ -32,12 +32,6 @@ GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const
     _clearColor[2] = 0.0f;
     _clearColor[3] = 0.0f;
 
-    auto* gl_widget_ptr = reinterpret_cast<QOpenGLWidget*>(this->parent());
-    auto* base_widget_ptr = reinterpret_cast<BaseWidget*>(gl_widget_ptr->parent());
-    connect(base_widget_ptr, SIGNAL(moveBase(const QRect)), this, SLOT(Slot_WindowMove(const QRect)));
-    const auto init_rect = base_widget_ptr->geometry();
-    Slot_WindowMove(init_rect);
-
     int width = 2500;
     int height = 2000;
     QList<QScreen*> L_screen = QApplication::screens();
@@ -252,8 +246,8 @@ void GLObj_L2d::PostModelDraw()
 void GLObj_L2d::onTouchesBegan(QMouseEvent *e)
 {
     _touchManager->TouchesBegan
-            (e->globalX() - base_widget_geometry.center().x() + virtual_screen_geometry.center().x(),
-             e->globalY() - base_widget_geometry.center().y() + virtual_screen_geometry.center().y());
+            (e->globalX() - SingletonWarpper::getInstance()->geometry().center().x() + virtual_screen_geometry.center().x(),
+             e->globalY() - SingletonWarpper::getInstance()->geometry().center().y() + virtual_screen_geometry.center().y());
 }
 
 void GLObj_L2d::onTouchesMoved(QMouseEvent *e)
@@ -261,16 +255,16 @@ void GLObj_L2d::onTouchesMoved(QMouseEvent *e)
     float viewX = this->TransformViewX(_touchManager->GetX());
     float viewY = this->TransformViewY(_touchManager->GetY());
     _touchManager->TouchesMoved
-            (e->globalX() - base_widget_geometry.center().x() + virtual_screen_geometry.center().x(),
-             e->globalY() - base_widget_geometry.center().y() + virtual_screen_geometry.center().y());
+            (e->globalX() - SingletonWarpper::getInstance()->geometry().center().x() + virtual_screen_geometry.center().x(),
+             e->globalY() - SingletonWarpper::getInstance()->geometry().center().y() + virtual_screen_geometry.center().y());
     _model->SetDragging(viewX, viewY);
 }
 
 void GLObj_L2d::onTouchesEnd(QMouseEvent *e)
 {
+    Q_UNUSED(e);
     // タッチ終了
     _model->SetDragging(0.0f, 0.0f);
-
     // シングルタップ
     float x = _deviceToScreen->TransformX(_touchManager->GetX()); // 論理座標変換した座標を取得。
     float y = _deviceToScreen->TransformY(_touchManager->GetY()); // 論理座標変換した座標を取得。
@@ -310,6 +304,3 @@ float GLObj_L2d::TransformScreenX(float deviceX) const
 
 float GLObj_L2d::TransformScreenY(float deviceY) const
 { return _deviceToScreen->TransformY(deviceY); }
-
-void GLObj_L2d::Slot_WindowMove(const QRect base_geo)
-{ base_widget_geometry = base_geo; }

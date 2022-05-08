@@ -11,9 +11,6 @@
 
 /* DISPLAY INCLUDES */
 #include "core/gl_widget.h"
-/* MASK INCLUDES*/
-#include <QPixmap>
-#include <QBitmap>
 /* VOICE INCLUDES */
 #include <QLabel>
 #include <QtMultimedia>
@@ -22,14 +19,10 @@
 #include <QPropertyAnimation>
 /* TRAY MENU INCLUDES */
 #include <QSystemTrayIcon>
-#include <QMenu>
 /* JSON INCLUDES */
 #include <map>
 #include <QJsonObject>
-#include <QJsonDocument>
-#include <QByteArray>
 /* PLUGIN INCLUDES */
-#include "core/plugin_interface.h"
 #include "core/plugin_instance.h"
 /* MOVE_WIDGET INCLUDES */
 #include "core/move_widget.h"
@@ -41,16 +34,21 @@ namespace Core {
     class BaseWidget : public QWidget
     {
         Q_OBJECT
-    public:
+        friend class SingletonWarpper;
+    private:
         explicit BaseWidget(QWidget *parent = nullptr);
         ~BaseWidget();
+
+        static BaseWidget* instance;
+        int installHook();
+        int uninstallHook();
+
     protected:
-        void moveEvent(QMoveEvent *ev);
         void paintEvent(QPaintEvent *ev);
-    signals:
-        void moveBase(const QRect geo);
 
         /* Main Display */
+    public:
+        GLWidget* getDisplayInstance();
     private:
         void setupGLWidget();
         GLWidget *gl_widget_ptr;
@@ -59,7 +57,7 @@ namespace Core {
     private:
         void setupMask();
 
-        /* Voice MediaPlayer & Label */
+        /* Voice MediaPlayer && Label */
     private:
         void setupVoice();
         QTimer *voice_timer_ptr;
@@ -84,15 +82,12 @@ namespace Core {
         void Slot_TrayMenu_ResetGeometry();
         void Slot_TrayMenu_Exit();
 
-        /* Json Config */
+        /* Json Config && Plugins */
     private:
         int setupConfig();
         void saveConfig();
+        int setupPlugin(QString plugin_path);
         std::map<int32_t, QJsonObject> M_config;
-
-        /* Plugins */
-    private:
-        int setupPlugins();
         std::map<int32_t, QSharedPointer<PluginInstance>> M_plugins;
 
         /* Move_widget */
@@ -107,6 +102,15 @@ namespace Core {
         void setupHitboxWidgets();
         HitboxWidget *head_hitbox_widget;
         HitboxWidget *body_hitbox_widget;
+    };
+
+    class SingletonWarpper
+    {
+    public:
+        static BaseWidget* getInstance();
+        static void releaseInstance();
+    private:
+        static BaseWidget* instance;
     };
 }
 }

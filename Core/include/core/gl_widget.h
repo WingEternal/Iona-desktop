@@ -25,6 +25,7 @@ namespace Core {
         inline double getLogTime()
         { return log_timer_ptr->elapsed(); }
     private:
+        // Geometry of GLWidget, also determine the canvas size for drawing
         QRect widget_geo;
         QElapsedTimer *log_timer_ptr;
 

@@ -1,4 +1,4 @@
-#include "core/move_widget.h"
+﻿#include "core/move_widget.h"
 
 using namespace IonaDesktop::Core;
 
@@ -34,6 +34,7 @@ void MoveWidget::mousePressEvent(QMouseEvent *ev)
         m_pos = ev->globalPos();
         m_Lpressed = true;
     }
+    ev->accept();
 }
 
 void MoveWidget::mouseMoveEvent(QMouseEvent *ev)
@@ -43,10 +44,12 @@ void MoveWidget::mouseMoveEvent(QMouseEvent *ev)
         move_target->setGeometry(QRect(step + move_target->geometry().topLeft(), move_target->size()));
         m_pos += step;
     }
+    ev->accept();
 }
 
 void MoveWidget::mouseReleaseEvent(QMouseEvent *ev)
 {
     Q_UNUSED(ev);
     m_Lpressed = false;
+    ev->accept();
 }
