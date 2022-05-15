@@ -28,6 +28,7 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *mes
                 lmouse_pressed = true;
                 QApplication::postEvent
                     (SingletonWarpper::getInstance()->getDisplayInstance(), ev);
+//                qDebug() << "WM_LBUTTONDOWN" << pt.x << " " << pt.y;
                 break;
             case WM_MOUSEMOVE:
                 if(lmouse_pressed)
@@ -37,6 +38,7 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *mes
                          Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
                     QApplication::sendEvent
                         (SingletonWarpper::getInstance()->getDisplayInstance(), ev);
+//                    qDebug() << "WM_MOUSEMOVE" << pt.x << " " << pt.y;
                 }
                 break;
             case WM_LBUTTONUP:
@@ -46,6 +48,7 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *mes
                 lmouse_pressed = false;
                 QApplication::sendEvent
                     (SingletonWarpper::getInstance()->getDisplayInstance(), ev);
+//                qDebug() << "WM_LBUTTONUP" << pt.x << " " << pt.y;
                 break;
             }
         }

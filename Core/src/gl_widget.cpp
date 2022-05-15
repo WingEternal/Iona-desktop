@@ -65,15 +65,18 @@ void GLWidget::Slot_GLObj_RequestUpdate()
 
 void GLWidget::mousePressEvent(QMouseEvent *ev)
 {
-    asset_iona->onTouchesBegan(ev);
+    asset_iona->mousePressEvent(ev);
+    asset_data_ring->mousePressEvent(ev);
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *ev)
 {
-    asset_iona->onTouchesMoved(ev);
+    asset_iona->mouseMoveEvent(ev);
+    asset_data_ring->mouseMoveEvent(ev);
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *ev)
 {
-    asset_iona->onTouchesEnd(ev);
+    asset_iona->mouseReleaseEvent(ev);
+    asset_data_ring->mouseReleaseEvent(ev);
 }

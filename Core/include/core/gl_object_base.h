@@ -23,6 +23,9 @@ namespace Core {
         virtual void init() = 0;
         virtual void resize(){}
         virtual void paint() = 0;
+        virtual void mousePressEvent(QMouseEvent *ev){ Q_UNUSED(ev); }
+        virtual void mouseMoveEvent(QMouseEvent *ev){ Q_UNUSED(ev); }
+        virtual void mouseReleaseEvent(QMouseEvent *ev){ Q_UNUSED(ev); }
     private:
 
     protected:

@@ -63,9 +63,9 @@ namespace CoreEx1 {
 
         /* Touches */
     public:
-        void onTouchesBegan(QMouseEvent *e);
-        void onTouchesMoved(QMouseEvent *e);
-        void onTouchesEnd(QMouseEvent *e);
+        virtual void mousePressEvent(QMouseEvent *e) override;
+        virtual void mouseMoveEvent(QMouseEvent *e) override;
+        virtual void mouseReleaseEvent(QMouseEvent *e) override;
     private:
         float TransformViewX(float deviceX) const;
         float TransformViewY(float deviceY) const;

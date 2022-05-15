@@ -1,4 +1,5 @@
 ﻿#include "hook.h"
+#include "QDebug"
 #ifdef Q_OS_WIN
 HHOOK Hook::mouse_hook = nullptr;
 HHOOK Hook::kb_hook = nullptr;
@@ -11,10 +12,10 @@ Hook::Hook()
 BOOL Hook::InstallMouseHook(HWND hWnd)
 {
     mouse_hook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, GetModuleHandle(L"myHookMouseAndKeybord"), 0);
-        hwnd = hWnd;
-        if (mouse_hook != nullptr)
-            return TRUE;
-        else return FALSE;
+    hwnd = hWnd;
+    if (mouse_hook != nullptr)
+        return TRUE;
+    else return FALSE;
 }
 
 BOOL Hook::UnInstallMouseHook()

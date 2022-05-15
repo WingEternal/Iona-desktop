@@ -78,9 +78,11 @@ namespace Core {
         QSystemTrayIcon *tray_icon_ptr;
     private slots:
         void Slot_TrayIcon_Activated(QSystemTrayIcon::ActivationReason reason);
+        void Slot_TrayMenu_Show();
         void Slot_TrayMenu_Hide();
-        void Slot_TrayMenu_ResetGeometry();
-        void Slot_TrayMenu_Exit();
+        void Slot_TrayMenu_ActHide();
+        void Slot_TrayMenu_ActResetGeometry();
+        void Slot_TrayMenu_ActExit();
 
         /* Json Config && Plugins */
     private:
@@ -104,8 +106,9 @@ namespace Core {
         HitboxWidget *body_hitbox_widget;
     };
 
-    class SingletonWarpper
+    class SingletonWarpper : public QObject
     {
+        Q_OBJECT
     public:
         static BaseWidget* getInstance();
         static void releaseInstance();

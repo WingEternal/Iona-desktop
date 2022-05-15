@@ -243,14 +243,14 @@ void GLObj_L2d::PostModelDraw()
     glDisable(GL_ALPHA_TEST);
 }
 
-void GLObj_L2d::onTouchesBegan(QMouseEvent *e)
+void GLObj_L2d::mousePressEvent(QMouseEvent *e)
 {
     _touchManager->TouchesBegan
             (e->globalX() - SingletonWarpper::getInstance()->geometry().center().x() + virtual_screen_geometry.center().x(),
              e->globalY() - SingletonWarpper::getInstance()->geometry().center().y() + virtual_screen_geometry.center().y());
 }
 
-void GLObj_L2d::onTouchesMoved(QMouseEvent *e)
+void GLObj_L2d::mouseMoveEvent(QMouseEvent *e)
 {
     float viewX = this->TransformViewX(_touchManager->GetX());
     float viewY = this->TransformViewY(_touchManager->GetY());
@@ -260,7 +260,7 @@ void GLObj_L2d::onTouchesMoved(QMouseEvent *e)
     _model->SetDragging(viewX, viewY);
 }
 
-void GLObj_L2d::onTouchesEnd(QMouseEvent *e)
+void GLObj_L2d::mouseReleaseEvent(QMouseEvent *e)
 {
     Q_UNUSED(e);
     // タッチ終了
