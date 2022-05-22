@@ -30,7 +30,7 @@ BaseWidget::BaseWidget(QWidget *parent)
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
     this->setWindowFlag(Qt::NoDropShadowWindowHint);
     setGeometry(window_global_posLT.x(), window_global_posLT.y(), 600, 500);
-    setupMask();
+//    setupMask();
 
     setupGLWidget();
     setupMoveWidget();

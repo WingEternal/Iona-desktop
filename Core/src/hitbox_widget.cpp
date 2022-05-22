@@ -26,5 +26,6 @@ void HitboxWidget::paintEvent(QPaintEvent *ev)
 void HitboxWidget::mousePressEvent(QMouseEvent *ev)
 {
     emit mouseClicked();
+    qDebug() << "Hitbox: " << ev->globalPos();
     ev->ignore();
 }

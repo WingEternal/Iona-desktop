@@ -1,8 +1,12 @@
 ﻿#include "core/native_event_filter.h"
 #include "core/base_widget.h"
-#include "hook.h"
 #include <QApplication>
 #include <QMouseEvent>
+
+#ifdef Q_OS_WIN
+#include "hook.h"
+#endif
+
 using namespace IonaDesktop::Core;
 
 NativeEventFilter::NativeEventFilter()
@@ -13,6 +17,7 @@ NativeEventFilter::NativeEventFilter()
 bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *message, long *longMsg)
 {
     Q_UNUSED(longMsg);
+#ifdef Q_OS_WIN
     if (eventType == "windows_generic_MSG" || eventType == "windows_dispatcher_MSG")
     {
         MSG* pMsg = reinterpret_cast<MSG*>(message);
@@ -55,5 +60,6 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray &eventType, void *mes
 //            if (pMsg->message == WM_KEYDOWN)
 //                qDebug() << pMsg->wParam;
     }
+#endif
     return false;
 }

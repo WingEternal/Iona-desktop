@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
 #endif
     NativeEventFilter filter;
     a.installNativeEventFilter(&filter);
+
     SingletonWarpper::getInstance()->show();
     return a.exec();
 }

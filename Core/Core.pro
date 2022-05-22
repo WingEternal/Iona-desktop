@@ -167,7 +167,7 @@ INCLUDEPATH += \
 
 # Hook
 win32: LIBS += -L$$OUT_PWD/../bin/lib/ -lHook
-unix:!macx: LIBS += -L$$OUT_PWD/../Hook/ -lHook
+unix:!macx: LIBS += -L$$OUT_PWD/../bin/lib/ -lHook
 INCLUDEPATH += $$PWD/../Hook
 DEPENDPATH += $$PWD/../Hook
 

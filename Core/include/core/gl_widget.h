@@ -42,7 +42,7 @@ namespace Core {
         CoreEx1::GLObj_L2d* asset_iona;
 
     private slots:
-        void Slot_GLObj_RequestUpdate();
+        void Slot_RequestUpdate();
 
     protected:
         void mousePressEvent(QMouseEvent *ev) override;

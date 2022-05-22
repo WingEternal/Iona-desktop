@@ -2,6 +2,7 @@
 #define HOOK_H
 
 #include "hook_global.h"
+#include <QObject>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -9,8 +10,9 @@
 #pragma comment  (lib, "User32.lib")
 #endif
 
-class HOOKSHARED_EXPORT Hook
+class HOOKSHARED_EXPORT Hook : public QObject
 {
+    Q_OBJECT
 private:
     Hook();
 
@@ -28,6 +30,12 @@ private:
     static HHOOK mouse_hook;
     static HHOOK kb_hook;
     static HWND hwnd;
+#endif
+
+#ifdef Q_OS_LINUX
+    enum EVENT {};
+signals:
+    void MouseEvent();
 #endif
 };
 

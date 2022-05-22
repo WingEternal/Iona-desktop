@@ -1,5 +1,9 @@
-#include "resource_monitor/monitor_realization.h"
+﻿#include "resource_monitor/monitor_realization.h"
 #include <QDebug>
+
+#ifdef Q_OS_WIN
+#include "windows.h"
+#endif
 
 using namespace IonaDesktop::ResourceMonitor;
 
