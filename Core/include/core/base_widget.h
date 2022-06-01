@@ -1,4 +1,4 @@
-#ifndef IONADESKTOP_CORE_BASE_WIDGET_H
+﻿#ifndef IONADESKTOP_CORE_BASE_WIDGET_H
 #define IONADESKTOP_CORE_BASE_WIDGET_H
 
 #include "core/core_global.h"
@@ -11,9 +11,6 @@
 
 /* DISPLAY INCLUDES */
 #include "core/gl_widget.h"
-/* MASK INCLUDES*/
-#include <QPixmap>
-#include <QBitmap>
 /* VOICE INCLUDES */
 #include <QLabel>
 #include <QtMultimedia>
@@ -22,14 +19,10 @@
 #include <QPropertyAnimation>
 /* TRAY MENU INCLUDES */
 #include <QSystemTrayIcon>
-#include <QMenu>
 /* JSON INCLUDES */
 #include <map>
 #include <QJsonObject>
-#include <QJsonDocument>
-#include <QByteArray>
 /* PLUGIN INCLUDES */
-#include "core/plugin_interface.h"
 #include "core/plugin_instance.h"
 /* MOVE_WIDGET INCLUDES */
 #include "core/move_widget.h"
@@ -41,14 +34,21 @@ namespace Core {
     class BaseWidget : public QWidget
     {
         Q_OBJECT
-    public:
+        friend class SingletonWarpper;
+    private:
         explicit BaseWidget(QWidget *parent = nullptr);
         ~BaseWidget();
+
+        static BaseWidget* instance;
+        int installHook();
+        int uninstallHook();
+
     protected:
-         QPoint window_global_posLT;
         void paintEvent(QPaintEvent *ev);
 
         /* Main Display */
+    public:
+        GLWidget* getDisplayInstance();
     private:
         void setupGLWidget();
         GLWidget *gl_widget_ptr;
@@ -57,7 +57,7 @@ namespace Core {
     private:
         void setupMask();
 
-        /* Voice MediaPlayer & Label */
+        /* Voice MediaPlayer && Label */
     private:
         void setupVoice();
         QTimer *voice_timer_ptr;
@@ -78,31 +78,42 @@ namespace Core {
         QSystemTrayIcon *tray_icon_ptr;
     private slots:
         void Slot_TrayIcon_Activated(QSystemTrayIcon::ActivationReason reason);
+        void Slot_TrayMenu_Show();
         void Slot_TrayMenu_Hide();
-        void Slot_TrayMenu_ResetGeometry();
-        void Slot_TrayMenu_Exit();
+        void Slot_TrayMenu_ActHide();
+        void Slot_TrayMenu_ActResetGeometry();
+        void Slot_TrayMenu_ActExit();
 
-        /* Json Config */
+        /* Json Config && Plugins */
     private:
         int setupConfig();
         void saveConfig();
+        int setupPlugin(QString plugin_path);
         std::map<int32_t, QJsonObject> M_config;
-
-        /* Plugins */
-    private:
-        int setupPlugins();
         std::map<int32_t, QSharedPointer<PluginInstance>> M_plugins;
 
         /* Move_widget */
     private:
         void setupMoveWidget();
         MoveWidget *move_widget_ptr;
+        void UpdatePosLT();
+        QPoint window_global_posLT;
 
         /* Hitbox_widget */
     private:
         void setupHitboxWidgets();
         HitboxWidget *head_hitbox_widget;
         HitboxWidget *body_hitbox_widget;
+    };
+
+    class SingletonWarpper : public QObject
+    {
+        Q_OBJECT
+    public:
+        static BaseWidget* getInstance();
+        static void releaseInstance();
+    private:
+        static BaseWidget* instance;
     };
 }
 }

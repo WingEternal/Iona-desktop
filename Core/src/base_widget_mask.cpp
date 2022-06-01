@@ -1,4 +1,6 @@
-#include "core/base_widget.h"
+﻿#include "core/base_widget.h"
+#include <QPixmap>
+#include <QBitmap>
 
 using namespace IonaDesktop::Core;
 

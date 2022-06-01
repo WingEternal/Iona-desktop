@@ -1,4 +1,4 @@
-#include "core/hitbox_widget.h"
+﻿#include "core/hitbox_widget.h"
 
 using namespace IonaDesktop::Core;
 
@@ -26,5 +26,6 @@ void HitboxWidget::paintEvent(QPaintEvent *ev)
 void HitboxWidget::mousePressEvent(QMouseEvent *ev)
 {
     emit mouseClicked();
-    ev->accept();
+    qDebug() << "Hitbox: " << ev->globalPos();
+    ev->ignore();
 }

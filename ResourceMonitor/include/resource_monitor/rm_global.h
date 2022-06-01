@@ -1,4 +1,4 @@
-#ifndef IONADESKTOP_RM_GLOBAL_H
+﻿#ifndef IONADESKTOP_RM_GLOBAL_H
 #define IONADESKTOP_RM_GLOBAL_H
 
 #include <QtCore/qglobal.h>
@@ -37,14 +37,17 @@ private:
     const int hexagon_size;
     RmWidget *cpu_usage_widget_ptr;
     RmWidget *mem_usage_widget_ptr;
-    RmWidget *stb_1_widget_ptr;
+    RmWidget *time_widget_ptr;
     RmWidget *stb_2_widget_ptr;
     RmWidget *stb_3_widget_ptr;
+    void UpdateTime();
 signals:
     void requestCpuUsage();
     void requestMemUsage();
 private slots:
     void Slot_Refresh_Timeout();
+    void Slot_Update_CPU(const double new_rate);
+    void Slot_Update_MEM(const double new_rate);
 };
 
 #endif // IONADESKTOP_RM_GLOBAL_H

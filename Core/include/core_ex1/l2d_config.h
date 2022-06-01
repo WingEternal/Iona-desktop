@@ -16,7 +16,7 @@ namespace CoreEx1 {
         // 論理的なビュー座標系の左端の値
         static constexpr Csm::csmFloat32 ViewLogicalLeft = -1.0f;
         // 論理的なビュー座標系の右端の値
-        static constexpr Csm::csmFloat32 ViewLogicalRight = -1.0f;
+        static constexpr Csm::csmFloat32 ViewLogicalRight = 1.0f;
 
         // 論理的なビュー座標系の左端の最大値
         static constexpr Csm::csmFloat32 ViewLogicalMaxLeft = -2.0f;
@@ -26,13 +26,6 @@ namespace CoreEx1 {
         static constexpr Csm::csmFloat32 ViewLogicalMaxBottom = -2.0f;
         // 論理的なビュー座標系の上端の最大値
         static constexpr Csm::csmFloat32 ViewLogicalMaxTop = 2.0f;
-
-        // モデル定義--------------------------------------------
-        // モデルを配置したディレクトリ名の配列. ディレクトリ名とmodel3.jsonの名前を一致させておく.
-        static constexpr const Csm::csmChar* ModelDir[] = {"Haru"};
-        // モデルディレクトリ配列のサイズ
-        static constexpr Csm::csmInt32 ModelDirSize =
-            sizeof(ModelDir) / sizeof(const Csm::csmChar*);
 
                                                         // 外部定義ファイル(json)と合わせる
         // アイドリング時に再生するモーションのリスト
@@ -66,8 +59,6 @@ namespace CoreEx1 {
         static constexpr Csm::CubismFramework::Option::LogLevel CubismLoggingLevel = Csm::CubismFramework::Option::LogLevel_Verbose;
 
         // デフォルトのレンダーターゲットサイズ
-//        static constexpr Csm::csmInt32 RenderTargetWidth = 1900;
-//        static constexpr Csm::csmInt32 RenderTargetHeight = 1000;
     private:
         // Prohibit new instance
         L2dConfig(){}

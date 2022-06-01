@@ -15,6 +15,7 @@ GLObj_DataRing::GLObj_DataRing(QOpenGLWidget* parent, const QMatrix4x4& tf_camer
       tex_ring_m(nullptr),
       base_position(0, 0, -75.0),
       tf_camera(tf_camera_),
+      ring_spin_delta_angle(0.5),
       ring_spin_angle(0)
 {
 
@@ -23,13 +24,14 @@ GLObj_DataRing::~GLObj_DataRing()
 {
     for(int i = 0; i < 2; i++)
         tex_ring_tb[i]->destroy();
+    tex_ring_m->destroy();
 }
 
 void GLObj_DataRing::init()
 {
     ring_spin_update_timer_ptr = new QTimer(this);
     connect(ring_spin_update_timer_ptr, SIGNAL(timeout()), this, SLOT(Slot_RingSpinUpdateTimer_Timeout()));
-    ring_spin_update_timer_ptr->start(50);
+    ring_spin_update_timer_ptr->start(ring_update_duration);
 
     initializeTexture();
     initializeShaders();
@@ -105,9 +107,24 @@ void GLObj_DataRing::drawRingM()
     sprogram_general->release();
 }
 
+void GLObj_DataRing::mousePressEvent(QMouseEvent *ev)
+{
+    ring_spin_delta_angle = 1;
+}
+
+void GLObj_DataRing::mouseMoveEvent(QMouseEvent *ev)
+{
+
+}
+
+void GLObj_DataRing::mouseReleaseEvent(QMouseEvent *ev)
+{
+    ring_spin_delta_angle = 0.5;
+}
+
 void GLObj_DataRing::Slot_RingSpinUpdateTimer_Timeout()
 {
-    ring_spin_angle += 0.5;
+    ring_spin_angle += ring_spin_delta_angle;
     if(abs(ring_spin_angle - 360) < 1e-6)
         ring_spin_angle = 0;
     emit RequestUpdate();

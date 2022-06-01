@@ -25,6 +25,7 @@ namespace Core {
         inline double getLogTime()
         { return log_timer_ptr->elapsed(); }
     private:
+        // Geometry of GLWidget, also determine the canvas size for drawing
         QRect widget_geo;
         QElapsedTimer *log_timer_ptr;
 
@@ -41,7 +42,12 @@ namespace Core {
         CoreEx1::GLObj_L2d* asset_iona;
 
     private slots:
-        void Slot_GLObj_RequestUpdate();
+        void Slot_RequestUpdate();
+
+    protected:
+        void mousePressEvent(QMouseEvent *ev) override;
+        void mouseMoveEvent(QMouseEvent *ev) override;
+        void mouseReleaseEvent(QMouseEvent *ev) override;
     };
 }
 }

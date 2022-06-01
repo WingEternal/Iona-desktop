@@ -48,6 +48,7 @@ namespace CoreEx1 {
         void initializeRenderPlane();
         QOpenGLVertexArrayObject *vao_plane;
         GLfloat vertices[20];
+
         /* Paint */
     public:
         virtual void paint() final;
@@ -60,13 +61,24 @@ namespace CoreEx1 {
         void ModelDraw();
         void PostModelDraw();
 
+        /* Touches */
+    public:
+        virtual void mousePressEvent(QMouseEvent *e) override;
+        virtual void mouseMoveEvent(QMouseEvent *e) override;
+        virtual void mouseReleaseEvent(QMouseEvent *e) override;
     private:
+        float TransformViewX(float deviceX) const;
+        float TransformViewY(float deviceY) const;
+        float TransformScreenX(float deviceX) const;
+        float TransformScreenY(float deviceY) const;
+
         L2dTouchManager* _touchManager;                 ///< タッチマネージャー
         Csm::CubismMatrix44* _deviceToScreen;    ///< デバイスからスクリーンへの行列
         Csm::CubismViewMatrix* _viewMatrix;      ///< viewMatrix
+        QRect virtual_screen_geometry;
 
-        // レンダリング先を別ターゲットにする方式の場合に使用
-//        L2dSprite* _renderSprite;
+        /* Render */
+    private:
         Csm::Rendering::CubismOffscreenFrame_OpenGLES2 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
         float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
     };

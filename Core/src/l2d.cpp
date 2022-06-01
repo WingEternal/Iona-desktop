@@ -1,6 +1,12 @@
 ﻿#include "core_ex1/l2d.h"
 #include "core_ex1/l2d_config.h"
 #include "core_ex1/l2d_pal.h"
+#include "core/base_widget.h"
+
+#include <QApplication>
+#include <QScreen>
+#include <QMouseEvent>
+#include <QMoveEvent>
 
 using namespace IonaDesktop::Core;
 using namespace IonaDesktop::CoreEx1;
@@ -25,9 +31,47 @@ GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const
     _clearColor[1] = 0.0f;
     _clearColor[2] = 0.0f;
     _clearColor[3] = 0.0f;
-    double ratio = static_cast<double>(_canvas_width) / static_cast<double>(_canvas_height);
+
+    int width = 2500;
+    int height = 2000;
+    QList<QScreen*> L_screen = QApplication::screens();
+    if(L_screen.size() > 1) {
+        width = 2500;
+        height = 2000;
+    }
+    else if(L_screen.size() != 0) {
+        width = L_screen[0]->geometry().width();
+        height = L_screen[0]->geometry().height();
+    }
+    virtual_screen_geometry = QRect(0, 0, width, height);
+    double ratio = static_cast<double>(width) / static_cast<double>(height);
+    float left = L2dConfig::ViewLogicalLeft;
+    float right = L2dConfig::ViewLogicalRight;
+    float bottom = - static_cast<float>(ratio);
+    float top = static_cast<float>(ratio);
+
+    _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+
+    float screenW = fabsf(left - right);
+    _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
+    _deviceToScreen->ScaleRelative(screenW / width, - screenW / height);
+    _deviceToScreen->TranslateRelative(- width * 0.5f, - height * 0.5f);
+
+    // 表示範囲の設定
+    _viewMatrix->SetMaxScale(L2dConfig::ViewMaxScale); // 限界拡大率
+    _viewMatrix->SetMinScale(L2dConfig::ViewMinScale); // 限界縮小率
+
+    // 表示できる最大範囲
+    _viewMatrix->SetMaxScreenRect(
+        L2dConfig::ViewLogicalMaxLeft,
+        L2dConfig::ViewLogicalMaxRight,
+        L2dConfig::ViewLogicalMaxBottom,
+        L2dConfig::ViewLogicalMaxTop
+    );
+
+    double canvas_ratio = static_cast<double>(_canvas_width) / static_cast<double>(_canvas_height);
     GLdouble plane_height = 64.0;
-    GLdouble plane_width = plane_height * ratio;
+    GLdouble plane_width = plane_height * canvas_ratio;
 
     // -------position------     ---tex---
 //    - _width / 2, + _width / 2, 0.0,    0.0, 1.0,
@@ -198,3 +242,65 @@ void GLObj_L2d::PostModelDraw()
     sprogram_general->release();
     glDisable(GL_ALPHA_TEST);
 }
+
+void GLObj_L2d::mousePressEvent(QMouseEvent *e)
+{
+    _touchManager->TouchesBegan
+            (e->globalX() - SingletonWarpper::getInstance()->geometry().center().x() + virtual_screen_geometry.center().x(),
+             e->globalY() - SingletonWarpper::getInstance()->geometry().center().y() + virtual_screen_geometry.center().y());
+}
+
+void GLObj_L2d::mouseMoveEvent(QMouseEvent *e)
+{
+    float viewX = this->TransformViewX(_touchManager->GetX());
+    float viewY = this->TransformViewY(_touchManager->GetY());
+    _touchManager->TouchesMoved
+            (e->globalX() - SingletonWarpper::getInstance()->geometry().center().x() + virtual_screen_geometry.center().x(),
+             e->globalY() - SingletonWarpper::getInstance()->geometry().center().y() + virtual_screen_geometry.center().y());
+    _model->SetDragging(viewX, viewY);
+}
+
+void GLObj_L2d::mouseReleaseEvent(QMouseEvent *e)
+{
+    Q_UNUSED(e);
+    // タッチ終了
+    _model->SetDragging(0.0f, 0.0f);
+    // シングルタップ
+    float x = _deviceToScreen->TransformX(_touchManager->GetX()); // 論理座標変換した座標を取得。
+    float y = _deviceToScreen->TransformY(_touchManager->GetY()); // 論理座標変換した座標を取得。
+    if (L2dConfig::DebugTouchLogEnable)
+        L2dPal::PrintLog("[APP]touchesEnded x:%.2f y:%.2f", x, y);
+    if (L2dConfig::DebugLogEnable)
+        L2dPal::PrintLog("[APP]tap point: {x:%.2f y:%.2f}", x, y);
+
+    if (_model->HitTest(L2dConfig::HitAreaNameHead, x, y))
+    {
+        if (L2dConfig::DebugLogEnable)
+            L2dPal::PrintLog("[APP]hit area: [%s]", L2dConfig::HitAreaNameHead);
+        _model->SetRandomExpression();
+    }
+    else if (_model->HitTest(L2dConfig::HitAreaNameBody, x, y))
+    {
+        if (L2dConfig::DebugLogEnable)
+            L2dPal::PrintLog("[APP]hit area: [%s]", L2dConfig::HitAreaNameBody);
+        _model->StartRandomMotion(L2dConfig::MotionGroupTapBody, L2dConfig::PriorityNormal);
+    }
+}
+
+float GLObj_L2d::TransformViewX(float deviceX) const
+{
+    float screenX = _deviceToScreen->TransformX(deviceX); // 論理座標変換した座標を取得。
+    return _viewMatrix->InvertTransformX(screenX); // 拡大、縮小、移動後の値。
+}
+
+float GLObj_L2d::TransformViewY(float deviceY) const
+{
+    float screenY = _deviceToScreen->TransformY(deviceY); // 論理座標変換した座標を取得。
+    return _viewMatrix->InvertTransformY(screenY); // 拡大、縮小、移動後の値。
+}
+
+float GLObj_L2d::TransformScreenX(float deviceX) const
+{ return _deviceToScreen->TransformX(deviceX); }
+
+float GLObj_L2d::TransformScreenY(float deviceY) const
+{ return _deviceToScreen->TransformY(deviceY); }

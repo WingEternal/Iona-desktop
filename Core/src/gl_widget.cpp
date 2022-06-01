@@ -1,4 +1,6 @@
 ﻿#include "core/gl_widget.h"
+#include "core/base_widget.h"
+#include <QMouseEvent>
 
 using namespace IonaDesktop::Core;
 
@@ -7,7 +9,7 @@ GLWidget::GLWidget(const QRect& geo, QWidget *parent)
       widget_geo(geo)
 {
     this->setAttribute(Qt::WA_TranslucentBackground);
-    this->setAttribute(Qt::WA_TransparentForMouseEvents);
+//    this->setAttribute(Qt::WA_TransparentForMouseEvents);
     this->setGeometry(widget_geo);
     log_timer_ptr = new QElapsedTimer();
     log_timer_ptr->start();
@@ -26,11 +28,12 @@ void GLWidget::initializeGL()
 
     asset_data_ring = new CoreEx1::GLObj_DataRing(this, tf_camera);
     asset_data_ring->init();
-    connect(asset_data_ring, SIGNAL(RequestUpdate()), this, SLOT(Slot_GLObj_RequestUpdate()));
+    connect(asset_data_ring, SIGNAL(RequestUpdate()), this, SLOT(Slot_RequestUpdate()));
 
     asset_iona = new CoreEx1::GLObj_L2d(this, tf_camera,  widget_geo);
     asset_iona->setModelPath(":/charater/live2d/", "Iona_ver_0_5.model3.json");
     asset_iona->init();
+    connect(asset_iona, SIGNAL(RequestUpdate()), this, SLOT(Slot_RequestUpdate()));
 
    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
    glShadeModel(GL_SMOOTH);
@@ -58,5 +61,23 @@ void GLWidget::paintGL()
    asset_data_ring->paint();
 }
 
-void GLWidget::Slot_GLObj_RequestUpdate()
+void GLWidget::Slot_RequestUpdate()
 { update(); }
+
+void GLWidget::mousePressEvent(QMouseEvent *ev)
+{
+    asset_iona->mousePressEvent(ev);
+    asset_data_ring->mousePressEvent(ev);
+}
+
+void GLWidget::mouseMoveEvent(QMouseEvent *ev)
+{
+    asset_iona->mouseMoveEvent(ev);
+    asset_data_ring->mouseMoveEvent(ev);
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent *ev)
+{
+    asset_iona->mouseReleaseEvent(ev);
+    asset_data_ring->mouseReleaseEvent(ev);
+}

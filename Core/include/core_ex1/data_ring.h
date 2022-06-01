@@ -14,7 +14,7 @@ namespace CoreEx1 {
         Q_OBJECT
     public:
         explicit GLObj_DataRing(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_);
-        ~GLObj_DataRing();
+        ~GLObj_DataRing() override;
 
         virtual void init()  final;
         virtual void paint() final;
@@ -70,9 +70,15 @@ namespace CoreEx1 {
         void drawRingTB();
         void drawRingM();
 
-        // Spin Timer
+        // Spin
+    public:
+        virtual void mousePressEvent(QMouseEvent *ev) override;
+        virtual void mouseMoveEvent(QMouseEvent *ev) override;
+        virtual void mouseReleaseEvent(QMouseEvent *ev) override;
     private:
         QTimer *ring_spin_update_timer_ptr;
+        const int ring_update_duration = 33;
+        double ring_spin_delta_angle;
         double ring_spin_angle;
     private slots:
         void Slot_RingSpinUpdateTimer_Timeout();

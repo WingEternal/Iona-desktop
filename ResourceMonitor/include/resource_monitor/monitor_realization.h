@@ -1,14 +1,10 @@
-#ifndef  IONADESKTOP_RM_MONITOR_REALIZATION_H
+﻿#ifndef  IONADESKTOP_RM_MONITOR_REALIZATION_H
 #define IONADESKTOP_RM_MONITOR_REALIZATION_H
 
 #include <QtGlobal>
 #include <QObject>
 #include <QThread>
 #include <QProcess>
-
-#ifdef Q_OS_WIN
-#include "windows.h"
-#endif
 
 namespace IonaDesktop {
 namespace ResourceMonitor {
