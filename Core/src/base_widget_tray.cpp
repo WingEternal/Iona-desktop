@@ -69,5 +69,5 @@ void BaseWidget::Slot_TrayMenu_ActResetGeometry()
 void BaseWidget::Slot_TrayMenu_ActExit()
 {
     saveConfig();
-    exit(0);
+    QCoreApplication::exit(0);
 }

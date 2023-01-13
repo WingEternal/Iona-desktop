@@ -109,17 +109,19 @@ void GLObj_DataRing::drawRingM()
 
 void GLObj_DataRing::mousePressEvent(QMouseEvent *ev)
 {
-    ring_spin_delta_angle = 1;
+    Q_UNUSED(ev);
+//    ring_spin_delta_angle = 1;
 }
 
 void GLObj_DataRing::mouseMoveEvent(QMouseEvent *ev)
 {
-
+    Q_UNUSED(ev);
 }
 
 void GLObj_DataRing::mouseReleaseEvent(QMouseEvent *ev)
 {
-    ring_spin_delta_angle = 0.5;
+    Q_UNUSED(ev);
+//    ring_spin_delta_angle = 0.5;
 }
 
 void GLObj_DataRing::Slot_RingSpinUpdateTimer_Timeout()

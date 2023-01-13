@@ -2,6 +2,7 @@
 #include <QTextCodec>
 #include "core/base_widget.h"
 #include "core/native_event_filter.h"
+
 using namespace IonaDesktop::Core;
 
 int main(int argc, char *argv[])
