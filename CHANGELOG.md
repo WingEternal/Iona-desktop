@@ -1,4 +1,9 @@
 # Changelog
+## 20230122
+  * 新年快乐！终于腾出~~拿来摸鱼的~~时间重构了代码。使用pri重新组织了各个模块，把参数服务和跨模块的信号槽连接解耦
+  * `hook`直接用自定义的`message`转发鼠标事件，方便`NativeEventFilter`识别并发送到`iona_gl`
+  * 废弃`plugin_manager`，正在重构六边形小组件
+  * Live2D直接外包了，画画搞不来，开摆
 ## 20220508
   * `L2dTouchManager`类实现与鼠标跟踪：在Win10平台上使用`WH_MOUSE_LL`(hook)做全局鼠标跟踪
 ## 20220419
@@ -7,8 +12,8 @@
 ## 20220405
   * 让伊欧娜动了起来，不再是静态贴图了
 ## 20220301
-  * Windows部分的Cubism依赖库为32位(141-MSVC2017)，编译器版本15.9.28307.1800(x86)，QtCreator4.9.1，基于Qt5.12.3
-  * Ubuntu部分的Cubism依赖库为64位，直接连接到libLive2DCubismCore.so，基于Qt5.12.3
+  * Windows部分的`Cubism`依赖库为32位(`141-MSVC2017`)，编译器版本`15.9.28307.1800(x86)`，`QtCreator4.9.1`，基于`Qt5.12.3`
+  * Ubuntu部分的`Cubism`依赖库为64位，直接连接到`libLive2DCubismCore.so`，基于`Qt5.12.3`
 ## 20220127
   * 为了实现这三个计算环，代码基本重构了一遍。目前主要的绘制集中在`QOpenGLWidget`上用`OpenGL`完成
   * 异形窗口在`BaseWidget`上用了一个很粗糙的mask实现，反正每次改布局都得重新画一个，凑合先用

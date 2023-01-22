@@ -1,1 +1,5 @@
+.vscode
+build
+build-Debug
+build-Release
 *.pro.user
