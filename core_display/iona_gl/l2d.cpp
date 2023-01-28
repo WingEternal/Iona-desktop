@@ -226,7 +226,7 @@ void GLObj_L2d::PostModelDraw()
     glEnable(GL_ALPHA_TEST);
     sprogram_general->bind();
     vao_plane->bind();
-    GLEntry::get()->glActiveTexture(GL_TEXTURE0);
+    GLHandle::get()->glActiveTexture(GL_TEXTURE0);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, _renderBuffer.GetColorBuffer());
     sprogram_general->setUniformValue(attr_sp_general_Texture_0, 0);

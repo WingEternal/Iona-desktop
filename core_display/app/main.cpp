@@ -1,6 +1,6 @@
 ﻿#include <QApplication>
 #include <QTextCodec>
-#include "app_msg_handler.h"
+#include "app_msg_handle.h"
 #include "app_config.h"
 #include "app_native_ev_filter.h"
 #include "app_widget_container.h"
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
     AppWidgetContainer* display = new AppWidgetContainer();
 
-    AppMsgHandler::getInstance().installHandler();
+    AppMsgHandler::getInstance().installHandle();
     display->show();
     return app.exec();
 }

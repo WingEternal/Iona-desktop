@@ -1,6 +1,6 @@
 ﻿#include "app_widget_container.h"
 #include "app_config.h"
-#include "app_msg_handler.h"
+#include "app_msg_handle.h"
 
 using namespace IonaDesktop::CoreDisplay;
 
@@ -25,6 +25,9 @@ AppWidgetContainer::AppWidgetContainer(QWidget *parent)
 
     move_ctrl = new MoveWidget(this);
     move_ctrl->show();
+
+    quick_cmds = new QuickCmdsEntry(this);
+    quick_cmds->show();
 
     voice_label = new VoiceLabel(this);
     voice_label->raise();

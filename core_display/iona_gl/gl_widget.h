@@ -7,7 +7,7 @@
 #include <QThread>
 
 #include <QWidget>
-#include "gl_entry.h"
+#include "gl_handle.h"
 #include <QOpenGLWidget>
 #include <QPixmap>
 #include "data_ring.h"

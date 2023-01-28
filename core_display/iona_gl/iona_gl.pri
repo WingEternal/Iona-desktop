@@ -4,7 +4,7 @@ INCLUDEPATH += \
     $$PWD
 
 HEADERS += \
-   $$PWD/gl_entry.h \
+    $$PWD/gl_handle.h \
    $$PWD/gl_object_base.h \
    $$PWD/gl_widget.h \
     $$PWD/l2d.h \
@@ -17,7 +17,7 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/data_ring_model.cpp \
-    $$PWD/gl_entry.cpp \
+    $$PWD/gl_handle.cpp \
     $$PWD/gl_widget.cpp \
     $$PWD/l2d.cpp \
     $$PWD/l2d_allocator.cpp \

@@ -2,7 +2,6 @@
 #define IONADESKTOP_CORE_DISPLAY_MOVE_WIDGET_H
 
 #include <QWidget>
-#include <QPainterPath>
 #include <QVariant>
 
 namespace IonaDesktop {
@@ -15,9 +14,7 @@ namespace CoreDisplay {
         ~MoveWidget();
 
     private:
-        QPainterPath hex_path;
-        QPixmap move_icon;
-
+        QPixmap icon;
         QWidget* move_target;
         bool m_Lpressed;
         QPoint m_pos;

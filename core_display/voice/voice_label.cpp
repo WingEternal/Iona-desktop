@@ -1,5 +1,5 @@
 ﻿#include "voice_label.h"
-#include "app_msg_handler.h"
+#include "app_msg_handle.h"
 #include <QTimer>
 
 namespace {

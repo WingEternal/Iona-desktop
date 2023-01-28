@@ -5,7 +5,7 @@
 
 namespace IonaDesktop {
 namespace CoreDisplay {
-    class GLEntry : public QOpenGLFunctions
+    class GLHandle : public QOpenGLFunctions
     {
     public:
         inline static QOpenGLFunctions* get() {
@@ -19,8 +19,8 @@ namespace CoreDisplay {
             instance = nullptr;
         }
     private:
-        GLEntry(){}
-        ~GLEntry(){}
+        GLHandle(){}
+        ~GLHandle(){}
         static QOpenGLFunctions* instance;
     };
 }

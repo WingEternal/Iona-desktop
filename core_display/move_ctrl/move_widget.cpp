@@ -1,6 +1,6 @@
 ﻿#include "move_widget.h"
 #include "app_config.h"
-#include "app_msg_handler.h"
+#include "app_msg_handle.h"
 #include <QPaintEvent>
 #include <QPainter>
 #include <QMouseEvent>
@@ -11,27 +11,10 @@ MoveWidget::MoveWidget(QWidget *parent)
     : QWidget(parent),
       move_target(parent)
 {
-    QRect geo;
-    AppConfig::getInstance().getParam("/move_ctrl/size", geo);
-    this->setGeometry(geo);
-
-    double radius = width() < height() ? width() / 2 : height() / 2;
-    if(radius < 1)  radius = 1;
-    QPointF local_origin = QPointF(width() / 2, height() / 2);
-    QPolygonF hex_poly;
-    hex_poly << local_origin + QPointF(0.5 * radius, sqrt(3) / 2 * radius)
-        << local_origin + QPointF(radius, 0)
-        << local_origin + QPointF(0.5 * radius, - sqrt(3) / 2 * radius)
-        << local_origin + QPointF(- 0.5 * radius, - sqrt(3) / 2 * radius)
-        << local_origin + QPointF(- radius, 0)
-        << local_origin + QPointF(- 0.5 * radius, sqrt(3) / 2 * radius);
-    hex_path.addPolygon(hex_poly);
-    hex_path.closeSubpath();
-
-    QPixmap move_icon_ori;
-    move_icon_ori.load(":/icon/move.png");
-    const double ratio = 0.4;
-    move_icon = move_icon_ori.scaled(qRound(ratio * geo.width()), qRound(ratio * geo.height()), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QPoint geo_pos;
+    AppConfig::getInstance().getParam("/move_ctrl/pos", geo_pos);
+    this->setGeometry(geo_pos.x(), geo_pos.y(), 50, 50);
+    icon.load(":/icon/move.png");
 
     AppMsgHandler::getInstance().regSignal
         ("/app/set_param", this, SIGNAL(saveGeometry(QString, QVariant)));
@@ -45,11 +28,7 @@ MoveWidget::~MoveWidget()
 void MoveWidget::paintEvent(QPaintEvent* ev)
 {
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(QColor(70, 90, 139, 135));
-    painter.setPen(Qt::NoPen);
-    painter.drawPath(hex_path);
-    painter.drawPixmap((this->width() - move_icon.width()) / 2, (this->height() - move_icon.height()) / 2, move_icon);
+    painter.drawPixmap(0, 0, icon);
     ev->accept();
 }
 

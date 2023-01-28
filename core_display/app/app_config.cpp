@@ -1,5 +1,5 @@
 ﻿#include "app_config.h"
-#include "app_msg_handler.h"
+#include "app_msg_handle.h"
 #include <QFileInfo>
 #include <QTextCodec>
 #include <QThread>
@@ -45,6 +45,9 @@ AppConfigWorker::~AppConfigWorker()
 const QHash<QString, QVariant> AppConfigWorker::default_value = {
     {"/window/size", QRect(1300, 560, 600, 500)},
     {"/animate/update_rate", 30.0},
-    {"/animate/ring_spin_rpm", 2.5},
-    {"/move_ctrl/size", QRect(450, 300, 50, 50)}
+    {"/animate/ring_spin_rpm", 1.5},
+    {"/animate/ring_tb_roll_spd", 25},
+    {"/animate/ring_m_animation_switch_by_frame", 2},
+    {"/move_ctrl/pos", QPoint(450, 350)},
+    {"/quick_cmds/pos", QPoint(450, 300)}
 };

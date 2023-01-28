@@ -1,4 +1,4 @@
-﻿#include "gl_entry.h"
+﻿#include "gl_handle.h"
 #include "l2d_tex_manager.h"
 
 using namespace IonaDesktop::CoreDisplay;
@@ -57,7 +57,7 @@ L2dTexManager::CreateTextureFromPngFile(std::string fileName)
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, png);
-    GLEntry::get()->glGenerateMipmap(GL_TEXTURE_2D);
+    GLHandle::get()->glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);

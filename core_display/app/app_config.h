@@ -62,7 +62,6 @@ namespace CoreDisplay {
         void setParam(const QString& key, const QVariant& value)
         {
             settings->setValue(key, value);
-//            qDebug() << "set value: " << key << " v: " << value;
 //            settings->sync();
         }
     };

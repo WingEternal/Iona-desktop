@@ -548,8 +548,8 @@ void CubismRendererProfile_OpenGLES2::SetGlEnable(GLenum index, GLboolean enable
 
 void CubismRendererProfile_OpenGLES2::SetGlEnableVertexAttribArray(GLuint index, GLint enabled)
 {
-    if (enabled) GLEntry::get()->glEnableVertexAttribArray(index);
-    else GLEntry::get()->glDisableVertexAttribArray(index);
+    if (enabled) GLHandle::get()->glEnableVertexAttribArray(index);
+    else GLHandle::get()->glDisableVertexAttribArray(index);
 }
 
 void CubismRendererProfile_OpenGLES2::Save()
@@ -560,16 +560,16 @@ void CubismRendererProfile_OpenGLES2::Save()
     glGetIntegerv(GL_CURRENT_PROGRAM, &_lastProgram);
 
     glGetIntegerv(GL_ACTIVE_TEXTURE, &_lastActiveTexture);
-    GLEntry::get()->glActiveTexture(GL_TEXTURE1); //テクスチャユニット1をアクティブに（以後の設定対象とする）
+    GLHandle::get()->glActiveTexture(GL_TEXTURE1); //テクスチャユニット1をアクティブに（以後の設定対象とする）
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &_lastTexture1Binding2D);
 
-    GLEntry::get()->glActiveTexture(GL_TEXTURE0); //テクスチャユニット0をアクティブに（以後の設定対象とする）
+    GLHandle::get()->glActiveTexture(GL_TEXTURE0); //テクスチャユニット0をアクティブに（以後の設定対象とする）
     glGetIntegerv(GL_TEXTURE_BINDING_2D, &_lastTexture0Binding2D);
 
-    GLEntry::get()->glGetVertexAttribiv(0, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &_lastVertexAttribArrayEnabled[0]);
-    GLEntry::get()->glGetVertexAttribiv(1, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &_lastVertexAttribArrayEnabled[1]);
-    GLEntry::get()->glGetVertexAttribiv(2, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &_lastVertexAttribArrayEnabled[2]);
-    GLEntry::get()->glGetVertexAttribiv(3, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &_lastVertexAttribArrayEnabled[3]);
+    GLHandle::get()->glGetVertexAttribiv(0, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &_lastVertexAttribArrayEnabled[0]);
+    GLHandle::get()->glGetVertexAttribiv(1, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &_lastVertexAttribArrayEnabled[1]);
+    GLHandle::get()->glGetVertexAttribiv(2, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &_lastVertexAttribArrayEnabled[2]);
+    GLHandle::get()->glGetVertexAttribiv(3, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &_lastVertexAttribArrayEnabled[3]);
 
     _lastScissorTest = glIsEnabled(GL_SCISSOR_TEST);
     _lastStencilTest = glIsEnabled(GL_STENCIL_TEST);
@@ -595,7 +595,7 @@ void CubismRendererProfile_OpenGLES2::Save()
 
 void CubismRendererProfile_OpenGLES2::Restore()
 {
-    GLEntry::get()->glUseProgram(_lastProgram);
+    GLHandle::get()->glUseProgram(_lastProgram);
 
     SetGlEnableVertexAttribArray(0, _lastVertexAttribArrayEnabled[0]);
     SetGlEnableVertexAttribArray(1, _lastVertexAttribArrayEnabled[1]);
@@ -612,19 +612,19 @@ void CubismRendererProfile_OpenGLES2::Restore()
 
     glColorMask(_lastColorMask[0], _lastColorMask[1], _lastColorMask[2], _lastColorMask[3]);
 
-    GLEntry::get()->glBindBuffer(GL_ARRAY_BUFFER, _lastArrayBufferBinding); //前にバッファがバインドされていたら破棄する必要がある
-    GLEntry::get()->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _lastElementArrayBufferBinding);
+    GLHandle::get()->glBindBuffer(GL_ARRAY_BUFFER, _lastArrayBufferBinding); //前にバッファがバインドされていたら破棄する必要がある
+    GLHandle::get()->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _lastElementArrayBufferBinding);
 
-    GLEntry::get()->glActiveTexture(GL_TEXTURE1); //テクスチャユニット1を復元
+    GLHandle::get()->glActiveTexture(GL_TEXTURE1); //テクスチャユニット1を復元
     glBindTexture(GL_TEXTURE_2D, _lastTexture1Binding2D);
 
-    GLEntry::get()->glActiveTexture(GL_TEXTURE0); //テクスチャユニット0を復元
+    GLHandle::get()->glActiveTexture(GL_TEXTURE0); //テクスチャユニット0を復元
     glBindTexture(GL_TEXTURE_2D, _lastTexture0Binding2D);
 
-    GLEntry::get()->glActiveTexture(_lastActiveTexture);
+    GLHandle::get()->glActiveTexture(_lastActiveTexture);
 
     // restore blending
-    GLEntry::get()->glBlendFuncSeparate(_lastBlending[0], _lastBlending[1], _lastBlending[2], _lastBlending[3]);
+    GLHandle::get()->glBlendFuncSeparate(_lastBlending[0], _lastBlending[1], _lastBlending[2], _lastBlending[3]);
 }
 
 
@@ -672,7 +672,7 @@ void CubismShader_OpenGLES2::ReleaseShaderProgram()
     {
         if (_shaderSets[i]->ShaderProgram)
         {
-            GLEntry::get()->glDeleteProgram(_shaderSets[i]->ShaderProgram);
+            GLHandle::get()->glDeleteProgram(_shaderSets[i]->ShaderProgram);
             _shaderSets[i]->ShaderProgram = 0;
             CSM_DELETE(_shaderSets[i]);
         }
@@ -1130,174 +1130,174 @@ void CubismShader_OpenGLES2::GenerateShaders()
 #endif
 
     // SetupMask
-    _shaderSets[0]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[0]->ShaderProgram, "a_position");
-    _shaderSets[0]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[0]->ShaderProgram, "a_texCoord");
-    _shaderSets[0]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[0]->ShaderProgram, "s_texture0");
-    _shaderSets[0]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[0]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[0]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[0]->ShaderProgram, "u_channelFlag");
-    _shaderSets[0]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[0]->ShaderProgram, "u_baseColor");
+    _shaderSets[0]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[0]->ShaderProgram, "a_position");
+    _shaderSets[0]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[0]->ShaderProgram, "a_texCoord");
+    _shaderSets[0]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[0]->ShaderProgram, "s_texture0");
+    _shaderSets[0]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[0]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[0]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[0]->ShaderProgram, "u_channelFlag");
+    _shaderSets[0]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[0]->ShaderProgram, "u_baseColor");
 
     // 通常
-    _shaderSets[1]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[1]->ShaderProgram, "a_position");
-    _shaderSets[1]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[1]->ShaderProgram, "a_texCoord");
-    _shaderSets[1]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[1]->ShaderProgram, "s_texture0");
-    _shaderSets[1]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[1]->ShaderProgram, "u_matrix");
-    _shaderSets[1]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[1]->ShaderProgram, "u_baseColor");
+    _shaderSets[1]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[1]->ShaderProgram, "a_position");
+    _shaderSets[1]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[1]->ShaderProgram, "a_texCoord");
+    _shaderSets[1]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[1]->ShaderProgram, "s_texture0");
+    _shaderSets[1]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[1]->ShaderProgram, "u_matrix");
+    _shaderSets[1]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[1]->ShaderProgram, "u_baseColor");
 
     // 通常（クリッピング）
-    _shaderSets[2]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[2]->ShaderProgram, "a_position");
-    _shaderSets[2]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[2]->ShaderProgram, "a_texCoord");
-    _shaderSets[2]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "s_texture0");
-    _shaderSets[2]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "s_texture1");
-    _shaderSets[2]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "u_matrix");
-    _shaderSets[2]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[2]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "u_channelFlag");
-    _shaderSets[2]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "u_baseColor");
+    _shaderSets[2]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[2]->ShaderProgram, "a_position");
+    _shaderSets[2]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[2]->ShaderProgram, "a_texCoord");
+    _shaderSets[2]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "s_texture0");
+    _shaderSets[2]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "s_texture1");
+    _shaderSets[2]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "u_matrix");
+    _shaderSets[2]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[2]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "u_channelFlag");
+    _shaderSets[2]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[2]->ShaderProgram, "u_baseColor");
 
     // 通常（クリッピング・反転）
-    _shaderSets[3]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[3]->ShaderProgram, "a_position");
-    _shaderSets[3]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[3]->ShaderProgram, "a_texCoord");
-    _shaderSets[3]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "s_texture0");
-    _shaderSets[3]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "s_texture1");
-    _shaderSets[3]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "u_matrix");
-    _shaderSets[3]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[3]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "u_channelFlag");
-    _shaderSets[3]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "u_baseColor");
+    _shaderSets[3]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[3]->ShaderProgram, "a_position");
+    _shaderSets[3]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[3]->ShaderProgram, "a_texCoord");
+    _shaderSets[3]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "s_texture0");
+    _shaderSets[3]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "s_texture1");
+    _shaderSets[3]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "u_matrix");
+    _shaderSets[3]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[3]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "u_channelFlag");
+    _shaderSets[3]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[3]->ShaderProgram, "u_baseColor");
 
     // 通常（PremultipliedAlpha）
-    _shaderSets[4]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[4]->ShaderProgram, "a_position");
-    _shaderSets[4]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[4]->ShaderProgram, "a_texCoord");
-    _shaderSets[4]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[4]->ShaderProgram, "s_texture0");
-    _shaderSets[4]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[4]->ShaderProgram, "u_matrix");
-    _shaderSets[4]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[4]->ShaderProgram, "u_baseColor");
+    _shaderSets[4]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[4]->ShaderProgram, "a_position");
+    _shaderSets[4]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[4]->ShaderProgram, "a_texCoord");
+    _shaderSets[4]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[4]->ShaderProgram, "s_texture0");
+    _shaderSets[4]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[4]->ShaderProgram, "u_matrix");
+    _shaderSets[4]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[4]->ShaderProgram, "u_baseColor");
 
     // 通常（クリッピング、PremultipliedAlpha）
-    _shaderSets[5]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[5]->ShaderProgram, "a_position");
-    _shaderSets[5]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[5]->ShaderProgram, "a_texCoord");
-    _shaderSets[5]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "s_texture0");
-    _shaderSets[5]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "s_texture1");
-    _shaderSets[5]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "u_matrix");
-    _shaderSets[5]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[5]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "u_channelFlag");
-    _shaderSets[5]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "u_baseColor");
+    _shaderSets[5]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[5]->ShaderProgram, "a_position");
+    _shaderSets[5]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[5]->ShaderProgram, "a_texCoord");
+    _shaderSets[5]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "s_texture0");
+    _shaderSets[5]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "s_texture1");
+    _shaderSets[5]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "u_matrix");
+    _shaderSets[5]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[5]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "u_channelFlag");
+    _shaderSets[5]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[5]->ShaderProgram, "u_baseColor");
 
     // 通常（クリッピング・反転、PremultipliedAlpha）
-    _shaderSets[6]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[6]->ShaderProgram, "a_position");
-    _shaderSets[6]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[6]->ShaderProgram, "a_texCoord");
-    _shaderSets[6]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "s_texture0");
-    _shaderSets[6]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "s_texture1");
-    _shaderSets[6]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "u_matrix");
-    _shaderSets[6]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[6]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "u_channelFlag");
-    _shaderSets[6]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "u_baseColor");
+    _shaderSets[6]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[6]->ShaderProgram, "a_position");
+    _shaderSets[6]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[6]->ShaderProgram, "a_texCoord");
+    _shaderSets[6]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "s_texture0");
+    _shaderSets[6]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "s_texture1");
+    _shaderSets[6]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "u_matrix");
+    _shaderSets[6]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[6]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "u_channelFlag");
+    _shaderSets[6]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[6]->ShaderProgram, "u_baseColor");
 
     // 加算
-    _shaderSets[7]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[7]->ShaderProgram, "a_position");
-    _shaderSets[7]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[7]->ShaderProgram, "a_texCoord");
-    _shaderSets[7]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[7]->ShaderProgram, "s_texture0");
-    _shaderSets[7]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[7]->ShaderProgram, "u_matrix");
-    _shaderSets[7]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[7]->ShaderProgram, "u_baseColor");
+    _shaderSets[7]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[7]->ShaderProgram, "a_position");
+    _shaderSets[7]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[7]->ShaderProgram, "a_texCoord");
+    _shaderSets[7]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[7]->ShaderProgram, "s_texture0");
+    _shaderSets[7]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[7]->ShaderProgram, "u_matrix");
+    _shaderSets[7]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[7]->ShaderProgram, "u_baseColor");
 
     // 加算（クリッピング）
-    _shaderSets[8]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[8]->ShaderProgram, "a_position");
-    _shaderSets[8]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[8]->ShaderProgram, "a_texCoord");
-    _shaderSets[8]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "s_texture0");
-    _shaderSets[8]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "s_texture1");
-    _shaderSets[8]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "u_matrix");
-    _shaderSets[8]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[8]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "u_channelFlag");
-    _shaderSets[8]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "u_baseColor");
+    _shaderSets[8]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[8]->ShaderProgram, "a_position");
+    _shaderSets[8]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[8]->ShaderProgram, "a_texCoord");
+    _shaderSets[8]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "s_texture0");
+    _shaderSets[8]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "s_texture1");
+    _shaderSets[8]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "u_matrix");
+    _shaderSets[8]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[8]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "u_channelFlag");
+    _shaderSets[8]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[8]->ShaderProgram, "u_baseColor");
 
     // 加算（クリッピング・反転）
-    _shaderSets[9]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[9]->ShaderProgram, "a_position");
-    _shaderSets[9]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[9]->ShaderProgram, "a_texCoord");
-    _shaderSets[9]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "s_texture0");
-    _shaderSets[9]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "s_texture1");
-    _shaderSets[9]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "u_matrix");
-    _shaderSets[9]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[9]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "u_channelFlag");
-    _shaderSets[9]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "u_baseColor");
+    _shaderSets[9]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[9]->ShaderProgram, "a_position");
+    _shaderSets[9]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[9]->ShaderProgram, "a_texCoord");
+    _shaderSets[9]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "s_texture0");
+    _shaderSets[9]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "s_texture1");
+    _shaderSets[9]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "u_matrix");
+    _shaderSets[9]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[9]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "u_channelFlag");
+    _shaderSets[9]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[9]->ShaderProgram, "u_baseColor");
 
     // 加算（PremultipliedAlpha）
-    _shaderSets[10]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[10]->ShaderProgram, "a_position");
-    _shaderSets[10]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[10]->ShaderProgram, "a_texCoord");
-    _shaderSets[10]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[10]->ShaderProgram, "s_texture0");
-    _shaderSets[10]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[10]->ShaderProgram, "u_matrix");
-    _shaderSets[10]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[10]->ShaderProgram, "u_baseColor");
+    _shaderSets[10]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[10]->ShaderProgram, "a_position");
+    _shaderSets[10]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[10]->ShaderProgram, "a_texCoord");
+    _shaderSets[10]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[10]->ShaderProgram, "s_texture0");
+    _shaderSets[10]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[10]->ShaderProgram, "u_matrix");
+    _shaderSets[10]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[10]->ShaderProgram, "u_baseColor");
 
     // 加算（クリッピング、PremultipliedAlpha）
-    _shaderSets[11]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[11]->ShaderProgram, "a_position");
-    _shaderSets[11]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[11]->ShaderProgram, "a_texCoord");
-    _shaderSets[11]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "s_texture0");
-    _shaderSets[11]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "s_texture1");
-    _shaderSets[11]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "u_matrix");
-    _shaderSets[11]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[11]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "u_channelFlag");
-    _shaderSets[11]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "u_baseColor");
+    _shaderSets[11]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[11]->ShaderProgram, "a_position");
+    _shaderSets[11]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[11]->ShaderProgram, "a_texCoord");
+    _shaderSets[11]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "s_texture0");
+    _shaderSets[11]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "s_texture1");
+    _shaderSets[11]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "u_matrix");
+    _shaderSets[11]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[11]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "u_channelFlag");
+    _shaderSets[11]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[11]->ShaderProgram, "u_baseColor");
 
     // 加算（クリッピング・反転、PremultipliedAlpha）
-    _shaderSets[12]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[12]->ShaderProgram, "a_position");
-    _shaderSets[12]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[12]->ShaderProgram, "a_texCoord");
-    _shaderSets[12]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "s_texture0");
-    _shaderSets[12]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "s_texture1");
-    _shaderSets[12]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "u_matrix");
-    _shaderSets[12]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[12]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "u_channelFlag");
-    _shaderSets[12]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "u_baseColor");
+    _shaderSets[12]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[12]->ShaderProgram, "a_position");
+    _shaderSets[12]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[12]->ShaderProgram, "a_texCoord");
+    _shaderSets[12]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "s_texture0");
+    _shaderSets[12]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "s_texture1");
+    _shaderSets[12]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "u_matrix");
+    _shaderSets[12]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[12]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "u_channelFlag");
+    _shaderSets[12]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[12]->ShaderProgram, "u_baseColor");
 
     // 乗算
-    _shaderSets[13]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[13]->ShaderProgram, "a_position");
-    _shaderSets[13]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[13]->ShaderProgram, "a_texCoord");
-    _shaderSets[13]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[13]->ShaderProgram, "s_texture0");
-    _shaderSets[13]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[13]->ShaderProgram, "u_matrix");
-    _shaderSets[13]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[13]->ShaderProgram, "u_baseColor");
+    _shaderSets[13]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[13]->ShaderProgram, "a_position");
+    _shaderSets[13]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[13]->ShaderProgram, "a_texCoord");
+    _shaderSets[13]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[13]->ShaderProgram, "s_texture0");
+    _shaderSets[13]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[13]->ShaderProgram, "u_matrix");
+    _shaderSets[13]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[13]->ShaderProgram, "u_baseColor");
 
     // 乗算（クリッピング）
-    _shaderSets[14]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[14]->ShaderProgram, "a_position");
-    _shaderSets[14]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[14]->ShaderProgram, "a_texCoord");
-    _shaderSets[14]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "s_texture0");
-    _shaderSets[14]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "s_texture1");
-    _shaderSets[14]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "u_matrix");
-    _shaderSets[14]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[14]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "u_channelFlag");
-    _shaderSets[14]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "u_baseColor");
+    _shaderSets[14]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[14]->ShaderProgram, "a_position");
+    _shaderSets[14]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[14]->ShaderProgram, "a_texCoord");
+    _shaderSets[14]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "s_texture0");
+    _shaderSets[14]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "s_texture1");
+    _shaderSets[14]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "u_matrix");
+    _shaderSets[14]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[14]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "u_channelFlag");
+    _shaderSets[14]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[14]->ShaderProgram, "u_baseColor");
 
     // 乗算（クリッピング・反転）
-    _shaderSets[15]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[15]->ShaderProgram, "a_position");
-    _shaderSets[15]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[15]->ShaderProgram, "a_texCoord");
-    _shaderSets[15]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "s_texture0");
-    _shaderSets[15]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "s_texture1");
-    _shaderSets[15]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "u_matrix");
-    _shaderSets[15]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[15]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "u_channelFlag");
-    _shaderSets[15]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "u_baseColor");
+    _shaderSets[15]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[15]->ShaderProgram, "a_position");
+    _shaderSets[15]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[15]->ShaderProgram, "a_texCoord");
+    _shaderSets[15]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "s_texture0");
+    _shaderSets[15]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "s_texture1");
+    _shaderSets[15]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "u_matrix");
+    _shaderSets[15]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[15]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "u_channelFlag");
+    _shaderSets[15]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[15]->ShaderProgram, "u_baseColor");
 
     // 乗算（PremultipliedAlpha）
-    _shaderSets[16]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[16]->ShaderProgram, "a_position");
-    _shaderSets[16]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[16]->ShaderProgram, "a_texCoord");
-    _shaderSets[16]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[16]->ShaderProgram, "s_texture0");
-    _shaderSets[16]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[16]->ShaderProgram, "u_matrix");
-    _shaderSets[16]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[16]->ShaderProgram, "u_baseColor");
+    _shaderSets[16]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[16]->ShaderProgram, "a_position");
+    _shaderSets[16]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[16]->ShaderProgram, "a_texCoord");
+    _shaderSets[16]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[16]->ShaderProgram, "s_texture0");
+    _shaderSets[16]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[16]->ShaderProgram, "u_matrix");
+    _shaderSets[16]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[16]->ShaderProgram, "u_baseColor");
 
     // 乗算（クリッピング、PremultipliedAlpha）
-    _shaderSets[17]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[17]->ShaderProgram, "a_position");
-    _shaderSets[17]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[17]->ShaderProgram, "a_texCoord");
-    _shaderSets[17]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "s_texture0");
-    _shaderSets[17]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "s_texture1");
-    _shaderSets[17]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "u_matrix");
-    _shaderSets[17]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[17]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "u_channelFlag");
-    _shaderSets[17]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "u_baseColor");
+    _shaderSets[17]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[17]->ShaderProgram, "a_position");
+    _shaderSets[17]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[17]->ShaderProgram, "a_texCoord");
+    _shaderSets[17]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "s_texture0");
+    _shaderSets[17]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "s_texture1");
+    _shaderSets[17]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "u_matrix");
+    _shaderSets[17]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[17]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "u_channelFlag");
+    _shaderSets[17]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[17]->ShaderProgram, "u_baseColor");
 
     // 乗算（クリッピング・反転、PremultipliedAlpha）
-    _shaderSets[18]->AttributePositionLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[18]->ShaderProgram, "a_position");
-    _shaderSets[18]->AttributeTexCoordLocation = GLEntry::get()->glGetAttribLocation(_shaderSets[18]->ShaderProgram, "a_texCoord");
-    _shaderSets[18]->SamplerTexture0Location = GLEntry::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "s_texture0");
-    _shaderSets[18]->SamplerTexture1Location = GLEntry::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "s_texture1");
-    _shaderSets[18]->UniformMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "u_matrix");
-    _shaderSets[18]->UniformClipMatrixLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "u_clipMatrix");
-    _shaderSets[18]->UnifromChannelFlagLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "u_channelFlag");
-    _shaderSets[18]->UniformBaseColorLocation = GLEntry::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "u_baseColor");
+    _shaderSets[18]->AttributePositionLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[18]->ShaderProgram, "a_position");
+    _shaderSets[18]->AttributeTexCoordLocation = GLHandle::get()->glGetAttribLocation(_shaderSets[18]->ShaderProgram, "a_texCoord");
+    _shaderSets[18]->SamplerTexture0Location = GLHandle::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "s_texture0");
+    _shaderSets[18]->SamplerTexture1Location = GLHandle::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "s_texture1");
+    _shaderSets[18]->UniformMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "u_matrix");
+    _shaderSets[18]->UniformClipMatrixLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "u_clipMatrix");
+    _shaderSets[18]->UnifromChannelFlagLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "u_channelFlag");
+    _shaderSets[18]->UniformBaseColorLocation = GLHandle::get()->glGetUniformLocation(_shaderSets[18]->ShaderProgram, "u_baseColor");
 }
 
 void CubismShader_OpenGLES2::SetupShaderProgram(CubismRenderer_OpenGLES2* renderer, GLuint textureId
@@ -1322,30 +1322,30 @@ void CubismShader_OpenGLES2::SetupShaderProgram(CubismRenderer_OpenGLES2* render
     if (renderer->GetClippingContextBufferForMask() != NULL) // マスク生成時
     {
         CubismShaderSet* shaderSet = _shaderSets[ShaderNames_SetupMask];
-        GLEntry::get()->glUseProgram(shaderSet->ShaderProgram);
+        GLHandle::get()->glUseProgram(shaderSet->ShaderProgram);
 
         //テクスチャ設定
-        GLEntry::get()->glActiveTexture(GL_TEXTURE0);
+        GLHandle::get()->glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureId);
-        GLEntry::get()->glUniform1i(shaderSet->SamplerTexture0Location, 0);
+        GLHandle::get()->glUniform1i(shaderSet->SamplerTexture0Location, 0);
 
         // 頂点配列の設定
-        GLEntry::get()->glEnableVertexAttribArray(shaderSet->AttributePositionLocation);
-        GLEntry::get()->glVertexAttribPointer(shaderSet->AttributePositionLocation, 2, GL_FLOAT, GL_FALSE, sizeof(csmFloat32) * 2, vertexArray);
+        GLHandle::get()->glEnableVertexAttribArray(shaderSet->AttributePositionLocation);
+        GLHandle::get()->glVertexAttribPointer(shaderSet->AttributePositionLocation, 2, GL_FLOAT, GL_FALSE, sizeof(csmFloat32) * 2, vertexArray);
         // テクスチャ頂点の設定
-        GLEntry::get()->glEnableVertexAttribArray(shaderSet->AttributeTexCoordLocation);
-        GLEntry::get()->glVertexAttribPointer(shaderSet->AttributeTexCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(csmFloat32) * 2, uvArray);
+        GLHandle::get()->glEnableVertexAttribArray(shaderSet->AttributeTexCoordLocation);
+        GLHandle::get()->glVertexAttribPointer(shaderSet->AttributeTexCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(csmFloat32) * 2, uvArray);
 
         // チャンネル
         const csmInt32 channelNo = renderer->GetClippingContextBufferForMask()->_layoutChannelNo;
         CubismRenderer::CubismTextureColor* colorChannel = renderer->GetClippingContextBufferForMask()->GetClippingManager()->GetChannelFlagAsColor(channelNo);
-        GLEntry::get()->glUniform4f(shaderSet->UnifromChannelFlagLocation, colorChannel->R, colorChannel->G, colorChannel->B, colorChannel->A);
+        GLHandle::get()->glUniform4f(shaderSet->UnifromChannelFlagLocation, colorChannel->R, colorChannel->G, colorChannel->B, colorChannel->A);
 
-        GLEntry::get()->glUniformMatrix4fv(shaderSet->UniformClipMatrixLocation, 1, GL_FALSE, renderer->GetClippingContextBufferForMask()->_matrixForMask.GetArray());
+        GLHandle::get()->glUniformMatrix4fv(shaderSet->UniformClipMatrixLocation, 1, GL_FALSE, renderer->GetClippingContextBufferForMask()->_matrixForMask.GetArray());
 
         csmRectF* rect = renderer->GetClippingContextBufferForMask()->_layoutBounds;
 
-        GLEntry::get()->glUniform4f(shaderSet->UniformBaseColorLocation,
+        GLHandle::get()->glUniform4f(shaderSet->UniformBaseColorLocation,
                     rect->X * 2.0f - 1.0f,
                     rect->Y * 2.0f - 1.0f,
                     rect->GetRight() * 2.0f - 1.0f,
@@ -1390,46 +1390,46 @@ void CubismShader_OpenGLES2::SetupShaderProgram(CubismRenderer_OpenGLES2* render
             break;
         }
 
-        GLEntry::get()->glUseProgram(shaderSet->ShaderProgram);
+        GLHandle::get()->glUseProgram(shaderSet->ShaderProgram);
 
         // 頂点配列の設定
-        GLEntry::get()->glEnableVertexAttribArray(shaderSet->AttributePositionLocation);
-        GLEntry::get()->glVertexAttribPointer(shaderSet->AttributePositionLocation, 2, GL_FLOAT, GL_FALSE, sizeof(csmFloat32) * 2, vertexArray);
+        GLHandle::get()->glEnableVertexAttribArray(shaderSet->AttributePositionLocation);
+        GLHandle::get()->glVertexAttribPointer(shaderSet->AttributePositionLocation, 2, GL_FLOAT, GL_FALSE, sizeof(csmFloat32) * 2, vertexArray);
         // テクスチャ頂点の設定
-        GLEntry::get()->glEnableVertexAttribArray(shaderSet->AttributeTexCoordLocation);
-        GLEntry::get()->glVertexAttribPointer(shaderSet->AttributeTexCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(csmFloat32) * 2, uvArray);
+        GLHandle::get()->glEnableVertexAttribArray(shaderSet->AttributeTexCoordLocation);
+        GLHandle::get()->glVertexAttribPointer(shaderSet->AttributeTexCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(csmFloat32) * 2, uvArray);
 
         if (masked)
         {
-            GLEntry::get()->glActiveTexture(GL_TEXTURE1);
+            GLHandle::get()->glActiveTexture(GL_TEXTURE1);
 
             // frameBufferに書かれたテクスチャ
             GLuint tex = renderer->_offscreenFrameBuffer.GetColorBuffer();
 
             glBindTexture(GL_TEXTURE_2D, tex);
-            GLEntry::get()->glUniform1i(shaderSet->SamplerTexture1Location, 1);
+            GLHandle::get()->glUniform1i(shaderSet->SamplerTexture1Location, 1);
 
             // View座標をClippingContextの座標に変換するための行列を設定
-            GLEntry::get()->glUniformMatrix4fv(shaderSet->UniformClipMatrixLocation, 1, 0, renderer->GetClippingContextBufferForDraw()->_matrixForDraw.GetArray());
+            GLHandle::get()->glUniformMatrix4fv(shaderSet->UniformClipMatrixLocation, 1, 0, renderer->GetClippingContextBufferForDraw()->_matrixForDraw.GetArray());
 
             // 使用するカラーチャンネルを設定
             const csmInt32 channelNo = renderer->GetClippingContextBufferForDraw()->_layoutChannelNo;
             CubismRenderer::CubismTextureColor* colorChannel = renderer->GetClippingContextBufferForDraw()->GetClippingManager()->GetChannelFlagAsColor(channelNo);
-            GLEntry::get()->glUniform4f(shaderSet->UnifromChannelFlagLocation, colorChannel->R, colorChannel->G, colorChannel->B, colorChannel->A);
+            GLHandle::get()->glUniform4f(shaderSet->UnifromChannelFlagLocation, colorChannel->R, colorChannel->G, colorChannel->B, colorChannel->A);
         }
 
         //テクスチャ設定
-        GLEntry::get()->glActiveTexture(GL_TEXTURE0);
+        GLHandle::get()->glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureId);
-        GLEntry::get()->glUniform1i(shaderSet->SamplerTexture0Location, 0);
+        GLHandle::get()->glUniform1i(shaderSet->SamplerTexture0Location, 0);
 
         //座標変換
-        GLEntry::get()->glUniformMatrix4fv(shaderSet->UniformMatrixLocation, 1, 0, matrix4x4.GetArray()); //
+        GLHandle::get()->glUniformMatrix4fv(shaderSet->UniformMatrixLocation, 1, 0, matrix4x4.GetArray()); //
 
-        GLEntry::get()->glUniform4f(shaderSet->UniformBaseColorLocation, baseColor.R, baseColor.G, baseColor.B, baseColor.A);
+        GLHandle::get()->glUniform4f(shaderSet->UniformBaseColorLocation, baseColor.R, baseColor.G, baseColor.B, baseColor.A);
     }
 
-    GLEntry::get()->glBlendFuncSeparate(SRC_COLOR, DST_COLOR, SRC_ALPHA, DST_ALPHA);
+    GLHandle::get()->glBlendFuncSeparate(SRC_COLOR, DST_COLOR, SRC_ALPHA, DST_ALPHA);
 }
 
 csmBool CubismShader_OpenGLES2::CompileShaderSource(GLuint* outShader, GLenum shaderType, const csmChar* shaderSource)
@@ -1437,24 +1437,24 @@ csmBool CubismShader_OpenGLES2::CompileShaderSource(GLuint* outShader, GLenum sh
     GLint status;
     const GLchar* source = shaderSource;
 
-    *outShader = GLEntry::get()->glCreateShader(shaderType);
-    GLEntry::get()->glShaderSource(*outShader, 1, &source, NULL);
-    GLEntry::get()->glCompileShader(*outShader);
+    *outShader = GLHandle::get()->glCreateShader(shaderType);
+    GLHandle::get()->glShaderSource(*outShader, 1, &source, NULL);
+    GLHandle::get()->glCompileShader(*outShader);
 
     GLint logLength;
-    GLEntry::get()->glGetShaderiv(*outShader, GL_INFO_LOG_LENGTH, &logLength);
+    GLHandle::get()->glGetShaderiv(*outShader, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 0)
     {
         GLchar* log = reinterpret_cast<GLchar*>(CSM_MALLOC(logLength));
-        GLEntry::get()->glGetShaderInfoLog(*outShader, logLength, &logLength, log);
+        GLHandle::get()->glGetShaderInfoLog(*outShader, logLength, &logLength, log);
         CubismLogError("Shader compile log: %s", log);
         CSM_FREE(log);
     }
 
-    GLEntry::get()->glGetShaderiv(*outShader, GL_COMPILE_STATUS, &status);
+    GLHandle::get()->glGetShaderiv(*outShader, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE)
     {
-        GLEntry::get()->glDeleteShader(*outShader);
+        GLHandle::get()->glDeleteShader(*outShader);
         return false;
     }
 
@@ -1464,19 +1464,19 @@ csmBool CubismShader_OpenGLES2::CompileShaderSource(GLuint* outShader, GLenum sh
 csmBool CubismShader_OpenGLES2::LinkProgram(GLuint shaderProgram)
 {
     GLint status;
-    GLEntry::get()->glLinkProgram(shaderProgram);
+    GLHandle::get()->glLinkProgram(shaderProgram);
 
     GLint logLength;
-    GLEntry::get()->glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
+    GLHandle::get()->glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 0)
     {
         GLchar* log = reinterpret_cast<GLchar*>(CSM_MALLOC(logLength));
-        GLEntry::get()->glGetProgramInfoLog(shaderProgram, logLength, &logLength, log);
+        GLHandle::get()->glGetProgramInfoLog(shaderProgram, logLength, &logLength, log);
         CubismLogError("Program link log: %s", log);
         CSM_FREE(log);
     }
 
-    GLEntry::get()->glGetProgramiv(shaderProgram, GL_LINK_STATUS, &status);
+    GLHandle::get()->glGetProgramiv(shaderProgram, GL_LINK_STATUS, &status);
     if (status == GL_FALSE)
     {
         return false;
@@ -1489,17 +1489,17 @@ csmBool CubismShader_OpenGLES2::ValidateProgram(GLuint shaderProgram)
 {
     GLint logLength, status;
 
-    GLEntry::get()->glValidateProgram(shaderProgram);
-    GLEntry::get()->glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
+    GLHandle::get()->glValidateProgram(shaderProgram);
+    GLHandle::get()->glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 0)
     {
         GLchar* log = reinterpret_cast<GLchar*>(CSM_MALLOC(logLength));
-        GLEntry::get()->glGetProgramInfoLog(shaderProgram, logLength, &logLength, log);
+        GLHandle::get()->glGetProgramInfoLog(shaderProgram, logLength, &logLength, log);
         CubismLogError("Validate program log: %s", log);
         CSM_FREE(log);
     }
 
-    GLEntry::get()->glGetProgramiv(shaderProgram, GL_VALIDATE_STATUS, &status);
+    GLHandle::get()->glGetProgramiv(shaderProgram, GL_VALIDATE_STATUS, &status);
     if (status == GL_FALSE)
     {
         return false;
@@ -1513,7 +1513,7 @@ GLuint CubismShader_OpenGLES2::LoadShaderProgram(const csmChar* vertShaderSrc, c
     GLuint vertShader, fragShader;
 
     // Create shader program.
-    GLuint shaderProgram = GLEntry::get()->glCreateProgram();
+    GLuint shaderProgram = GLHandle::get()->glCreateProgram();
 
     if (!CompileShaderSource(&vertShader, GL_VERTEX_SHADER, vertShaderSrc))
     {
@@ -1529,10 +1529,10 @@ GLuint CubismShader_OpenGLES2::LoadShaderProgram(const csmChar* vertShaderSrc, c
     }
 
     // Attach vertex shader to program.
-    GLEntry::get()->glAttachShader(shaderProgram, vertShader);
+    GLHandle::get()->glAttachShader(shaderProgram, vertShader);
 
     // Attach fragment shader to program.
-    GLEntry::get()->glAttachShader(shaderProgram, fragShader);
+    GLHandle::get()->glAttachShader(shaderProgram, fragShader);
 
     // Link program.
     if (!LinkProgram(shaderProgram))
@@ -1541,17 +1541,17 @@ GLuint CubismShader_OpenGLES2::LoadShaderProgram(const csmChar* vertShaderSrc, c
 
         if (vertShader)
         {
-            GLEntry::get()->glDeleteShader(vertShader);
+            GLHandle::get()->glDeleteShader(vertShader);
             vertShader = 0;
         }
         if (fragShader)
         {
-            GLEntry::get()->glDeleteShader(fragShader);
+            GLHandle::get()->glDeleteShader(fragShader);
             fragShader = 0;
         }
         if (shaderProgram)
         {
-            GLEntry::get()->glDeleteProgram(shaderProgram);
+            GLHandle::get()->glDeleteProgram(shaderProgram);
             shaderProgram = 0;
         }
 
@@ -1561,14 +1561,14 @@ GLuint CubismShader_OpenGLES2::LoadShaderProgram(const csmChar* vertShaderSrc, c
     // Release vertex and fragment shaders.
     if (vertShader)
     {
-        GLEntry::get()->glDetachShader(shaderProgram, vertShader);
-        GLEntry::get()->glDeleteShader(vertShader);
+        GLHandle::get()->glDetachShader(shaderProgram, vertShader);
+        GLHandle::get()->glDeleteShader(vertShader);
     }
 
     if (fragShader)
     {
-        GLEntry::get()->glDetachShader(shaderProgram, fragShader);
-        GLEntry::get()->glDeleteShader(fragShader);
+        GLHandle::get()->glDetachShader(shaderProgram, fragShader);
+        GLHandle::get()->glDeleteShader(fragShader);
     }
 
     return shaderProgram;
@@ -1794,8 +1794,8 @@ void CubismRenderer_OpenGLES2::PreDraw()
     glBindVertexArrayOES(0);
 #endif
 
-    GLEntry::get()->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    GLEntry::get()->glBindBuffer(GL_ARRAY_BUFFER, 0); //前にバッファがバインドされていたら破棄する必要がある
+    GLHandle::get()->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    GLHandle::get()->glBindBuffer(GL_ARRAY_BUFFER, 0); //前にバッファがバインドされていたら破棄する必要がある
 
     //異方性フィルタリング。プラットフォームのOpenGLによっては未対応の場合があるので、未設定のときは設定しない
     if (GetAnisotropy() > 0.0f)
@@ -1998,7 +1998,7 @@ void CubismRenderer_OpenGLES2::DrawMesh(csmInt32 textureNo, csmInt32 indexCount,
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_SHORT, indexArray);
 
     // 後処理
-    GLEntry::get()->glUseProgram(0);
+    GLHandle::get()->glUseProgram(0);
     SetClippingContextBufferForDraw(NULL);
     SetClippingContextBufferForMask(NULL);
 }

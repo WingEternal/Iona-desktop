@@ -14,6 +14,8 @@
 #include "tray/tray.h"
 /* MOVE_WIDGET INCLUDES */
 #include "move_ctrl/move_widget.h"
+/* CMDS INCLUDES */
+#include "quick_cmds/quick_cmds_entry.h"
 /* HOOK INCLUDES */
 #ifdef Q_OS_WIN
 #include "hook.h"
@@ -33,6 +35,7 @@ namespace CoreDisplay {
         VoiceLabel* voice_label;
         Tray* tray;
         MoveWidget* move_ctrl;
+        QuickCmdsEntry* quick_cmds;
 
     protected:
         void paintEvent(QPaintEvent* ev);

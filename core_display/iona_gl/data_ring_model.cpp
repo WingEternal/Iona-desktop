@@ -1,6 +1,6 @@
 ﻿#include "data_ring.h"
 #include <QtMath>
-#define PI 3.1415926536
+#define PI 3.1415926536f
 
 using namespace IonaDesktop::CoreDisplay;
 
@@ -9,13 +9,17 @@ namespace CoreDisplay {
     /* DO NOT EDIT */
     // Ring circumference
     constexpr GLfloat ring_tb_perimeter = GLObj_DataRing::ring_tb_height * 17650 / 540;
+    constexpr GLfloat ring_tbf_perimeter = GLObj_DataRing::ring_tbf_height * 17650 / 540;
     constexpr GLfloat ring_m_perimeter = GLObj_DataRing::ring_m_height * 18564 / 540;
     // Ring Radius (according to ring texture resolution)
-    constexpr GLfloat ring_tb_radius = ring_tb_perimeter / 2 /  PI;
-    constexpr GLfloat ring_m_radius = ring_m_perimeter / 2 /  PI;
+    constexpr GLfloat ring_tb_radius = ring_tb_perimeter / 2.0f /  PI;
+    constexpr GLfloat ring_tbf_radius = ring_tbf_perimeter / 2.0f /  PI;
+    constexpr GLfloat ring_m_radius = ring_m_perimeter / 2.0f /  PI;
     constexpr GLint ring_tb_vertices_size = 2 * 5 * (GLObj_DataRing::ring_tb_res + 1);
+    constexpr GLint ring_tbf_vertices_size = 2 * 5 * (GLObj_DataRing::ring_tbf_res + 1);
     constexpr GLint ring_m_vertices_size = 2 * 5 * (GLObj_DataRing::ring_m_res + 1);
     static GLfloat vertices_ring_tb[ring_tb_vertices_size];
+    static GLfloat vertices_ring_tbf[ring_tbf_vertices_size];
     static GLfloat vertices_ring_m[ring_m_vertices_size];
     //GLuint indices_ring_tb[2 * ring_tb_res + 2];
 
@@ -27,7 +31,7 @@ namespace CoreDisplay {
         // Use N = (Resolution +1) to form a closed loop
         for(int i = 0; i < res; i ++)
         {
-            GLfloat angle = angle_incremental * i * 3.14 / 180;
+            GLfloat angle = angle_incremental * i * 3.14f / 180.0f;
             // vertices on top
             // Position
             container_array[i * 10] = radius * sin(angle);
@@ -66,10 +70,15 @@ void GLObj_DataRing::initializeModel()
             (vertices_ring_tb, ring_tb_vertices_size, ring_tb_radius, ring_tb_height, ring_tb_res);
     vao_ring_tb = loadModel(sprogram_mix2, vertices_ring_tb, sizeof (vertices_ring_tb));
 
+    // Ring_tbf
+    CompileVertices
+            (vertices_ring_tbf, ring_tbf_vertices_size, ring_tbf_radius, ring_tbf_height, ring_tbf_res);
+    vao_ring_tbf = loadModel(sprogram_general, vertices_ring_tbf, sizeof (vertices_ring_tbf));
+
     // Ring_m
     CompileVertices
             (vertices_ring_m, ring_m_vertices_size, ring_m_radius, ring_m_height, ring_m_res);
-    vao_ring_m = loadModel(sprogram_general, vertices_ring_m, sizeof (vertices_ring_m));
+    vao_ring_m = loadModel(sprogram_rm, vertices_ring_m, sizeof (vertices_ring_m));
 }
 
 QOpenGLVertexArrayObject * GLObj_DataRing::loadModel

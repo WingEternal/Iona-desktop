@@ -1,4 +1,4 @@
-﻿#include "app_msg_handler.h"
+﻿#include "app_msg_handle.h"
 #include <QCoreApplication>
 #include <QDebug>
 
@@ -55,7 +55,7 @@ void AppMsgHandler::bindSlot(const SID_t &sid, QObject *obj, const char *method,
     m_slot_connect[sid][obj]->connection_type = c_type;
 }
 
-void AppMsgHandler::installHandler()
+void AppMsgHandler::installHandle()
 {
     for(auto im_sig : m_sig_connect)
         for(auto ti_sig : im_sig)

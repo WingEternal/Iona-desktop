@@ -1,9 +1,30 @@
 ﻿<RCC>
     <qresource prefix="/charater/texture">
         <file>Iona_514_723.png</file>
-        <file>ring_m_2235_65.png</file>
         <file>ring_tb_frame_2648_75.png</file>
         <file>ring_tb_block_2648_75.png</file>
+        <file>ring_tb_code_2648.png</file>
+        <file>ring_m_empty_559.png</file>
+        <file>ring_m_a0_559.png</file>
+        <file>ring_m_a1_559.png</file>
+        <file>ring_m_a2_559.png</file>
+        <file>ring_m_a3_559.png</file>
+        <file>ring_m_a4_559.png</file>
+        <file>ring_m_a5_559.png</file>
+        <file>ring_m_a6_559.png</file>
+        <file>ring_m_a7_559.png</file>
+        <file>ring_m_a8_559.png</file>
+        <file>ring_m_a9_559.png</file>
+        <file>ring_m_a10_559.png</file>
+        <file>ring_m_a11_559.png</file>
+        <file>ring_m_a12_559.png</file>
+        <file>ring_m_a13_559.png</file>
+        <file>ring_m_a14_559.png</file>
+        <file>ring_m_a15_559.png</file>
+        <file>ring_m_a16_559.png</file>
+        <file>ring_m_a17_559.png</file>
+        <file>ring_m_a18_559.png</file>
+        <file>ring_m_a19_559.png</file>
     </qresource>
     <qresource prefix="/charater/voice">
         <file>0000.mp3</file>
@@ -38,6 +59,7 @@
     <qresource prefix="/icon">
         <file>icon_anchor.png</file>
         <file>move.png</file>
+        <file>terminal.png</file>
     </qresource>
     <qresource prefix="/mask">
         <file>mask.png</file>

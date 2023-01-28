@@ -38,8 +38,8 @@
 #include <OpenGL/gl.h>
 #endif
 
-#include "gl_entry.h"
-using IonaDesktop::CoreDisplay::GLEntry;
+#include "gl_handle.h"
+using IonaDesktop::CoreDisplay::GLHandle;
 
 //------------ LIVE2D NAMESPACE ------------
 namespace Live2D { namespace Cubism { namespace Framework { namespace Rendering {

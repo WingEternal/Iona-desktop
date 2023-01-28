@@ -1,6 +1,6 @@
 ﻿#include "gl_widget.h"
 #include "app_config.h"
-#include "app_msg_handler.h"
+#include "app_msg_handle.h"
 #include <QMouseEvent>
 
 using namespace IonaDesktop::CoreDisplay;
@@ -32,7 +32,7 @@ GLWidget::~GLWidget()
 void GLWidget::initializeGL()
 {
     this->makeCurrent();
-    GLEntry::get()->initializeOpenGLFunctions();
+    GLHandle::get()->initializeOpenGLFunctions();
 
     asset_iona = new GLObj_L2d(this, tf_camera,  widget_geo);
     asset_iona->setModelPath(":/charater/live2d/", "Iona_ver_0_5.model3.json");

@@ -1,5 +1,5 @@
-﻿#ifndef IONADESKTOP_CORE_DISPLAY_APP_MSG_HANDLER_H
-#define IONADESKTOP_CORE_DISPLAY_APP_MSG_HANDLER_H
+﻿#ifndef IONADESKTOP_CORE_DISPLAY_APP_MSG_HANDLE_H
+#define IONADESKTOP_CORE_DISPLAY_APP_MSG_HANDLE_H
 
 #include <QMap>
 #include <QList>
@@ -21,7 +21,7 @@ namespace CoreDisplay {
         }
         void regSignal(const SID_t& sid, QObject* obj, const char* method);
         void bindSlot(const SID_t& sid, QObject* obj, const char* method, const Qt::ConnectionType c_type = Qt::AutoConnection);
-        void installHandler();
+        void installHandle();
 
         void listenEvent(const SID_t& sid, QObject* obj);
         void unlistenEvent(const SID_t& sid, QObject* obj);
@@ -57,4 +57,4 @@ namespace CoreDisplay {
 
 }
 }
-#endif // IONADESKTOP_CORE_DISPLAY_APP_MSG_HANDLER_H
+#endif // IONADESKTOP_CORE_DISPLAY_APP_MSG_HANDLE_H

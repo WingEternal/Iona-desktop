@@ -2,7 +2,7 @@
 #define IONA_DESKTOP_CORE_DISPLAY_GL_OBJECT_BASE_H
 
 #include <QObject>
-#include "gl_entry.h"
+#include "gl_handle.h"
 #include <QOpenGLWidget>
 #include <QOpenGLShader>
 #include <QOpenGLShaderProgram>
