@@ -17,7 +17,6 @@ include($$PWD/voice/voice.pri)
 include($$PWD/app/app.pri)
 include($$PWD/tray/tray.pri)
 include($$PWD/move_ctrl/move_ctrl.pri)
-win32: include($$PWD/res_monitor/res_monitor.pri)
 include($$PWD/quick_cmds/quick_cmds.pri)
 
 RESOURCES += \

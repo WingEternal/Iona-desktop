@@ -1,4 +1,5 @@
 .vscode
+.qtc_clangd
 build
 build-Debug
 build-Release
