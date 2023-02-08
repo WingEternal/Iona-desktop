@@ -1,5 +1,5 @@
-﻿#include "data_ring.h"
-#include "app_config.h"
+﻿#include "iona_gl/data_ring.h"
+#include "app/app_config.h"
 #include <QTime>
 
 using namespace IonaDesktop::CoreDisplay;
@@ -73,11 +73,11 @@ namespace {
         static bool seedStatus = false;
         if (!seedStatus)
         {
-            qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+            srand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
             seedStatus = true;
         }
         float diff = fabs(max - min);
-        float m1 = static_cast<float>(qrand() % 100) / 100.0f;
+        float m1 = static_cast<float>(rand() % 100) / 100.0f;
         return min + m1 * diff;
     }
 }
@@ -132,7 +132,6 @@ void GLObj_DataRing::initializeTexture()
     tex_ring_tb[1] = loadTexture(":/charater/texture/ring_tb_block_2648_75.png");
     tex_ring_tb[2] = loadTexture(":/charater/texture/ring_tb_code_2648.png");
     tex_ring_m_empty = loadTexture(":/charater/texture/ring_m_empty_559.png");
-    QString filename;
     for(int i = 0; i < 20; i++)
         tex_ring_m_active[i] = loadTexture(":/charater/texture/ring_m_a"+ QString::number(i) + "_559.png");
 }

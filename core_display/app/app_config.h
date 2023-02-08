@@ -20,8 +20,10 @@ namespace CoreDisplay {
     public:
         static AppConfigWorker& getInstance();
     private:
-        static AppConfigWorker* instance;
-        static QThread* thrd;
+        explicit AppConfig();
+        ~AppConfig();
+        AppConfigWorker* instance;
+        QThread* thrd;
     };
 
     class AppConfigWorker : public QObject

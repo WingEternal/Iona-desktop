@@ -1,11 +1,11 @@
-﻿#include "gl_handle.h"
-#include "l2d_tex_manager.h"
+﻿#include "iona_gl/gl_handle.h"
+#include "iona_gl/l2d_tex_manager.h"
 
 using namespace IonaDesktop::CoreDisplay;
 using namespace IonaDesktop::CoreDisplay;
 
-#include "l2d_tex_manager.h"
-#include "l2d_utils.h"
+#include "iona_gl/l2d_tex_manager.h"
+#include "iona_gl/l2d_utils.h"
 #include <iostream>
 #define STBI_NO_STDIO
 #define STBI_ONLY_PNG
@@ -83,7 +83,11 @@ void
 L2dTexManager::ReleaseTextures()
 {
     for (Csm::csmUint32 i = 0; i < _textures.GetSize(); i++)
+    {
+        GLuint textureId[1] = {_textures[i]->id};
+        glDeleteTextures(1, textureId);
         delete _textures[i];
+    }
     _textures.Clear();
 }
 

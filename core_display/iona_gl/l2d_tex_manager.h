@@ -2,7 +2,7 @@
 #define IONA_DESKTOP_CORE_DISPLAY_L2D_TEXTURE_H
 
 #include <string>
-#include <gl_handle.h>
+#include "gl_handle.h"
 #include <Type/csmVector.hpp>
 
 namespace IonaDesktop {

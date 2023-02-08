@@ -1,9 +1,9 @@
 ﻿#include <QApplication>
 #include <QTextCodec>
-#include "app_msg_handle.h"
-#include "app_config.h"
-#include "app_native_ev_filter.h"
-#include "app_widget_container.h"
+#include "app/app_msg_handle.h"
+#include "app/app_config.h"
+#include "app/app_native_ev_filter.h"
+#include "app/app_widget_container.h"
 
 using namespace IonaDesktop::CoreDisplay;
 

@@ -51,7 +51,7 @@ namespace CoreDisplay {
 
                                                         // デバッグ用ログの表示
         // デバッグ用ログ表示の有効・無効
-        static constexpr Csm::csmBool DebugLogEnable = true;
+        static constexpr Csm::csmBool DebugLogEnable = false;
         // タッチ処理のデバッグ用ログ表示の有効・無効
         static constexpr Csm::csmBool DebugTouchLogEnable = false;
 

@@ -1,24 +1,35 @@
-﻿#include "app_config.h"
-#include "app_msg_handle.h"
+﻿#include "app/app_config.h"
+#include "app/app_msg_handle.h"
 #include <QFileInfo>
 #include <QTextCodec>
 #include <QThread>
+#include <QRect>
+#include <QPoint>
 
 using namespace IonaDesktop::CoreDisplay;
 
-AppConfigWorker* AppConfig::instance = nullptr;
-QThread* AppConfig::thrd = nullptr;
+// AppConfigWorker* AppConfig::instance = nullptr;
+// QThread* AppConfig::thrd = nullptr;
 
 AppConfigWorker& AppConfig::getInstance()
 {
-    if(instance == nullptr)
-    {
-        instance = new AppConfigWorker();
-        thrd = new QThread;
-        instance->moveToThread(thrd);
-        thrd->start();
-    }
-    return *instance;
+    static AppConfig config_singleton;
+    return *config_singleton.instance;
+}
+
+AppConfig::AppConfig()
+    : instance(new AppConfigWorker),
+    thrd(new QThread)
+{
+    instance->moveToThread(thrd);
+    connect(thrd, &QThread::finished, instance, &QObject::deleteLater);
+    thrd->start();
+}
+
+AppConfig::~AppConfig()
+{
+    thrd->quit();
+    thrd->wait();
 }
 
 AppConfigWorker::AppConfigWorker()
@@ -26,7 +37,7 @@ AppConfigWorker::AppConfigWorker()
 {
     // Read ini
     settings = new QSettings("./config.ini", QSettings::IniFormat, this);
-    settings->setIniCodec(QTextCodec::codecForName("UTF-8"));
+//    settings->setIniCodec(QTextCodec::codecForName("UTF-8"));
 
     // Bind slot
     connect(this, SIGNAL(addDefaultParam(const QString, const QVariant)),
@@ -39,7 +50,7 @@ AppConfigWorker::AppConfigWorker()
 
 AppConfigWorker::~AppConfigWorker()
 {
-
+    
 }
 
 const QHash<QString, QVariant> AppConfigWorker::default_value = {

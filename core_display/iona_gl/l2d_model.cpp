@@ -1,4 +1,4 @@
-﻿#include "l2d_model.h"
+﻿#include "iona_gl/l2d_model.h"
 #include <fstream>
 #include <vector>
 #include <CubismModelSettingJson.hpp>
@@ -9,8 +9,8 @@
 #include <Utils/CubismString.hpp>
 #include <Id/CubismIdManager.hpp>
 #include <Motion/CubismMotionQueueEntry.hpp>
-#include "l2d_config.h"
-#include "l2d_utils.h"
+#include "iona_gl/l2d_config.h"
+#include "iona_gl/l2d_utils.h"
 
 using namespace IonaDesktop::CoreDisplay;
 using namespace Live2D::Cubism::Framework;

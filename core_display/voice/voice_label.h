@@ -6,6 +6,7 @@
 #include <QtMultimedia/qmediaplayer.h>
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
+#include <QAudioOutput>
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -22,6 +23,8 @@ namespace CoreDisplay {
     private:
         QTimer* voice_timer;
         QMediaPlayer* voice_player;
+        QAudioOutput* audio_output;
+        
         QThread* media_thrd;
         QGraphicsOpacityEffect* label_opacity_fx;
         QPropertyAnimation* label_animation;
@@ -34,7 +37,7 @@ namespace CoreDisplay {
 
     private slots:
         void checkChime();
-        void changeLabelVisibilty(QMediaPlayer::State);
+        void changeLabelVisibilty(QMediaPlayer::PlaybackState);
         void onAnimationFinished();
     };
 }

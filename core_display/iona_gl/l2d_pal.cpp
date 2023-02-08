@@ -1,5 +1,5 @@
 ﻿#include <QtGlobal>
-#include "l2d_utils.h"
+#include "iona_gl/l2d_utils.h"
 #include <cstdio>
 #include <stdarg.h>
 #include <sys/stat.h>
@@ -8,7 +8,7 @@
 #include <QIODevice>
 #include <QFile>
 #include <Model/CubismMoc.hpp>
-#include "l2d_config.h"
+#include "iona_gl/l2d_config.h"
 
 using std::endl;
 using namespace Csm;

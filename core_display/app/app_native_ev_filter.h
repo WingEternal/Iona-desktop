@@ -4,9 +4,10 @@
 #include <QAbstractNativeEventFilter>
 #include <QObject>
 #include <QEvent>
+#include <QPoint>
 
 #ifdef Q_OS_WIN
-#include "hook.h"
+#include "Windows.h"
 #endif
 
 namespace IonaDesktop {
@@ -18,7 +19,7 @@ namespace CoreDisplay {
         AppNativeEvFilter();
 
         virtual bool nativeEventFilter
-            (const QByteArray &eventType, void *message, long *longMsg) override;
+            (const QByteArray &eventType, void *message, qintptr *result) override;
 
     private:
 #ifdef Q_OS_WIN

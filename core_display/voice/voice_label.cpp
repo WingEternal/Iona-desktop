@@ -1,5 +1,5 @@
-﻿#include "voice_label.h"
-#include "app_msg_handle.h"
+﻿#include "voice/voice_label.h"
+#include "app/app_msg_handle.h"
 #include <QTimer>
 
 namespace {
@@ -77,13 +77,15 @@ using namespace IonaDesktop::CoreDisplay;
 VoiceLabel::VoiceLabel(QWidget *parent) : QLabel(parent)
 {
     voice_timer = new QTimer(this);
-    media_thrd = new QThread;
+    media_thrd = new QThread(this);
     voice_player = new QMediaPlayer;
     voice_player->moveToThread(media_thrd);
+    audio_output = new QAudioOutput(this);
+    voice_player->setAudioOutput(audio_output);
     connect(media_thrd, &QThread::finished, voice_player, &QObject::deleteLater);
     media_thrd->start();
 
-    this->setStyleSheet("font-family:微软雅黑; font-size:16px; color: black; background-color:rgb(255, 255, 255, 180); border-radius:15px;");
+    this->setStyleSheet("font-family:微软雅黑; font-size:16px; color: black; background-color:rgba(255, 255, 255, 180); border-radius:15px;");
     this->setWordWrap(true);
     this->setAlignment(Qt::AlignCenter);
     this->setGeometry(250, 265, 220, 60);
@@ -100,13 +102,13 @@ VoiceLabel::VoiceLabel(QWidget *parent) : QLabel(parent)
 
     AppMsgHandler::getInstance().bindSlot("/hitbox_hit", this, SLOT(playRandomVoice()));
     connect(voice_timer, SIGNAL(timeout()), this, SLOT(checkChime()));
-    connect(voice_player, SIGNAL(stateChanged(QMediaPlayer::State)),
-        this, SLOT(changeLabelVisibilty(QMediaPlayer::State)));
+    connect(voice_player, SIGNAL(playbackStateChanged(QMediaPlayer::PlaybackState)),
+        this, SLOT(changeLabelVisibilty(QMediaPlayer::PlaybackState)));
     connect(label_animation, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
 
     // Play startup voice
-    voice_player->setMedia(start_info[0].url);
-    voice_player->setVolume(35);
+    voice_player->setSource(start_info[0].url);
+    audio_output->setVolume(15);
     this->setText(start_info[0].text);
     voice_player->play();
     voice_timer->start(500);
@@ -120,11 +122,11 @@ VoiceLabel::~VoiceLabel()
 void VoiceLabel::playRandomVoice()
 {
     qDebug() << "Judge: single click";
-    if(voice_player->state() != QMediaPlayer::StoppedState)
+    if(voice_player->playbackState() != QMediaPlayer::StoppedState)
         voice_player->stop();
-    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-    int rand_index = qrand() % 2 + 1;
-    voice_player->setMedia(random_info[rand_index].url);
+    srand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+    int rand_index = rand() % 2 + 1;
+    voice_player->setSource(random_info[rand_index].url);
     this->setText(random_info[rand_index].text);
     voice_player->play();
 }
@@ -133,15 +135,15 @@ void VoiceLabel::checkChime()
 {
     QTime curr_time = QTime::currentTime();
     if(curr_time.minute() == 0 && curr_time.second() == 0
-        && voice_player->state() == QMediaPlayer::StoppedState)
+        && voice_player->playbackState() == QMediaPlayer::StoppedState)
     {
-        voice_player->setMedia(chime_info[curr_time.hour()].url);
+        voice_player->setSource(chime_info[curr_time.hour()].url);
         this->setText(chime_info[curr_time.hour()].text);
         voice_player->play();
     }
 }
 
-void VoiceLabel::changeLabelVisibilty(QMediaPlayer::State state)
+void VoiceLabel::changeLabelVisibilty(QMediaPlayer::PlaybackState state)
 {
     if(state == QMediaPlayer::PlayingState)
     {

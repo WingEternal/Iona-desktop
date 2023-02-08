@@ -1,12 +1,13 @@
-﻿#include "app_native_ev_filter.h"
-#include "app_msg_handle.h"
+﻿#include "app/app_native_ev_filter.h"
+#include "app/app_msg_handle.h"
 #include <QByteArray>
 #include <QDebug>
 
 using namespace IonaDesktop::CoreDisplay;
 
 #ifdef Q_OS_WIN
-    const UINT AppNativeEvFilter::WM_IONAGL_LOOKAT = RegisterWindowMessage(L"WM_IONAGL_LOOKAT");
+#include "hook.h"
+const UINT AppNativeEvFilter::WM_IONAGL_LOOKAT = RegisterWindowMessage(L"WM_IONAGL_LOOKAT");
 #endif
 
 AppNativeEvFilter::AppNativeEvFilter()
@@ -15,9 +16,8 @@ AppNativeEvFilter::AppNativeEvFilter()
     AppMsgHandler::getInstance().regSignal("/animate/lookat", this, SIGNAL(sendGlMouseEvent(const QEvent::Type, const Qt::MouseButton, const QPoint)));
 }
 
-bool AppNativeEvFilter::nativeEventFilter(const QByteArray &eventType, void *message, long *longMsg)
+bool AppNativeEvFilter::nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result)
 {
-    Q_UNUSED(longMsg);
 #ifdef Q_OS_WIN
     if (eventType == "windows_generic_MSG" || eventType == "windows_dispatcher_MSG")
     {
@@ -29,17 +29,17 @@ bool AppNativeEvFilter::nativeEventFilter(const QByteArray &eventType, void *mes
             case WM_LBUTTONDOWN:
                 emit sendGlMouseEvent
                     (QEvent::MouseButtonPress, Qt::LeftButton,
-                     QPoint(GET_X_LPARAM(pMsg->lParam), GET_Y_LPARAM(pMsg->lParam)));
+                    QPoint(GET_X_LPARAM(pMsg->lParam), GET_Y_LPARAM(pMsg->lParam)));
                 break;
             case WM_MOUSEMOVE:
                 emit sendGlMouseEvent
                     (QEvent::MouseMove, Qt::LeftButton,
-                     QPoint(GET_X_LPARAM(pMsg->lParam), GET_Y_LPARAM(pMsg->lParam)));
+                    QPoint(GET_X_LPARAM(pMsg->lParam), GET_Y_LPARAM(pMsg->lParam)));
                 break;
             case WM_LBUTTONUP:
                 emit sendGlMouseEvent
                     (QEvent::MouseButtonRelease, Qt::LeftButton,
-                     QPoint(GET_X_LPARAM(pMsg->lParam), GET_Y_LPARAM(pMsg->lParam)));
+                    QPoint(GET_X_LPARAM(pMsg->lParam), GET_Y_LPARAM(pMsg->lParam)));
                 break;
             }
             return true;

@@ -39,7 +39,8 @@ LRESULT CALLBACK Hook::MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
     if(wParam == WM_LBUTTONDOWN || wParam == WM_MOUSEMOVE || wParam == WM_LBUTTONUP)
     {
-        POINT mpt{GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+        MOUSEHOOKSTRUCT *mhookstruct = (MOUSEHOOKSTRUCT*)lParam;
+        POINT mpt = mhookstruct->pt;
         switch (wParam)
         {
         case WM_LBUTTONDOWN:

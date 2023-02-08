@@ -1,6 +1,6 @@
-﻿#include "move_widget.h"
-#include "app_config.h"
-#include "app_msg_handle.h"
+﻿#include "move_ctrl/move_widget.h"
+#include "app/app_config.h"
+#include "app/app_msg_handle.h"
 #include <QPaintEvent>
 #include <QPainter>
 #include <QMouseEvent>
@@ -35,7 +35,7 @@ void MoveWidget::paintEvent(QPaintEvent* ev)
 void MoveWidget::mousePressEvent(QMouseEvent *ev)
 {
     if(ev->button() == Qt::LeftButton) {
-        m_pos = ev->globalPos();
+        m_pos = ev->globalPosition().toPoint();
         m_Lpressed = true;
     }
     ev->accept();
@@ -44,7 +44,7 @@ void MoveWidget::mousePressEvent(QMouseEvent *ev)
 void MoveWidget::mouseMoveEvent(QMouseEvent *ev)
 {
     if(m_Lpressed) {
-        QPoint step = ev->globalPos() - m_pos;
+        QPoint step = ev->globalPosition().toPoint() - m_pos;
         //move_target->setGeometry(QRect(step + move_target->geometry().topLeft(), move_target->size()));
         move_target->move(step + move_target->geometry().topLeft());
         m_pos += step;

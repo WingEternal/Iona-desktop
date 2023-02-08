@@ -1,6 +1,6 @@
-﻿#include "l2d.h"
-#include "l2d_config.h"
-#include "l2d_utils.h"
+﻿#include "iona_gl/l2d.h"
+#include "iona_gl/l2d_config.h"
+#include "iona_gl/l2d_utils.h"
 
 #include <QApplication>
 #include <QScreen>
@@ -247,8 +247,8 @@ void GLObj_L2d::mousePressEvent(QMouseEvent *e)
     auto gl = (QWidget*)(this->parent());
     auto gl_global_center = gl->mapToGlobal(gl->geometry().center());
     _touchManager->TouchesBegan
-        (e->globalX() - gl_global_center.x() + virtual_screen_geometry.center().x(),
-        e->globalY() - gl_global_center.y() + virtual_screen_geometry.center().y());
+        (e->globalPosition().x() - gl_global_center.x() + virtual_screen_geometry.center().x(),
+        e->globalPosition().y() - gl_global_center.y() + virtual_screen_geometry.center().y());
 }
 
 void GLObj_L2d::mouseMoveEvent(QMouseEvent *e)
@@ -258,8 +258,8 @@ void GLObj_L2d::mouseMoveEvent(QMouseEvent *e)
     auto gl = (QWidget*)(this->parent());
     auto gl_global_center = gl->mapToGlobal(gl->geometry().center());
     _touchManager->TouchesMoved
-        (e->globalX() - gl_global_center.x() + virtual_screen_geometry.center().x(),
-        e->globalY() - gl_global_center.y() + virtual_screen_geometry.center().y());
+        (e->globalPosition().x() - gl_global_center.x() + virtual_screen_geometry.center().x(),
+        e->globalPosition().y() - gl_global_center.y() + virtual_screen_geometry.center().y());
     _model->SetDragging(viewX, viewY);
 }
 

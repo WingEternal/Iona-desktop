@@ -1,6 +1,6 @@
-﻿#include "gl_widget.h"
-#include "app_config.h"
-#include "app_msg_handle.h"
+﻿#include "iona_gl/gl_widget.h"
+#include "app/app_config.h"
+#include "app/app_msg_handle.h"
 #include <QMouseEvent>
 
 using namespace IonaDesktop::CoreDisplay;
@@ -90,7 +90,7 @@ void GLWidget::paintGL()
 
 void GLWidget::glPrivateMouseEventDispatch(const QEvent::Type type, const Qt::MouseButton b, const QPoint pt)
 {
-    QMouseEvent* ev = new QMouseEvent(type, pt, b, b, Qt::NoModifier);
+    QMouseEvent* ev = new QMouseEvent(type, pt, pt, b, b, Qt::NoModifier);
     switch(type)
     {
     case QEvent::MouseButtonPress:

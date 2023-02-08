@@ -1,5 +1,5 @@
-﻿#include "quick_cmds_entry.h"
-#include "app_config.h"
+﻿#include "quick_cmds/quick_cmds_entry.h"
+#include "app/app_config.h"
 #include <QPainter>
 #include <QPaintEvent>
 
