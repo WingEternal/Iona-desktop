@@ -82,6 +82,8 @@ VoiceLabel::VoiceLabel(QWidget *parent) : QLabel(parent)
     voice_player->moveToThread(media_thrd);
     audio_output = new QAudioOutput(this);
     voice_player->setAudioOutput(audio_output);
+    connect(voice_player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(onPlayerMediaStatusChanged(const QMediaPlayer::MediaStatus)));
+    connect(this, SIGNAL(playMedia()), voice_player, SLOT(play()));
     connect(media_thrd, &QThread::finished, voice_player, &QObject::deleteLater);
     media_thrd->start();
 
@@ -101,16 +103,15 @@ VoiceLabel::VoiceLabel(QWidget *parent) : QLabel(parent)
     label_animation->setEasingCurve(QEasingCurve::Linear);
 
     AppMsgHandler::getInstance().bindSlot("/hitbox_hit", this, SLOT(playRandomVoice()));
-    connect(voice_timer, SIGNAL(timeout()), this, SLOT(checkChime()));
+    connect(voice_timer, SIGNAL(timeout()), this, SLOT(onChimeTimerTimeout()));
     connect(voice_player, SIGNAL(playbackStateChanged(QMediaPlayer::PlaybackState)),
-        this, SLOT(changeLabelVisibilty(QMediaPlayer::PlaybackState)));
+        this, SLOT(onPlayerPlaybackStateChanged(QMediaPlayer::PlaybackState)));
     connect(label_animation, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
 
     // Play startup voice
     voice_player->setSource(start_info[0].url);
     audio_output->setVolume(15);
     this->setText(start_info[0].text);
-    voice_player->play();
     voice_timer->start(500);
 }
 
@@ -125,13 +126,12 @@ void VoiceLabel::playRandomVoice()
     if(voice_player->playbackState() != QMediaPlayer::StoppedState)
         voice_player->stop();
     srand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-    int rand_index = rand() % 2 + 1;
+    int rand_index = rand() % 3;
     voice_player->setSource(random_info[rand_index].url);
     this->setText(random_info[rand_index].text);
-    voice_player->play();
 }
 
-void VoiceLabel::checkChime()
+void VoiceLabel::onChimeTimerTimeout()
 {
     QTime curr_time = QTime::currentTime();
     if(curr_time.minute() == 0 && curr_time.second() == 0
@@ -139,11 +139,17 @@ void VoiceLabel::checkChime()
     {
         voice_player->setSource(chime_info[curr_time.hour()].url);
         this->setText(chime_info[curr_time.hour()].text);
-        voice_player->play();
     }
 }
 
-void VoiceLabel::changeLabelVisibilty(QMediaPlayer::PlaybackState state)
+void VoiceLabel::onPlayerMediaStatusChanged(const QMediaPlayer::MediaStatus status)
+{
+    qDebug() << "onPlayerMediaStatusChanged " << status;
+    if(status == QMediaPlayer::LoadedMedia)
+        emit playMedia();
+}
+
+void VoiceLabel::onPlayerPlaybackStateChanged(QMediaPlayer::PlaybackState state)
 {
     if(state == QMediaPlayer::PlayingState)
     {

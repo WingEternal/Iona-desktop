@@ -31,13 +31,15 @@ namespace CoreDisplay {
         const int label_animate_duration = 100;
 
     signals:
+        void playMedia();
 
     public slots:
         void playRandomVoice();
 
     private slots:
-        void checkChime();
-        void changeLabelVisibilty(QMediaPlayer::PlaybackState);
+        void onChimeTimerTimeout();
+        void onPlayerMediaStatusChanged(const QMediaPlayer::MediaStatus);
+        void onPlayerPlaybackStateChanged(const QMediaPlayer::PlaybackState);
         void onAnimationFinished();
     };
 }
