@@ -1,0 +1,42 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "tbs.moc3",
+		"Textures": [
+			"tbs.4096/texture_00.png"
+		],
+		"Physics": "tbs.physics3.json",
+		"DisplayInfo": "tbs.cdi3.json",
+		"Motions": {
+			"": [
+				{
+					"File": "motions/asleep.motion3.json"
+				},
+				{
+					"File": "motions/curiosity.motion3.json"
+				},
+				{
+					"File": "motions/doubts.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeLOpen",
+				"ParamEyeROpen"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": [
+				"ParamMouthOpenY"
+			]
+		}
+	],
+	"HitAreas": []
+}

@@ -1,4 +1,7 @@
 # Changelog
+## 20230221
+  * 新的Live2D模型
+  * Live2D视线跟踪使用`Sigmoid`做屏幕坐标的二次映射，将任意坐标映射到`virtsrc_geometry`的范围内
 ## 20230208
   * 为了和后续的一些组件兼容，构建从`qmake`换为`cmake`，并将`Qt`版本由`5.12`升级到`6.4.2`，`Visual Studio`从`VS2017 x86`更改为`VS2019 x86_64`,对应的`Cubism`库更换为`v142/x86_64`
 ## 20230122

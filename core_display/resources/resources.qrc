@@ -70,5 +70,13 @@
         <file>Iona_ver_0_5.physics3.json</file>
         <file>Iona_ver_0_5.model3.json</file>
         <file>texture_00.png</file>
+        <file>tbs.cdi3.json</file>
+        <file>tbs.moc3</file>
+        <file>tbs.model3.json</file>
+        <file>tbs.physics3.json</file>
+        <file>tbs.4096/texture_00.png</file>
+        <file>motions/asleep.motion3.json</file>
+        <file>motions/curiosity.motion3.json</file>
+        <file>motions/doubts.motion3.json</file>
     </qresource>
 </RCC>

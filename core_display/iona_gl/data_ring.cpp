@@ -64,7 +64,7 @@ namespace {
         void main(void) \
         { \
             vec4 texture_0_color = texture2D(Texture_0, Tex2f_Active.st); \
-            if(texture_0_color.a != 0) { gl_FragColor = texture_0_color; } \
+            if(texture_0_color.a != 0.0) { gl_FragColor = texture_0_color; } \
             else { gl_FragColor = texture2D(Texture_1, Tex2f_Empty.st); } \
         }";
 

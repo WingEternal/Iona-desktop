@@ -58,7 +58,7 @@ const QHash<QString, QVariant> AppConfigWorker::default_value = {
     {"/animate/update_rate", 30.0},
     {"/animate/ring_spin_rpm", 1.5},
     {"/animate/ring_tb_roll_spd", 25},
-    {"/animate/ring_m_animation_switch_by_frame", 2},
+    {"/animate/ring_m_animation_switch_by_frame", 3},
     {"/move_ctrl/pos", QPoint(450, 350)},
     {"/quick_cmds/pos", QPoint(450, 300)}
 };

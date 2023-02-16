@@ -13,13 +13,12 @@ GLWidget::GLWidget(QWidget *parent)
     AppConfig::getInstance().getParam("/window/size", widget_geo);
     this->setGeometry(0, 0, widget_geo.width(), widget_geo.height());
     update_timer = new QTimer(this);
+    update_timer->setTimerType(Qt::PreciseTimer);
 
     double update_rate;
     AppConfig::getInstance().getParam("/animate/update_rate", update_rate);
     update_timer->start(qRound(1000.0 / update_rate));
     connect(update_timer, SIGNAL(timeout()), this, SLOT(glAnimateUpdate()));
-
-    flag_lm_pressed = false;
 
     AppMsgHandler::getInstance().bindSlot("/animate/lookat", this, SLOT(glPrivateMouseEventDispatch(const QEvent::Type, const Qt::MouseButton, const QPoint)));
 }
@@ -35,7 +34,7 @@ void GLWidget::initializeGL()
     GLHandle::get()->initializeOpenGLFunctions();
 
     asset_iona = new GLObj_L2d(this, tf_camera,  widget_geo);
-    asset_iona->setModelPath(":/charater/live2d/", "Iona_ver_0_5.model3.json");
+    asset_iona->setModelPath(":/charater/live2d/", "tbs.model3.json");
     asset_iona->init();
 
     asset_data_ring = new GLObj_DataRing(this, tf_camera);
@@ -94,19 +93,14 @@ void GLWidget::glPrivateMouseEventDispatch(const QEvent::Type type, const Qt::Mo
     switch(type)
     {
     case QEvent::MouseButtonPress:
-        flag_lm_pressed = true;
         asset_iona->mousePressEvent(ev);
         asset_data_ring->mousePressEvent(ev);
         break;
     case QEvent::MouseMove:
-        if(flag_lm_pressed)
-        {
-            asset_iona->mouseMoveEvent(ev);
-            asset_data_ring->mouseMoveEvent(ev);
-        }
+        asset_iona->mouseMoveEvent(ev);
+        asset_data_ring->mouseMoveEvent(ev);
         break;
     case QEvent::MouseButtonRelease:
-        flag_lm_pressed = false;
         asset_iona->mouseReleaseEvent(ev);
         asset_iona->mouseReleaseEvent(ev);
         break;

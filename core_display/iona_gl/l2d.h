@@ -19,40 +19,34 @@ namespace CoreDisplay {
     public:
         explicit GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const QRect& canvas_size);
         ~GLObj_L2d();
+
+        virtual void init() final;
+        virtual void paint() final;
+        void setModelPath(const Csm::csmChar* path, const Csm::csmChar* fileName);
+        virtual void mousePressEvent(QMouseEvent *e) override;
+        virtual void mouseMoveEvent(QMouseEvent *e) override;
+        virtual void mouseReleaseEvent(QMouseEvent *e) override;
+
     private:
         L2dModel* _model;
 
-        /* Initialization */
-    public:
-        virtual void init() final;
-    private:
         static void initializeCubism();
         static L2dAllocator _cubismAllocator;
         static Csm::CubismFramework::Option _cubismOption;
-
-    public:
-        void setModelPath(const Csm::csmChar* path, const Csm::csmChar* fileName);
-    private:
-        bool _flag_pathReady;
+        bool _flag_path_ready;
         Csm::csmString _modelHomeDir;
         Csm::csmString _modelFileName;
 
-    private:
         void initializeShaders();
         QOpenGLShaderProgram *sprogram_general;
         // use to set uniform value for shader
         int attr_sp_general_Transform;
         int attr_sp_general_Texture_0;
 
-    private:
         void initializeRenderPlane();
         QOpenGLVertexArrayObject *vao_plane;
         GLfloat vertices[20];
 
-        /* Paint */
-    public:
-        virtual void paint() final;
-    private:
         QVector3D base_position;
         const QMatrix4x4& tf_camera;
         int _canvas_width;
@@ -61,12 +55,7 @@ namespace CoreDisplay {
         void ModelDraw();
         void PostModelDraw();
 
-        /* Touches */
-    public:
-        virtual void mousePressEvent(QMouseEvent *e) override;
-        virtual void mouseMoveEvent(QMouseEvent *e) override;
-        virtual void mouseReleaseEvent(QMouseEvent *e) override;
-    private:
+        QPointF scrPosSigmoid(const double virt_x, const double virt_y) const;
         float TransformViewX(float deviceX) const;
         float TransformViewY(float deviceY) const;
         float TransformScreenX(float deviceX) const;
@@ -75,10 +64,10 @@ namespace CoreDisplay {
         L2dTouchManager* _touchManager;                 ///< タッチマネージャー
         Csm::CubismMatrix44* _deviceToScreen;    ///< デバイスからスクリーンへの行列
         Csm::CubismViewMatrix* _viewMatrix;      ///< viewMatrix
-        QRect virtual_screen_geometry;
+        // virtual screen geometry
+        QRect virtscr_geometry;
+        bool flag_mouse_pressed;
 
-        /* Render */
-    private:
         Csm::Rendering::CubismOffscreenFrame_OpenGLES2 _renderBuffer;   ///< モードによってはCubismモデル結果をこっちにレンダリング
         float _clearColor[4];           ///< レンダリングターゲットのクリアカラー
     };

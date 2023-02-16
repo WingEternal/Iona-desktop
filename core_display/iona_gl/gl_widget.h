@@ -34,9 +34,6 @@ namespace CoreDisplay {
         CoreDisplay::GLObj_L2d* asset_iona;
         CoreDisplay::GLObj_DataRing* asset_data_ring;
 
-        // Hook
-        bool flag_lm_pressed; // is left button pressed?
-
     protected:
         void initializeGL() override;
         void resizeGL(int w, int h) override;

@@ -6,6 +6,7 @@
 #include <QScreen>
 #include <QMouseEvent>
 #include <QMoveEvent>
+#include <cmath>
 
 using namespace IonaDesktop::CoreDisplay;
 using namespace IonaDesktop::CoreDisplay;
@@ -15,16 +16,17 @@ Csm::CubismFramework::Option GLObj_L2d::_cubismOption;
 
 GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const QRect& canvas_size)
     : CoreDisplay::GLObjectBase(parent),
-      _flag_pathReady(false),
+      _flag_path_ready(false),
       attr_sp_general_Transform(-1),
       attr_sp_general_Texture_0(-1),
-      base_position(0, 0, -75.0),
+      base_position(0, -5.0, -75.0),
       tf_camera(tf_camera_),
       _canvas_width(canvas_size.width()),
       _canvas_height(canvas_size.height()),
       _touchManager(new L2dTouchManager()),
       _deviceToScreen(new Csm::CubismMatrix44()),
-      _viewMatrix(new Csm::CubismViewMatrix())
+      _viewMatrix(new Csm::CubismViewMatrix()),
+      flag_mouse_pressed(false)
 {
     _clearColor[0] = 0.0f;
     _clearColor[1] = 0.0f;
@@ -35,14 +37,14 @@ GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const
     int virtual_height = 2000;
     QList<QScreen*> L_screen = QApplication::screens();
     if(L_screen.size() > 1) {
-        virtual_width = 2500;
-        virtual_height = 2000;
+        virtual_width = 1280;
+        virtual_height = 720;
     }
     else if(L_screen.size() != 0) {
         virtual_width = L_screen[0]->geometry().width();
         virtual_height = L_screen[0]->geometry().height();
     }
-    virtual_screen_geometry = QRect(0, 0, virtual_width, virtual_height);
+    virtscr_geometry = QRect(0, 0, virtual_width, virtual_height);
     double ratio = static_cast<double>(virtual_width) / static_cast<double>(virtual_height);
     float left = L2dConfig::ViewLogicalLeft;
     float right = L2dConfig::ViewLogicalRight;
@@ -105,7 +107,7 @@ GLObj_L2d::~GLObj_L2d()
 void GLObj_L2d::init()
 {
     initializeCubism();
-    if(!_flag_pathReady)
+    if(!_flag_path_ready)
         return;
     _model = new L2dModel();
     _model->LoadAssets(_modelHomeDir.GetRawString(), _modelFileName.GetRawString());
@@ -133,7 +135,7 @@ void GLObj_L2d::setModelPath(const Csm::csmChar* path, const Csm::csmChar* fileN
 {
     _modelHomeDir = path;
     _modelFileName = fileName;
-    _flag_pathReady = true;
+    _flag_path_ready = true;
 }
 
 void GLObj_L2d::initializeShaders()
@@ -189,7 +191,7 @@ void GLObj_L2d::initializeRenderPlane()
 
 void GLObj_L2d::paint()
 {
-    if(!_flag_pathReady)
+    if(!_flag_path_ready)
         return;
     L2dPal::UpdateTime();
     PreModelDraw();
@@ -246,20 +248,24 @@ void GLObj_L2d::mousePressEvent(QMouseEvent *e)
 {
     auto gl = (QWidget*)(this->parent());
     auto gl_global_center = gl->mapToGlobal(gl->geometry().center());
-    _touchManager->TouchesBegan
-        (e->globalPosition().x() - gl_global_center.x() + virtual_screen_geometry.center().x(),
-        e->globalPosition().y() - gl_global_center.y() + virtual_screen_geometry.center().y());
+    QPointF virt_pos = scrPosSigmoid
+        (e->globalPosition().x() - gl_global_center.x() + virtscr_geometry.center().x(),
+        e->globalPosition().y() - gl_global_center.y() + virtscr_geometry.center().y());
+    _touchManager->TouchesBegan(virt_pos.x(), virt_pos.y());
+    flag_mouse_pressed = true;
 }
 
 void GLObj_L2d::mouseMoveEvent(QMouseEvent *e)
 {
+    if(!flag_mouse_pressed) return;
     float viewX = this->TransformViewX(_touchManager->GetX());
     float viewY = this->TransformViewY(_touchManager->GetY());
     auto gl = (QWidget*)(this->parent());
     auto gl_global_center = gl->mapToGlobal(gl->geometry().center());
-    _touchManager->TouchesMoved
-        (e->globalPosition().x() - gl_global_center.x() + virtual_screen_geometry.center().x(),
-        e->globalPosition().y() - gl_global_center.y() + virtual_screen_geometry.center().y());
+    QPointF virt_pos = scrPosSigmoid
+        (e->globalPosition().x() - gl_global_center.x() + virtscr_geometry.center().x(),
+        e->globalPosition().y() - gl_global_center.y() + virtscr_geometry.center().y());
+    _touchManager->TouchesMoved(virt_pos.x(), virt_pos.y());
     _model->SetDragging(viewX, viewY);
 }
 
@@ -288,6 +294,18 @@ void GLObj_L2d::mouseReleaseEvent(QMouseEvent *e)
             L2dPal::PrintLog("[APP]hit area: [%s]", L2dConfig::HitAreaNameBody);
         _model->StartRandomMotion(L2dConfig::MotionGroupTapBody, L2dConfig::PriorityNormal);
     }
+    flag_mouse_pressed = false;
+}
+
+QPointF GLObj_L2d::scrPosSigmoid(const double virt_x, const double virt_y) const
+{
+    static const double x_coeff = log(19) / virtscr_geometry.width();
+    static const double y_coeff = log(19) / virtscr_geometry.height();
+    return QPointF(
+        virtscr_geometry.width() /
+            (1.0 + exp(-x_coeff * (virt_x - virtscr_geometry.center().x()))),
+        virtscr_geometry.height() /
+            (1.0 + exp(-y_coeff * (virt_y - virtscr_geometry.center().y()))));
 }
 
 float GLObj_L2d::TransformViewX(float deviceX) const
