@@ -1,10 +1,7 @@
 ﻿#ifndef IONA_DESKTOP_CORE_DISPLAY_DATA_RING_H
 #define IONA_DESKTOP_CORE_DISPLAY_DATA_RING_H
 
-#include "gl_handle.h"
 #include "gl_object_base.h"
-#include "l2d_utils.h"
-#include <QTimer>
 
 using namespace IonaDesktop;
 
@@ -91,6 +88,12 @@ namespace CoreDisplay {
         float ring_tb_roll_spd;
         float ring_tb_roll_dist[2];
         float random_stop_elapsed[2];
+
+        // Scale
+        float ring_scale;
+
+    public slots:
+        void setRingScale(const float scale);
     };
 }
 }

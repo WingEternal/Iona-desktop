@@ -11,6 +11,8 @@
 #include "CubismFramework.hpp"
 #include "Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp"
 
+#include <QPoint>
+
 namespace IonaDesktop {
 namespace CoreDisplay {
     class GLObj_L2d : public CoreDisplay::GLObjectBase
@@ -23,9 +25,11 @@ namespace CoreDisplay {
         virtual void init() final;
         virtual void paint() final;
         void setModelPath(const Csm::csmChar* path, const Csm::csmChar* fileName);
-        virtual void mousePressEvent(QMouseEvent *e) override;
-        virtual void mouseMoveEvent(QMouseEvent *e) override;
-        virtual void mouseReleaseEvent(QMouseEvent *e) override;
+
+    public slots:
+        void onL2dLButtonDown(const QPointF& pt);
+        void onL2dMouseMove(const QPointF& pt);
+        void onL2dLButtonUp(const QPointF& pt);
 
     private:
         L2dModel* _model;

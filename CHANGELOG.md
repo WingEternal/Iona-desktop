@@ -1,4 +1,6 @@
 # Changelog
+## 20230226
+  * `CubismNativeFramework`升级到4-r.6
 ## 20230221
   * 新的Live2D模型
   * Live2D视线跟踪使用`Sigmoid`做屏幕坐标的二次映射，将任意坐标映射到`virtsrc_geometry`的范围内

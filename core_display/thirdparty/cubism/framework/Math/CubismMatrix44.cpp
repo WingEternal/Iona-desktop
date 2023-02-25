@@ -116,7 +116,7 @@ csmFloat32 CubismMatrix44::InvertTransformY(csmFloat32 src)
     return (src - _tr[13]) / _tr[5];
 }
 
-void CubismMatrix44::SetMatrix(const csmFloat32* tr)
+void CubismMatrix44::SetMatrix(csmFloat32* tr)
 {
     for (csmInt32 i = 0; i < 16; ++i)
     {

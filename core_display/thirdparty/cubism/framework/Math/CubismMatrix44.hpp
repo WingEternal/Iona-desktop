@@ -67,7 +67,7 @@ public:
      *
      * @param[in]   tr  16個の浮動小数点数で表される4x4の行列
      */
-    void            SetMatrix(const csmFloat32* tr);
+    void            SetMatrix(csmFloat32* tr);
 
     /**
      * @brief X軸の拡大率を取得

@@ -1,5 +1,5 @@
-﻿#ifndef IONA_DESKTOP_CORE_DISPLAY_L2D_ALLOCATOR_H
-#define IONA_DESKTOP_CORE_DISPLAY_L2D_ALLOCATOR_H
+﻿#ifndef IONA_DESKTOP_CORE_DISPLAY_L2D_UTILS_H
+#define IONA_DESKTOP_CORE_DISPLAY_L2D_UTILS_H
 
 #include "CubismFramework.hpp"
 #include "ICubismAllocator.hpp"
@@ -39,4 +39,4 @@ namespace CoreDisplay {
 }
 }
 
-#endif
+#endif // IONA_DESKTOP_CORE_DISPLAY_L2D_UTILS_H

@@ -28,9 +28,7 @@ namespace CoreDisplay {
     private:
 
     protected:
-        virtual void mousePressEvent(QMouseEvent *ev){ Q_UNUSED(ev); }
-        virtual void mouseMoveEvent(QMouseEvent *ev){ Q_UNUSED(ev); }
-        virtual void mouseReleaseEvent(QMouseEvent *ev){ Q_UNUSED(ev); }
+    
     };
 }
 }

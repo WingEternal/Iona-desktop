@@ -31,20 +31,13 @@ namespace CoreDisplay {
         // Camera
         QMatrix4x4  tf_camera;
         // Assets
-        CoreDisplay::GLObj_L2d* asset_iona;
-        CoreDisplay::GLObj_DataRing* asset_data_ring;
+        GLObj_L2d* asset_iona;
+        GLObj_DataRing* asset_data_ring;
 
     protected:
         void initializeGL() override;
         void resizeGL(int w, int h) override;
         void paintGL() override;
-
-        // void mousePressEvent(QMouseEvent *ev) override;
-        // void mouseMoveEvent(QMouseEvent *ev) override;
-        // void mouseReleaseEvent(QMouseEvent *ev) override;
-
-    public slots:
-        void glPrivateMouseEventDispatch(const QEvent::Type type, const Qt::MouseButton b, const QPoint pt);
 
     private slots:
         void glAnimateUpdate();

@@ -1,4 +1,5 @@
-﻿#include "iona_gl/l2d_model.h"
+﻿#include "app/app_msg_handler.h"
+#include "iona_gl/l2d_model.h"
 #include <fstream>
 #include <vector>
 #include <CubismModelSettingJson.hpp>
@@ -17,7 +18,8 @@ using namespace Live2D::Cubism::Framework;
 using namespace Live2D::Cubism::Framework::DefaultParameterId;
 
 L2dModel::L2dModel()
-    : CubismUserModel(),
+    : QObject(nullptr),
+      CubismUserModel(),
       _modelSetting(nullptr),
       _userTimeSeconds(0.0f)
 {
@@ -32,6 +34,8 @@ L2dModel::L2dModel()
     _idParamEyeBallY = CubismFramework::GetIdManager()->GetId(ParamEyeBallY);
 
     _texManager = new L2dTexManager();
+
+    AppMsgHandler::getInstance().regSignal("/voice/rms", this, SIGNAL(requestWavRms(const float, float&)));
 }
 
 L2dModel::~L2dModel()
@@ -60,6 +64,11 @@ L2dModel::LoadAssets(const Csm::csmChar* dir, const  Csm::csmChar* fileName)
     L2dPal::ReleaseBytes(buffer);
 
     SetupModel(setting);
+    if (_model == NULL)
+    {
+        L2dPal::PrintLog("Failed to LoadAssets().");
+        return;
+    }
     CreateRenderer();
     SetupTextures();
 
@@ -178,6 +187,12 @@ L2dModel::SetupModel(ICubismModelSetting* setting)
         csmInt32 lipSyncIdCount = _modelSetting->GetLipSyncParameterCount();
         for (csmInt32 i = 0; i < lipSyncIdCount; ++i)
             _lipSyncIds.PushBack(_modelSetting->GetLipSyncParameterId(i));
+    }
+
+    if (_modelSetting == NULL || _modelMatrix == NULL)
+    {
+        L2dPal::PrintLog("Failed to SetupModel().");
+        return;
     }
 
     //Layout
@@ -317,9 +332,13 @@ void L2dModel::Update()
     // リップシンクの設定
     if (_lipSync)
     {
-        csmFloat32 value = 0; // リアルタイムでリップシンクを行う場合、システムから音量を取得して0〜1の範囲で値を入力します。
+        // リアルタイムでリップシンクを行う場合、システムから音量を取得して0〜1の範囲で値を入力します。
+        csmFloat32 value = 0.0f;
+
+        // 状態更新/RMS値取得
+        emit requestWavRms(deltaTimeSeconds, value);
         for (csmUint32 i = 0; i < _lipSyncIds.GetSize(); ++i)
-            _model->AddParameterValue(_lipSyncIds[i], value, 0.8f);
+            _model->AddParameterValue(_lipSyncIds[i], value, 3.0f);
     }
 
     // ポーズの設定
@@ -381,14 +400,6 @@ L2dModel::StartMotion
     }
     else
         motion->SetFinishedMotionHandler(onFinishedMotionHandler);
-
-    //voice
-    csmString voice = _modelSetting->GetMotionSoundFileName(group, no);
-    if (strcmp(voice.GetRawString(), "") != 0)
-    {
-        csmString path = voice;
-        path = _modelHomeDir + path;
-    }
 
     if (_debugMode)
         L2dPal::PrintLog("[APP]start motion: [%s_%d]", group, no);

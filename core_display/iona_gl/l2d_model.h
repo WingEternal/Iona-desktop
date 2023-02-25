@@ -1,18 +1,20 @@
 ﻿#ifndef IONA_DESKTOP_CORE_DISPLAY_L2D_MODEL_H
 #define IONA_DESKTOP_CORE_DISPLAY_L2D_MODEL_H
 
+#include <QObject>
 #include <CubismFramework.hpp>
 #include <Model/CubismUserModel.hpp>
 #include <ICubismModelSetting.hpp>
 #include <Type/csmRectF.hpp>
 #include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
 
-#include "l2d_tex_manager.h"
+#include "iona_gl/l2d_tex_manager.h"
 
 namespace IonaDesktop {
 namespace CoreDisplay {
-    class L2dModel : public Csm::CubismUserModel
+    class L2dModel : public QObject, public Csm::CubismUserModel
     {
+        Q_OBJECT
     public:
         explicit L2dModel();
         ~L2dModel();
@@ -42,7 +44,6 @@ namespace CoreDisplay {
         Csm::CubismMotionQueueEntryHandle StartRandomMotion
             (const Csm::csmChar* group, Csm::csmInt32 priority,
              Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = nullptr);
-
         void SetExpression(const Csm::csmChar* expressionID);
         void SetRandomExpression();
 
@@ -72,6 +73,8 @@ namespace CoreDisplay {
         const Csm::CubismId* _idParamBodyAngleX;
         const Csm::CubismId* _idParamEyeBallX;
         const Csm::CubismId* _idParamEyeBallY;
+    signals:
+        void requestWavRms(const float delatSec, float& rms);
 
         /* Utils */
     private:

@@ -53,7 +53,10 @@ CubismUserModel::~CubismUserModel()
 {
     CSM_DELETE(_motionManager);
     CSM_DELETE(_expressionManager);
-    _moc->DeleteModel(_model);
+    if (_moc)
+    {
+        _moc->DeleteModel(_model);
+    }
     CubismMoc::Delete(_moc);
     CSM_DELETE(_modelMatrix);
     CubismPose::Delete(_pose);
@@ -76,15 +79,22 @@ void CubismUserModel::SetAcceleration(csmFloat32 x, csmFloat32 y, csmFloat32 z)
 void CubismUserModel::LoadModel(const csmByte* buffer, csmSizeInt size)
 {
     _moc = CubismMoc::Create(buffer, size);
-    _model = _moc->CreateModel();
-    _model->SaveParameters();
 
-    if ((_moc == NULL) || (_model == NULL))
+    if (_moc == NULL)
+    {
+        CubismLogError("Failed to CubismMoc::Create().");
+        return;
+    }
+
+    _model = _moc->CreateModel();
+
+    if (_model == NULL)
     {
         CubismLogError("Failed to CreateModel().");
         return;
     }
 
+    _model->SaveParameters();
     _modelMatrix = CSM_NEW CubismModelMatrix(_model->GetCanvasWidth(), _model->GetCanvasHeight());
 
 }
@@ -207,7 +217,7 @@ CubismModel* CubismUserModel::GetModel() const
     return _model;
 }
 
-void CubismUserModel::CreateRenderer()
+void CubismUserModel::CreateRenderer(csmInt32 maskBufferCount)
 {
     if (_renderer)
     {
@@ -215,7 +225,7 @@ void CubismUserModel::CreateRenderer()
     }
     _renderer = Rendering::CubismRenderer::Create();
 
-    _renderer->Initialize(_model);
+    _renderer->Initialize(_model, maskBufferCount);
 }
 
 void CubismUserModel::DeleteRenderer()

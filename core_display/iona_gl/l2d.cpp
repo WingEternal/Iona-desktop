@@ -1,4 +1,5 @@
-﻿#include "iona_gl/l2d.h"
+﻿#include "app/app_msg_handler.h"
+#include "iona_gl/l2d.h"
 #include "iona_gl/l2d_config.h"
 #include "iona_gl/l2d_utils.h"
 
@@ -45,17 +46,28 @@ GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const
         virtual_height = L_screen[0]->geometry().height();
     }
     virtscr_geometry = QRect(0, 0, virtual_width, virtual_height);
-    double ratio = static_cast<double>(virtual_width) / static_cast<double>(virtual_height);
-    float left = L2dConfig::ViewLogicalLeft;
-    float right = L2dConfig::ViewLogicalRight;
-    float bottom = - static_cast<float>(ratio);
-    float top = static_cast<float>(ratio);
+
+    // 縦サイズを基準とする
+    float ratio = static_cast<float>(virtual_width) / static_cast<float>(virtual_height);
+    float left = -ratio;
+    float right = ratio;
+    float bottom = L2dConfig::ViewLogicalLeft;
+    float top = L2dConfig::ViewLogicalRight;
 
     _viewMatrix->SetScreenRect(left, right, bottom, top); // デバイスに対応する画面の範囲。 Xの左端, Xの右端, Yの下端, Yの上端
+    _viewMatrix->Scale(L2dConfig::ViewScale, L2dConfig::ViewScale);
 
-    float screenW = fabsf(left - right);
     _deviceToScreen->LoadIdentity(); // サイズが変わった際などリセット必須
-    _deviceToScreen->ScaleRelative(screenW / virtual_width, - screenW / virtual_height);
+    if (virtual_width > virtual_height)
+    {
+        float screenW = fabsf(right - left);
+        _deviceToScreen->ScaleRelative(screenW / virtual_width, -screenW / virtual_width);
+    }
+    else
+    {
+        float screenH = fabsf(top - bottom);
+        _deviceToScreen->ScaleRelative(screenH / virtual_height, -screenH / virtual_height);
+    }
     _deviceToScreen->TranslateRelative(- virtual_width * 0.5f, - virtual_height * 0.5f);
 
     // 表示範囲の設定
@@ -92,6 +104,10 @@ GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const
     vertices[16] = + static_cast<GLfloat>(plane_height / 2);
     vertices[18] = 1.0f;
     vertices[19] = 1.0f;
+
+    AppMsgHandler::getInstance().bindSlot("/animate/l2d_lbutton_down", this, SLOT(onL2dLButtonDown(const QPointF&)));
+    AppMsgHandler::getInstance().bindSlot("/animate/l2d_mouse_move", this, SLOT(onL2dMouseMove(const QPointF&)));
+    AppMsgHandler::getInstance().bindSlot("/animate/l2d_lbutton_up", this, SLOT(onL2dLButtonUp(const QPointF&)));
 }
 
 GLObj_L2d::~GLObj_L2d()
@@ -244,18 +260,18 @@ void GLObj_L2d::PostModelDraw()
     glDisable(GL_ALPHA_TEST);
 }
 
-void GLObj_L2d::mousePressEvent(QMouseEvent *e)
+void GLObj_L2d::onL2dLButtonDown(const QPointF& pt)
 {
     auto gl = (QWidget*)(this->parent());
     auto gl_global_center = gl->mapToGlobal(gl->geometry().center());
     QPointF virt_pos = scrPosSigmoid
-        (e->globalPosition().x() - gl_global_center.x() + virtscr_geometry.center().x(),
-        e->globalPosition().y() - gl_global_center.y() + virtscr_geometry.center().y());
+        (pt.x() - gl_global_center.x() + virtscr_geometry.center().x(),
+        pt.y() - gl_global_center.y() + virtscr_geometry.center().y());
     _touchManager->TouchesBegan(virt_pos.x(), virt_pos.y());
     flag_mouse_pressed = true;
 }
 
-void GLObj_L2d::mouseMoveEvent(QMouseEvent *e)
+void GLObj_L2d::onL2dMouseMove(const QPointF& pt)
 {
     if(!flag_mouse_pressed) return;
     float viewX = this->TransformViewX(_touchManager->GetX());
@@ -263,15 +279,15 @@ void GLObj_L2d::mouseMoveEvent(QMouseEvent *e)
     auto gl = (QWidget*)(this->parent());
     auto gl_global_center = gl->mapToGlobal(gl->geometry().center());
     QPointF virt_pos = scrPosSigmoid
-        (e->globalPosition().x() - gl_global_center.x() + virtscr_geometry.center().x(),
-        e->globalPosition().y() - gl_global_center.y() + virtscr_geometry.center().y());
+        (pt.x() - gl_global_center.x() + virtscr_geometry.center().x(),
+        pt.y() - gl_global_center.y() + virtscr_geometry.center().y());
     _touchManager->TouchesMoved(virt_pos.x(), virt_pos.y());
     _model->SetDragging(viewX, viewY);
 }
 
-void GLObj_L2d::mouseReleaseEvent(QMouseEvent *e)
+void GLObj_L2d::onL2dLButtonUp(const QPointF& pt)
 {
-    Q_UNUSED(e);
+    Q_UNUSED(pt);
     // タッチ終了
     _model->SetDragging(0.0f, 0.0f);
     // シングルタップ

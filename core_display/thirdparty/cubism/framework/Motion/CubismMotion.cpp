@@ -26,6 +26,14 @@ const csmChar* TargetNameModel = "Model";
 const csmChar* TargetNameParameter = "Parameter";
 const csmChar* TargetNamePartOpacity = "PartOpacity";
 
+// Id
+const csmChar* IdNameOpacity = "Opacity";
+
+/**
+* Cubism SDK R2 以前のモーションを再現させるなら true 、アニメータのモーションを正しく再現するなら false 。
+*/
+const csmBool UseOldBeziersCurveMotion = false;
+
 CubismMotionPoint LerpPoints(const CubismMotionPoint a, const CubismMotionPoint b, const csmFloat32 t)
 {
     CubismMotionPoint result;
@@ -56,6 +64,108 @@ csmFloat32 BezierEvaluate(const CubismMotionPoint* points, const csmFloat32 time
     {
         t = 0.0f;
     }
+
+    const CubismMotionPoint p01 = LerpPoints(points[0], points[1], t);
+    const CubismMotionPoint p12 = LerpPoints(points[1], points[2], t);
+    const CubismMotionPoint p23 = LerpPoints(points[2], points[3], t);
+
+    const CubismMotionPoint p012 = LerpPoints(p01, p12, t);
+    const CubismMotionPoint p123 = LerpPoints(p12, p23, t);
+
+    return LerpPoints(p012, p123, t).Value;
+}
+
+csmFloat32 BezierEvaluateBinarySearch(const CubismMotionPoint* points, const csmFloat32 time)
+{
+    const csmFloat32 x_error = 0.01f;
+
+    const csmFloat32 x = time;
+    csmFloat32 x1 = points[0].Time;
+    csmFloat32 x2 = points[3].Time;
+    csmFloat32 cx1 = points[1].Time;
+    csmFloat32 cx2 = points[2].Time;
+
+    csmFloat32 ta = 0.0f;
+    csmFloat32 tb = 1.0f;
+    csmFloat32 t = 0.0f;
+    int i = 0;
+
+    for (csmBool var33 = true; i < 20; ++i) {
+        if (x < x1 + x_error) {
+            t = ta;
+            break;
+        }
+
+        if (x2 - x_error < x) {
+            t = tb;
+            break;
+        }
+
+        csmFloat32 centerx = (cx1 + cx2) * 0.5f;
+        cx1 = (x1 + cx1) * 0.5f;
+        cx2 = (x2 + cx2) * 0.5f;
+        csmFloat32 ctrlx12 = (cx1 + centerx) * 0.5f;
+        csmFloat32 ctrlx21 = (cx2 + centerx) * 0.5f;
+        centerx = (ctrlx12 + ctrlx21) * 0.5f;
+        if (x < centerx) {
+            tb = (ta + tb) * 0.5f;
+            if (centerx - x_error < x) {
+                t = tb;
+                break;
+            }
+
+            x2 = centerx;
+            cx2 = ctrlx12;
+        }
+        else {
+            ta = (ta + tb) * 0.5f;
+            if (x < centerx + x_error) {
+                t = ta;
+                break;
+            }
+
+            x1 = centerx;
+            cx1 = ctrlx21;
+        }
+    }
+
+    if (i == 20) {
+        t = (ta + tb) * 0.5f;
+    }
+
+    if (t < 0.0f)
+    {
+        t = 0.0f;
+    }
+    if (t > 1.0f)
+    {
+        t = 1.0f;
+    }
+
+    const CubismMotionPoint p01 = LerpPoints(points[0], points[1], t);
+    const CubismMotionPoint p12 = LerpPoints(points[1], points[2], t);
+    const CubismMotionPoint p23 = LerpPoints(points[2], points[3], t);
+
+    const CubismMotionPoint p012 = LerpPoints(p01, p12, t);
+    const CubismMotionPoint p123 = LerpPoints(p12, p23, t);
+
+    return LerpPoints(p012, p123, t).Value;
+}
+
+csmFloat32 BezierEvaluateCardanoInterpretation(const CubismMotionPoint* points, const csmFloat32 time)
+{
+    const csmFloat32 x = time;
+    csmFloat32 x1 = points[0].Time;
+    csmFloat32 x2 = points[3].Time;
+    csmFloat32 cx1 = points[1].Time;
+    csmFloat32 cx2 = points[2].Time;
+
+    csmFloat32 a = x2 - 3.0f * cx2 + 3.0f * cx1 - x1;
+    csmFloat32 b = 3.0f * cx2 - 6.0f * cx1 + 3.0f * x1;
+    csmFloat32 c = 3.0f * cx1 - 3.0f * x1;
+    csmFloat32 d = x1 - x;
+
+    csmFloat32 t = CubismMath::CardanoAlgorithmForBezier(a, b, c, d);
 
     const CubismMotionPoint p01 = LerpPoints(points[0], points[1], t);
     const CubismMotionPoint p12 = LerpPoints(points[1], points[2], t);
@@ -409,6 +519,8 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
     _motionData->Fps = json->GetMotionFps();
     _motionData->EventCount = json->GetEventCount();
 
+    csmBool areBeziersRestructed = json->GetEvaluationOptionFlag( EvaluationOptionFlag_AreBeziersRistricted );
+
     if (json->IsExistMotionFadeInTime())
     {
         _fadeInSeconds = (json->GetMotionFadeInTime() < 0.0f)
@@ -453,6 +565,10 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
         else if (strcmp(json->GetMotionCurveTarget(curveCount), TargetNamePartOpacity) == 0)
         {
             _motionData->Curves[curveCount].Type = CubismMotionCurveTarget_PartOpacity;
+        }
+        else
+        {
+            CubismLogWarning("Warning : Unable to get segment type from Curve! The number of \"CurveCount\" may be incorrect!");
         }
 
         _motionData->Curves[curveCount].Id = json->GetMotionCurveId(curveCount);
@@ -504,7 +620,13 @@ void CubismMotion::Parse(const csmByte* motionJson, const csmSizeInt size)
             }
             case CubismMotionSegmentType_Bezier: {
                 _motionData->Segments[totalSegmentCount].SegmentType = CubismMotionSegmentType_Bezier;
-                _motionData->Segments[totalSegmentCount].Evaluate = BezierEvaluate;
+                if (areBeziersRestructed || UseOldBeziersCurveMotion) {
+                    _motionData->Segments[totalSegmentCount].Evaluate = BezierEvaluate;
+                }
+                else
+                {
+                    _motionData->Segments[totalSegmentCount].Evaluate = BezierEvaluateCardanoInterpretation;
+                }
 
                 _motionData->Points[totalPointCount].Time = json->GetMotionCurveSegment(curveCount, (segmentPosition + 1));
                 _motionData->Points[totalPointCount].Value = json->GetMotionCurveSegment(curveCount, (segmentPosition + 2));
@@ -668,6 +790,152 @@ const csmVector<const csmString*>& CubismMotion::GetFiredEvent(csmFloat32 before
     }
 
     return _firedEventValues;
+}
+
+csmBool CubismMotion::IsExistOpacity() const
+{
+    for (csmInt32 i = 0; i < _motionData->CurveCount; i++)
+    {
+        CubismMotionCurve curve = _motionData->Curves[i];
+
+        if (curve.Type != CubismMotionCurveTarget_Model)
+        {
+            continue;
+        }
+
+        if (strcmp(curve.Id->GetString().GetRawString(), IdNameOpacity) == 0)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+csmInt32 CubismMotion::GetOpacityIndex() const
+{
+    if (IsExistOpacity())
+    {
+        for (csmInt32 i = 0; i < _motionData->CurveCount; i++)
+        {
+            CubismMotionCurve curve = _motionData->Curves[i];
+
+            if (curve.Type != CubismMotionCurveTarget_Model)
+            {
+                continue;
+            }
+
+            if (strcmp(curve.Id->GetString().GetRawString(), IdNameOpacity) == 0)
+            {
+                return i;
+            }
+        }
+    }
+
+    return -1;
+}
+
+CubismIdHandle CubismMotion::GetOpacityId(csmInt32 index)
+{
+    if (index != -1)
+    {
+        CubismMotionCurve curve = _motionData->Curves[index];
+
+        if (curve.Type == CubismMotionCurveTarget_Model)
+        {
+            if (strcmp(curve.Id->GetString().GetRawString(), IdNameOpacity) == 0)
+            {
+                return CubismFramework::GetIdManager()->GetId(curve.Id->GetString().GetRawString());
+            }
+        }
+    }
+
+    return NULL;
+}
+
+csmFloat32 CubismMotion::GetOpacityValue(csmFloat32 motionTimeSeconds) const
+{
+    if (motionTimeSeconds >= 0.0f)
+    {
+        csmInt32 index = GetOpacityIndex();
+
+        if (index != -1)
+        {
+            csmInt32 baseSegmentIndex = _motionData->Curves[index].BaseSegmentIndex;
+            csmInt32 basePointIndex = _motionData->Segments[baseSegmentIndex].BasePointIndex;
+
+            csmFloat32 fps = 1.0f / _motionData->Fps;
+
+            csmFloat32 pointTime = -1.0f;
+            csmInt32 segmentPosition = 0;
+            CubismMotionSegmentType segmentType = static_cast<CubismMotionSegmentType>(_motionData->Segments[index + segmentPosition].SegmentType);
+
+            for (segmentPosition = 0; segmentPosition < _motionData->Curves[index].SegmentCount; segmentPosition++)
+            {
+                if (segmentPosition == 0)
+                {
+                    if (motionTimeSeconds == 0.0f)
+                    {
+                        return LinearEvaluate(&_motionData->Points[basePointIndex], motionTimeSeconds);
+                    }
+
+                    segmentPosition += 2;
+                }
+
+                segmentType = static_cast<CubismMotionSegmentType>(_motionData->Segments[index + segmentPosition].SegmentType);
+                basePointIndex = _motionData->Segments[index + segmentPosition].BasePointIndex;
+
+                pointTime = _motionData->Points[basePointIndex].Time;
+
+                switch (segmentType)
+                {
+                    case Live2D::Cubism::Framework::CubismMotionSegmentType_Linear:
+                        segmentPosition += 3;
+                        break;
+                    case Live2D::Cubism::Framework::CubismMotionSegmentType_Bezier:
+                        basePointIndex += 3;
+                        segmentPosition += 7;
+                        break;
+                    case Live2D::Cubism::Framework::CubismMotionSegmentType_Stepped:
+                        segmentPosition += 3;
+                        break;
+                    case Live2D::Cubism::Framework::CubismMotionSegmentType_InverseStepped:
+                        segmentPosition += 3;
+                        break;
+                    default:
+                        CSM_ASSERT(0);
+                        break;
+                }
+
+
+                if (pointTime + fps < motionTimeSeconds)
+                {
+                    continue;
+                }
+
+                switch (segmentType)
+                {
+                    case Live2D::Cubism::Framework::CubismMotionSegmentType_Linear:
+                        return LinearEvaluate(&_motionData->Points[basePointIndex], motionTimeSeconds);
+
+                    case Live2D::Cubism::Framework::CubismMotionSegmentType_Bezier:
+                        return BezierEvaluateCardanoInterpretation(&_motionData->Points[basePointIndex - 3], motionTimeSeconds);
+
+                    case Live2D::Cubism::Framework::CubismMotionSegmentType_Stepped:
+                        return SteppedEvaluate(&_motionData->Points[basePointIndex], motionTimeSeconds);
+
+                    case Live2D::Cubism::Framework::CubismMotionSegmentType_InverseStepped:
+                        return InverseSteppedEvaluate(&_motionData->Points[basePointIndex], motionTimeSeconds);
+
+                    default:
+                        CSM_ASSERT(0);
+                        break;
+                }
+            }
+        }
+    }
+
+    return 1.0f;
 }
 
 }}}

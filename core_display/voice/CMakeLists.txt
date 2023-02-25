@@ -1,5 +1,9 @@
-target_sources(${APP_NAME}
+﻿target_sources(${APP_NAME}
 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/voice_label.h
     ${CMAKE_CURRENT_SOURCE_DIR}/voice_label.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/wav_handler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/wav_handler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/media_info.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/media_info.cpp
 )

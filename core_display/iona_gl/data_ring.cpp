@@ -1,5 +1,8 @@
 ﻿#include "iona_gl/data_ring.h"
+#include "iona_gl/gl_handle.h"
+#include "iona_gl/l2d_utils.h"
 #include "app/app_config.h"
+#include "app/app_msg_handler.h"
 #include <QTime>
 
 using namespace IonaDesktop::CoreDisplay;
@@ -94,8 +97,10 @@ GLObj_DataRing::GLObj_DataRing(QOpenGLWidget* parent, const QMatrix4x4& tf_camer
       tf_camera(tf_camera_),
       ring_spin_angle(0),
       ring_tb_roll_dist{0.0f, 0.0f},
-      random_stop_elapsed{-1.0f, -1.0f}
+      random_stop_elapsed{-1.0f, -1.0f},
+      ring_scale(1.0f)
 {
+    AppMsgHandler::getInstance().bindSlot("/animate/ring_scale", this, SLOT(setRingScale(const float)));
     AppConfig::getInstance().getParam("/animate/ring_spin_rpm", ring_spin_rpm);
     AppConfig::getInstance().getParam("/animate/ring_m_animation_switch_by_frame", animate_switch_thrd);
     AppConfig::getInstance().getParam("/animate/ring_tb_roll_spd", ring_tb_roll_spd);
@@ -239,6 +244,7 @@ void GLObj_DataRing::drawRingTB()
     tf_ring_tb.setToIdentity();
     tf_ring_tb.translate(base_position.x() + 0.0f, base_position.y() + 20.0f, base_position.z());
     tf_ring_tb.rotate(10, 1, 0, 0);
+    tf_ring_tb.scale(ring_scale);
     sprogram_mix2->setUniformValue(attr_sp_mix2_Transform, tf_camera * tf_ring_tb);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_tb_res + 1));
 
@@ -248,6 +254,7 @@ void GLObj_DataRing::drawRingTB()
     tf_ring_tb.setToIdentity();
     tf_ring_tb.translate(base_position.x() + 0.0f, base_position.y() - 8.0f, base_position.z());
     tf_ring_tb.rotate(5, 1, 0, 0);
+    tf_ring_tb.scale(ring_scale);
     sprogram_mix2->setUniformValue(attr_sp_mix2_Transform, tf_camera * tf_ring_tb);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_tb_res + 1));
 
@@ -272,11 +279,13 @@ void GLObj_DataRing::drawRingTBF()
     tf_ring_tbf.setToIdentity();
     tf_ring_tbf.translate(base_position.x() + 0.0f, base_position.y() + 20.0f, base_position.z());
     tf_ring_tbf.rotate(10, 1, 0, 0);
+    tf_ring_tbf.scale(ring_scale);
     sprogram_general->setUniformValue(attr_sp_general_Transform, tf_camera * tf_ring_tbf);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_tbf_res + 1));
     tf_ring_tbf.setToIdentity();
     tf_ring_tbf.translate(base_position.x() + 0.0f, base_position.y() - 8.0f, base_position.z());
     tf_ring_tbf.rotate(5, 1, 0, 0);
+    tf_ring_tbf.scale(ring_scale);
     sprogram_general->setUniformValue(attr_sp_general_Transform, tf_camera * tf_ring_tbf);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_tbf_res + 1));
 
@@ -306,6 +315,7 @@ void GLObj_DataRing::drawRingM()
     tf_ring_m.setToIdentity();
     tf_ring_m.translate(base_position.x() + 0.0f,  base_position.y() + 5.0f, base_position.z());
     tf_ring_m.rotate(5, 1, 0, 0);
+    tf_ring_m.scale(ring_scale);
     sprogram_rm->setUniformValue(attr_sp_rm_Transform, tf_camera * tf_ring_m);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_m_res + 1));
     // Clean
@@ -328,4 +338,9 @@ void GLObj_DataRing::drawRingM()
                 ring_m_active_zone = 0;
         }
     }
+}
+
+void GLObj_DataRing::setRingScale(const float scale)
+{
+    ring_scale = scale;
 }

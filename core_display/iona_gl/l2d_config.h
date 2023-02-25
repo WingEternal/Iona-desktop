@@ -8,6 +8,8 @@ namespace CoreDisplay {
     class L2dConfig
     {
     public:
+        // 拡大縮小率
+        static constexpr Csm::csmFloat32 ViewScale = 1.0f;
         // 拡大縮小率の最大値
         static constexpr Csm::csmFloat32 ViewMaxScale = 2.0f;
         // 拡大縮小率の最小値
@@ -17,6 +19,10 @@ namespace CoreDisplay {
         static constexpr Csm::csmFloat32 ViewLogicalLeft = -1.0f;
         // 論理的なビュー座標系の右端の値
         static constexpr Csm::csmFloat32 ViewLogicalRight = 1.0f;
+        // 論理的なビュー座標系の下端の値
+        static constexpr Csm::csmFloat32 ViewLogicalBottom = -1.0f;
+        // 論理的なビュー座標系の上端の値
+        static constexpr Csm::csmFloat32 ViewLogicalTop = -1.0f;
 
         // 論理的なビュー座標系の左端の最大値
         static constexpr Csm::csmFloat32 ViewLogicalMaxLeft = -2.0f;

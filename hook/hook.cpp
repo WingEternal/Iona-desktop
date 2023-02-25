@@ -11,7 +11,7 @@ BOOL Hook::InstallMouseHook(HWND hWnd)
 {
     if(WM_IONAGL_LOOKAT == 0)
     {
-        qDebug() << GetLastError();
+        qDebug() << "[Hook] " << GetLastError();
         return FALSE;
     }
     m_hook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, GetModuleHandle(NULL), 0);

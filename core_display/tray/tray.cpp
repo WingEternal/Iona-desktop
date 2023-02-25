@@ -1,5 +1,5 @@
 ﻿#include "tray/tray.h"
-#include "app/app_msg_handle.h"
+#include "app/app_msg_handler.h"
 #include <QMenu>
 #include <QAction>
 #include <QCoreApplication>

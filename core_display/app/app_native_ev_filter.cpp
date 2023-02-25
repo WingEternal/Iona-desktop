@@ -1,5 +1,5 @@
 ﻿#include "app/app_native_ev_filter.h"
-#include "app/app_msg_handle.h"
+#include "app/app_msg_handler.h"
 #include <QByteArray>
 #include <QDebug>
 
@@ -13,7 +13,7 @@ const UINT AppNativeEvFilter::WM_IONAGL_LOOKAT = RegisterWindowMessage(L"WM_IONA
 AppNativeEvFilter::AppNativeEvFilter()
     : QAbstractNativeEventFilter()
 {
-    AppMsgHandler::getInstance().regSignal("/animate/lookat", this, SIGNAL(sendGlMouseEvent(const QEvent::Type, const Qt::MouseButton, const QPoint)));
+    AppMsgHandler::getInstance().regSignal("/mouse", this, SIGNAL(sendGlMouseEvent(const QEvent::Type, const Qt::MouseButton, const QPoint)));
 }
 
 bool AppNativeEvFilter::nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result)

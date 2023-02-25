@@ -1,6 +1,6 @@
 ﻿#include "move_ctrl/move_widget.h"
 #include "app/app_config.h"
-#include "app/app_msg_handle.h"
+#include "app/app_msg_handler.h"
 #include <QPaintEvent>
 #include <QPainter>
 #include <QMouseEvent>

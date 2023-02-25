@@ -8,17 +8,26 @@
 
 #pragma once
 
+#include "CubismJsonHolder.hpp"
 #include "Utils/CubismJson.hpp"
 #include "Id/CubismId.hpp"
 
 namespace Live2D { namespace Cubism { namespace Framework {
 
 /**
+* @brief ベジェカーブの解釈方法のフラグタイプ
+*/
+enum EvaluationOptionFlag
+{
+    EvaluationOptionFlag_AreBeziersRistricted = 0,  ///< ベジェハンドルの規制状態
+};
+
+/**
  * @brief motion3.jsonのコンテナ。
  *
  * motion3.jsonのコンテナ。
  */
-class CubismMotionJson
+class CubismMotionJson : public CubismJsonHolder
 {
 public:
     /**
@@ -56,6 +65,18 @@ public:
      * @retval  false   ループしない
      */
     csmBool IsMotionLoop() const;
+
+    /**
+     * @brief モーションのベジェカーブの解釈方式のフラグ取得
+     *
+     * モーション内のベジェカーブハンドルの解釈フラグの状態を取得する。
+     *
+     * @param[in]   flagType  EvaluationOptionFlagで指定されるフラグタイプ
+     *
+     * @retval  true    フラグあり
+     * @retval  false   フラグなし
+     */
+    csmBool GetEvaluationOptionFlag(csmInt32 flagType) const;
 
     /**
      * @brief モーションカーブの個数の取得
@@ -252,9 +273,6 @@ public:
     * @return  イベントの文字列
     */
     const csmChar* GetEventValue(csmInt32 userDataIndex) const;
-
-private:
-    Utils::CubismJson* _json;       ///< motion3.jsonデータ
 };
 
 }}}

@@ -1,6 +1,6 @@
 ﻿#include "iona_gl/gl_widget.h"
 #include "app/app_config.h"
-#include "app/app_msg_handle.h"
+#include "app/app_msg_handler.h"
 #include <QMouseEvent>
 
 using namespace IonaDesktop::CoreDisplay;
@@ -19,8 +19,6 @@ GLWidget::GLWidget(QWidget *parent)
     AppConfig::getInstance().getParam("/animate/update_rate", update_rate);
     update_timer->start(qRound(1000.0 / update_rate));
     connect(update_timer, SIGNAL(timeout()), this, SLOT(glAnimateUpdate()));
-
-    AppMsgHandler::getInstance().bindSlot("/animate/lookat", this, SLOT(glPrivateMouseEventDispatch(const QEvent::Type, const Qt::MouseButton, const QPoint)));
 }
 GLWidget::~GLWidget()
 {
@@ -64,49 +62,6 @@ void GLWidget::paintGL()
 
     asset_iona->paint();
     asset_data_ring->paint();
-}
-
-//void GLWidget::mousePressEvent(QMouseEvent *ev)
-//{
-//    asset_iona->mousePressEvent(ev);
-//    asset_data_ring->mousePressEvent(ev);
-//    ev->accept();
-//}
-
-//void GLWidget::mouseMoveEvent(QMouseEvent *ev)
-//{
-//    asset_iona->mouseMoveEvent(ev);
-//    asset_data_ring->mouseMoveEvent(ev);
-//    ev->accept();
-//}
-
-//void GLWidget::mouseReleaseEvent(QMouseEvent *ev)
-//{
-//    asset_iona->mouseReleaseEvent(ev);
-//    asset_data_ring->mouseReleaseEvent(ev);
-//    ev->accept();
-//}
-
-void GLWidget::glPrivateMouseEventDispatch(const QEvent::Type type, const Qt::MouseButton b, const QPoint pt)
-{
-    QMouseEvent* ev = new QMouseEvent(type, pt, pt, b, b, Qt::NoModifier);
-    switch(type)
-    {
-    case QEvent::MouseButtonPress:
-        asset_iona->mousePressEvent(ev);
-        asset_data_ring->mousePressEvent(ev);
-        break;
-    case QEvent::MouseMove:
-        asset_iona->mouseMoveEvent(ev);
-        asset_data_ring->mouseMoveEvent(ev);
-        break;
-    case QEvent::MouseButtonRelease:
-        asset_iona->mouseReleaseEvent(ev);
-        asset_iona->mouseReleaseEvent(ev);
-        break;
-    default: break;
-    }
-    delete ev;
 }
 
 void GLWidget::glAnimateUpdate()

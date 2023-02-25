@@ -1,5 +1,5 @@
 ﻿#include "app/app_config.h"
-#include "app/app_msg_handle.h"
+#include "app/app_msg_handler.h"
 #include <QFileInfo>
 #include <QTextCodec>
 #include <QThread>
@@ -19,7 +19,7 @@ AppConfigWorker& AppConfig::getInstance()
 
 AppConfig::AppConfig()
     : instance(new AppConfigWorker),
-    thrd(new QThread)
+      thrd(new QThread)
 {
     instance->moveToThread(thrd);
     connect(thrd, &QThread::finished, instance, &QObject::deleteLater);

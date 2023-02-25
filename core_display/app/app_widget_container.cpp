@@ -1,6 +1,6 @@
 ﻿#include "app/app_widget_container.h"
 #include "app/app_config.h"
-#include "app/app_msg_handle.h"
+#include "app/app_msg_handler.h"
 
 using namespace IonaDesktop::CoreDisplay;
 
@@ -73,9 +73,9 @@ bool AppWidgetContainer::installHook()
     BOOL hookMouseState = Hook::InstallMouseHook(m_hWnd);
 //    BOOL hookKeybordState = Hook::InstallKeybordHook();
     if (!hookMouseState)
-        qDebug() << "hook failed!";
+        qDebug() << "[Hook] Install failed";
     else
-        qDebug() << "hook success!";
+        qDebug() << "[Hook] install success";
     return hookMouseState;
 }
 
@@ -84,9 +84,9 @@ bool AppWidgetContainer::uninstallHook()
     BOOL hookMouseState = Hook::UnInstallMouseHook();
 //    BOOL hookKeybordState = Hook::UnInstallKeybordHook();
     if (!hookMouseState)
-        qDebug() << "unhook failed!";
+        qDebug() << "[Hook] Uninstall failed";
     else
-        qDebug() << "unhook success!";
+        qDebug() << "[Hook] Uninstall success";
     return hookMouseState;
 }
 #endif
