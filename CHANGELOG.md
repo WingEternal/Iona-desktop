@@ -1,6 +1,11 @@
 # Changelog
-## 20230226
+## 20230301
   * `CubismNativeFramework`升级到4-r.6
+  * 从`VoiceLabel`和`GLObj_L2d`中抽象出了状态机类`ASM`，以后行为逻辑往状态机里写
+  * 新增`WavHandler`用于播放音频和处理模型的`LipSync`，同样接入状态机`ASM`
+  * 新增`ThrdCtrl`用于自动将`ASM`和`WavHandler`移动到子线程中执行
+  * 重构`AppMsgHandler`，现在支持信号槽的动态新增连接
+  * 音频文件不再包含到`qrc`资源文件中（测试，可能有后续改动）
 ## 20230221
   * 新的Live2D模型
   * Live2D视线跟踪使用`Sigmoid`做屏幕坐标的二次映射，将任意坐标映射到`virtsrc_geometry`的范围内

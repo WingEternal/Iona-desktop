@@ -1,7 +1,4 @@
 .vscode
 .qtc_clangd
 build
-build-*
-*.pro.user
-*.pro.user.*
 CMakeLists.txt.user

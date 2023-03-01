@@ -11,6 +11,12 @@ find_package(OpenGL REQUIRED)
 qt_standard_project_setup()
 set(CMAKE_AUTORCC ON)
 
+set(OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+###############
+# Set up hook #
+###############
+add_subdirectory(hook)
+
 ###########################
 # Set up cubism framework #
 ###########################
@@ -75,7 +81,7 @@ PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/../hook
         ${STB_PATH})
 
-add_dependencies(${APP_NAME} Framework)
+add_dependencies(${APP_NAME} Framework hook)
 
 target_link_libraries(${APP_NAME} 
 PRIVATE
@@ -93,14 +99,19 @@ PRIVATE
 
 set_target_properties(${APP_NAME} 
 PROPERTIES
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}
 )
 
-install(TARGETS ${APP_NAME}
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+###############
+# Copy Assets #
+###############
+if(CMAKE_HOST_WIN32)
+    add_custom_command(TARGET ${APP_NAME}
+    POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:${APP_NAME}>/assets"
+        COMMENT "Copying IonaDesktop::CoreDisplay assets..."
+    )
+endif()
 
 qt_finalize_executable(${APP_NAME})

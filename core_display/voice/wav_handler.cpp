@@ -80,7 +80,6 @@ void WavHandler::play(const QUrl filePath)
 {
     // WAVファイルのロード
     _player->setSource(filePath);
-    qDebug() << filePath.toLocalFile();
     if(!LoadWavFile(filePath.toLocalFile()))
         return;
 }

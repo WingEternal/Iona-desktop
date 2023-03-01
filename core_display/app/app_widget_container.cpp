@@ -2,6 +2,10 @@
 #include "app/app_config.h"
 #include "app/app_msg_handler.h"
 
+#ifdef Q_OS_WIN
+#include "hook/hook.h"
+#endif
+
 using namespace IonaDesktop::CoreDisplay;
 
 AppWidgetContainer::AppWidgetContainer(QWidget *parent)

@@ -16,3 +16,7 @@ add_library(hook SHARED
 )
 target_compile_definitions(hook PUBLIC HOOK_LIBRARY)
 target_link_libraries(hook PRIVATE Qt6::Core)
+set_target_properties(hook 
+PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_PATH}
+)

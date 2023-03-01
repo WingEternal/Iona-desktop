@@ -16,10 +16,6 @@
 #include "move_ctrl/move_widget.h"
 /* CMDS INCLUDES */
 #include "quick_cmds/quick_cmds_entry.h"
-/* HOOK INCLUDES */
-#ifdef Q_OS_WIN
-#include "hook.h"
-#endif
 
 namespace IonaDesktop {
 namespace CoreDisplay {

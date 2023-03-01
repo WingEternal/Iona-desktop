@@ -6,7 +6,8 @@
 using namespace IonaDesktop::CoreDisplay;
 
 #ifdef Q_OS_WIN
-#include "hook.h"
+#include "Windows.h"
+#include "windowsx.h"
 const UINT AppNativeEvFilter::WM_IONAGL_LOOKAT = RegisterWindowMessage(L"WM_IONAGL_LOOKAT");
 #endif
 
