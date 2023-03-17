@@ -15,15 +15,15 @@ using namespace IonaDesktop::CoreDisplay;
 L2dAllocator GLObj_L2d::_cubismAllocator;
 Csm::CubismFramework::Option GLObj_L2d::_cubismOption;
 
-GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const QRect& canvas_size)
+GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_)
     : CoreDisplay::GLObjectBase(parent),
       _flag_path_ready(false),
       attr_sp_general_Transform(-1),
       attr_sp_general_Texture_0(-1),
       base_position(0, -5.0, -75.0),
       tf_camera(tf_camera_),
-      _canvas_width(canvas_size.width()),
-      _canvas_height(canvas_size.height()),
+      _canvas_width(parent->width()),
+      _canvas_height(parent->height()),
       _touchManager(new L2dTouchManager()),
       _deviceToScreen(new Csm::CubismMatrix44()),
       _viewMatrix(new Csm::CubismViewMatrix()),
@@ -38,8 +38,8 @@ GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const
     int virtual_height = 2000;
     QList<QScreen*> L_screen = QApplication::screens();
     if(L_screen.size() > 1) {
-        virtual_width = 1280;
-        virtual_height = 720;
+        virtual_width = 2560;
+        virtual_height = 1440;
     }
     else if(L_screen.size() != 0) {
         virtual_width = L_screen[0]->geometry().width();
@@ -129,8 +129,6 @@ void GLObj_L2d::init()
     _model->LoadAssets(_modelHomeDir.GetRawString(), _modelFileName.GetRawString());
     initializeShaders();
     initializeRenderPlane();
-
-    L2dPal::UpdateTime();
 }
 
 void GLObj_L2d::initializeCubism()
@@ -209,7 +207,6 @@ void GLObj_L2d::paint()
 {
     if(!_flag_path_ready)
         return;
-    L2dPal::UpdateTime();
     PreModelDraw();
     ModelDraw();
     PostModelDraw();

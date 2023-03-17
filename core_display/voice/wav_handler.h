@@ -15,11 +15,10 @@ namespace CoreDisplay {
         explicit WavHandler(QObject* parent = nullptr);
         ~WavHandler();
         void register_ss();
-        float getRms() const;
 
     public slots:
         void play(const QUrl filePath);
-        void update(const float deltaTimeSeconds, float& rms);
+        void update();
         
     private:
         bool LoadWavFile(const QString& filePath);
@@ -89,7 +88,6 @@ namespace CoreDisplay {
 
         float** _pcmData; ///< -1から1の範囲で表現された音声データ配列
         uint32_t _sampleOffset; ///< サンプル参照位置
-        float _lastRms; ///< 最後に計測したRMS値
         float _userTimeSeconds; ///< デルタ時間の積算値[秒]
 
         QAudioOutput* _audio_output;

@@ -11,7 +11,6 @@ find_package(OpenGL REQUIRED)
 qt_standard_project_setup()
 set(CMAKE_AUTORCC ON)
 
-set(OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 ###############
 # Set up hook #
 ###############
@@ -64,7 +63,7 @@ elseif(CMAKE_HOST_UNIX)
     add_executable(${APP_NAME})
 endif()
 add_subdirectory(app)
-add_subdirectory(asm)
+add_subdirectory(fsm)
 add_subdirectory(iona_gl)
 add_subdirectory(move_ctrl)
 add_subdirectory(quick_cmds)

@@ -1,5 +1,4 @@
 ﻿#include "move_ctrl/move_widget.h"
-#include "app/app_config.h"
 #include "app/app_msg_handler.h"
 #include <QPaintEvent>
 #include <QPainter>
@@ -11,13 +10,11 @@ MoveWidget::MoveWidget(QWidget *parent)
     : QWidget(parent),
       move_target(parent)
 {
-    QPoint geo_pos;
-    AppConfig::getInstance().getParam("/move_ctrl/pos", geo_pos);
-    this->setGeometry(geo_pos.x(), geo_pos.y(), 50, 50);
+    this->setGeometry(0.75 * parent->width(), 0.7 * parent->height(), 50, 50);
     icon.load(":/icon/move.png");
 
     AppMsgHandler::getInstance().regSignal
-        ("/app/set_param", this, SIGNAL(saveGeometry(QString, QVariant)));
+        ("/app/set_param", this, SIGNAL(setParam(const QString, const QVariant)));
 }
 
 MoveWidget::~MoveWidget()
@@ -55,7 +52,8 @@ void MoveWidget::mouseMoveEvent(QMouseEvent *ev)
 void MoveWidget::mouseReleaseEvent(QMouseEvent *ev)
 {
     m_Lpressed = false;
-    emit saveGeometry("/window/size", move_target->geometry());
+    emit setParam("S$window/pos", move_target->pos());
+    emit setParam("D$window/center", move_target->geometry().center());
     ev->accept();
 }
 

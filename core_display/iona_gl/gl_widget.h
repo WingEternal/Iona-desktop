@@ -7,7 +7,6 @@
 #include <QThread>
 
 #include <QWidget>
-#include "gl_handle.h"
 #include <QOpenGLWidget>
 #include <QPixmap>
 #include "data_ring.h"
@@ -20,14 +19,10 @@ namespace CoreDisplay {
         Q_OBJECT
         /* Widget Initialization */
     public:
-        explicit GLWidget(QWidget *parent = nullptr);
+        explicit GLWidget(QWidget *parent);
         ~GLWidget() override;
 
     private:
-        // Geometry of GLWidget, also determine the canvas size for drawing
-        QRect widget_geo;
-        QTimer* update_timer;
-
         // Camera
         QMatrix4x4  tf_camera;
         // Assets

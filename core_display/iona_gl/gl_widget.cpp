@@ -1,6 +1,7 @@
 ﻿#include "iona_gl/gl_widget.h"
-#include "app/app_config.h"
+#include "app/app_param.h"
 #include "app/app_msg_handler.h"
+#include "gl_handle.h"
 #include <QMouseEvent>
 
 using namespace IonaDesktop::CoreDisplay;
@@ -10,16 +11,10 @@ GLWidget::GLWidget(QWidget *parent)
 {
     this->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     this->setAttribute(Qt::WA_TranslucentBackground);
-    AppConfig::getInstance().getParam("/window/size", widget_geo);
-    this->setGeometry(0, 0, widget_geo.width(), widget_geo.height());
-    update_timer = new QTimer(this);
-    update_timer->setTimerType(Qt::PreciseTimer);
-
-    double update_rate;
-    AppConfig::getInstance().getParam("/animate/update_rate", update_rate);
-    update_timer->start(qRound(1000.0 / update_rate));
-    connect(update_timer, SIGNAL(timeout()), this, SLOT(glAnimateUpdate()));
+    this->setGeometry(0, 0, parent->width(), parent->height());
+    AppMsgHandler::getInstance().bindSlot("/animate/update", this, SLOT(glAnimateUpdate()));
 }
+
 GLWidget::~GLWidget()
 {
     makeCurrent();
@@ -31,7 +26,7 @@ void GLWidget::initializeGL()
     this->makeCurrent();
     GLHandle::get()->initializeOpenGLFunctions();
 
-    asset_iona = new GLObj_L2d(this, tf_camera,  widget_geo);
+    asset_iona = new GLObj_L2d(this, tf_camera);
     asset_iona->setModelPath(":/charater/live2d/", "tbs.model3.json");
     asset_iona->init();
 

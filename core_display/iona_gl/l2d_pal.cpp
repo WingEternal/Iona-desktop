@@ -15,42 +15,8 @@ using namespace Csm;
 using namespace std;
 using namespace IonaDesktop::CoreDisplay;
 
-double L2dPal::s_currentFrame = 0.0;
-double L2dPal::s_lastFrame = 0.0;
-double L2dPal::s_deltaTime = 0.0;
-
-QElapsedTimer L2dPal::timer;
-
 csmByte* L2dPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
 {
-//    //filePath;//
-//    const char* path = filePath.c_str();
-
-//    int size = 0;
-//    struct stat statBuf;
-//    if (stat(path, &statBuf) == 0)
-//    {
-//        size = statBuf.st_size;
-//    }
-
-//    std::fstream file;
-//    char* buf = new char[size];
-
-//    file.open(path, std::ios::in | std::ios::binary);
-//    if (!file.is_open())
-//    {
-//        if (L2dConfig::DebugLogEnable)
-//        {
-//            PrintLog("file open error");
-//        }
-//        return NULL;
-//    }
-//    file.read(buf, size);
-//    file.close();
-
-//    *outSize = size;
-//    return reinterpret_cast<csmByte*>(buf);
-
     QFile file(QString(filePath.c_str()));
     if(file.open(QIODevice::ReadOnly))
     {
@@ -71,21 +37,6 @@ csmByte* L2dPal::LoadFileAsBytes(const string filePath, csmSizeInt* outSize)
 
 void L2dPal::ReleaseBytes(csmByte* byteData)
 { delete[] byteData; }
-
-csmFloat32  L2dPal::GetDeltaTime()
-{  return static_cast<csmFloat32>(s_deltaTime); }
-
-void L2dPal::UpdateTime()
-{
-    static bool flag_init = false;
-    if(!flag_init) {
-        timer.start();
-        flag_init = true;
-    }
-    s_currentFrame = timer.elapsed();
-    s_deltaTime = (s_currentFrame - s_lastFrame) / 1000;
-    s_lastFrame = s_currentFrame;
-}
 
 void L2dPal::PrintLog(const csmChar* format, ...)
 {

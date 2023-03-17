@@ -36,14 +36,12 @@ void VoiceLabel::onPlayerPlaybackStateChanged(QMediaPlayer::PlaybackState state)
 {
     if(state == QMediaPlayer::PlayingState)
     {
-        qDebug() << "media entry >> show";
         this->show();
         label_animation->setDirection(QAbstractAnimation::Forward);
         label_animation->start();
     }
     else if(state == QMediaPlayer::StoppedState)
     {
-        qDebug() << "media entry >> hide";
         label_animation->setDirection(QAbstractAnimation::Backward);
         label_animation->start();
     }
@@ -54,6 +52,5 @@ void VoiceLabel::onAnimationFinished()
     if(label_animation->direction() == QAbstractAnimation::Backward)
     {
         this->hide();
-        qDebug() << "Animation Finished >> Hide()";
     }
 }

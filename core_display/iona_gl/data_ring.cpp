@@ -1,12 +1,14 @@
 ﻿#include "iona_gl/data_ring.h"
 #include "iona_gl/gl_handle.h"
-#include "iona_gl/l2d_utils.h"
-#include "app/app_config.h"
+#include "app/app_param.h"
 #include "app/app_msg_handler.h"
 #include <QTime>
+#include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
+#include <QParallelAnimationGroup>
+#include <QSignalMapper>
 
 using namespace IonaDesktop::CoreDisplay;
-using IonaDesktop::CoreDisplay::GLHandle;
 
 namespace {
     static constexpr const char* vs_general_src  =
@@ -95,15 +97,42 @@ GLObj_DataRing::GLObj_DataRing(QOpenGLWidget* parent, const QMatrix4x4& tf_camer
       ring_m_animate_counter(0),
       base_position(0, 0, -75.0),
       tf_camera(tf_camera_),
+      _ring_t_posb(QVector3D(0, 0, 0)),
+      _ring_m_posb(QVector3D(0, 0, 0)),
+      _ring_b_posb(QVector3D(0, 0, 0)),
+      _ring_rpm(0.0f),
       ring_spin_angle(0),
       ring_tb_roll_dist{0.0f, 0.0f},
       random_stop_elapsed{-1.0f, -1.0f},
-      ring_scale(1.0f)
+      _ring_scale(0.0f),
+      _qpa { new QPropertyAnimation(this, "RingScale", this),
+             new QPropertyAnimation(this, "RingRpm", this),
+             new QPropertyAnimation(this, "RingTPos", this),
+             new QPropertyAnimation(this, "RingMPos", this),
+             new QPropertyAnimation(this, "RingBPos", this) }
 {
-    AppMsgHandler::getInstance().bindSlot("/animate/ring_scale", this, SLOT(setRingScale(const float)));
-    AppConfig::getInstance().getParam("/animate/ring_spin_rpm", ring_spin_rpm);
-    AppConfig::getInstance().getParam("/animate/ring_m_animation_switch_by_frame", animate_switch_thrd);
-    AppConfig::getInstance().getParam("/animate/ring_tb_roll_spd", ring_tb_roll_spd);
+    AppParam::getInstance().getParam("S$animate/ring_m_animation_switch_by_frame", animate_switch_thrd);
+    AppParam::getInstance().getParam("S$animate/ring_tb_roll_spd", ring_tb_roll_spd);
+    
+    AppMsgHandler& handler = AppMsgHandler::getInstance();
+    handler.bindSlot("/animate/ring_scale", this, SLOT(setRingScale(const float)));
+    handler.bindSlot("/animate/ring_rpm", this, SLOT(setRingRpm(const float)));
+    handler.bindSlot("/animate/ring_t_pos", this, SLOT(setRingTPos(const QVector3D&)));
+    handler.bindSlot("/animate/ring_m_pos", this, SLOT(setRingMPos(const QVector3D&)));
+    handler.bindSlot("/animate/ring_b_pos", this, SLOT(setRingBPos(const QVector3D&)));
+    handler.bindSlot("/animate/task", this, SLOT(addTask(const QString&, const QVariant&, const double, const QEasingCurve::Type)));
+    handler.regSignal("/animate/task/finished", this, SIGNAL(taskFinished(const QString)));
+
+    connect(_qpa[0], &QPropertyAnimation::finished, this, [=](){
+        emit taskFinished("DRAScale");});
+    connect(_qpa[1], &QPropertyAnimation::finished, this, [=](){
+        emit taskFinished("DRARpm");});
+    connect(_qpa[1], &QPropertyAnimation::finished, this, [=](){
+        emit taskFinished("DRARingTPos");});
+    connect(_qpa[1], &QPropertyAnimation::finished, this, [=](){
+        emit taskFinished("DRARingMPos");});
+    connect(_qpa[1], &QPropertyAnimation::finished, this, [=](){
+        emit taskFinished("DRARingBPos");});
 }
 
 GLObj_DataRing::~GLObj_DataRing()
@@ -198,8 +227,9 @@ void GLObj_DataRing::paint()
     glAlphaFunc(GL_GREATER, 0.1f);
     glEnable(GL_ALPHA_TEST);
     // Calculate spin angle
-    auto elapsed_time = L2dPal::GetDeltaTime();
-    ring_spin_angle += ring_spin_rpm * elapsed_time / 60.0f;
+    double elapsed_time = 0.0;
+    AppParam::getInstance().getParam("D$clock/delta", elapsed_time);
+    ring_spin_angle += _ring_rpm * elapsed_time / 60.0f;
     if(ring_spin_angle > 1)
         ring_spin_angle -= 1;
 
@@ -217,7 +247,6 @@ void GLObj_DataRing::paint()
         else
             random_stop_elapsed[i] -= elapsed_time;
     }
-
     drawRingTB();
     drawRingTBF();
     drawRingM();
@@ -242,9 +271,10 @@ void GLObj_DataRing::drawRingTB()
 
     // Draw ring_t
     tf_ring_tb.setToIdentity();
-    tf_ring_tb.translate(base_position.x() + 0.0f, base_position.y() + 20.0f, base_position.z());
+    QVector3D trans = base_position + _ring_t_posb;
+    tf_ring_tb.translate(trans.x(), trans.y(), trans.z());
     tf_ring_tb.rotate(10, 1, 0, 0);
-    tf_ring_tb.scale(ring_scale);
+    tf_ring_tb.scale(_ring_scale);
     sprogram_mix2->setUniformValue(attr_sp_mix2_Transform, tf_camera * tf_ring_tb);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_tb_res + 1));
 
@@ -252,9 +282,10 @@ void GLObj_DataRing::drawRingTB()
     sprogram_mix2->setUniformValue(attr_sp_mix2_Delta0f_Tex_S, - ring_spin_angle + 0.5f);
     sprogram_mix2->setUniformValue(attr_sp_mix2_Delta1f_Tex_T, - ring_tb_roll_dist[1] + 0.5f);
     tf_ring_tb.setToIdentity();
-    tf_ring_tb.translate(base_position.x() + 0.0f, base_position.y() - 8.0f, base_position.z());
+    trans = base_position + _ring_b_posb;
+    tf_ring_tb.translate(trans.x(), trans.y(), trans.z());
     tf_ring_tb.rotate(5, 1, 0, 0);
-    tf_ring_tb.scale(ring_scale);
+    tf_ring_tb.scale(_ring_scale);
     sprogram_mix2->setUniformValue(attr_sp_mix2_Transform, tf_camera * tf_ring_tb);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_tb_res + 1));
 
@@ -277,15 +308,17 @@ void GLObj_DataRing::drawRingTBF()
     sprogram_general->setUniformValue(attr_sp_general_Texture_0, 0);
     QMatrix4x4 tf_ring_tbf;
     tf_ring_tbf.setToIdentity();
-    tf_ring_tbf.translate(base_position.x() + 0.0f, base_position.y() + 20.0f, base_position.z());
+    QVector3D trans = base_position + _ring_t_posb;
+    tf_ring_tbf.translate(trans.x(), trans.y(), trans.z());
     tf_ring_tbf.rotate(10, 1, 0, 0);
-    tf_ring_tbf.scale(ring_scale);
+    tf_ring_tbf.scale(_ring_scale);
     sprogram_general->setUniformValue(attr_sp_general_Transform, tf_camera * tf_ring_tbf);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_tbf_res + 1));
     tf_ring_tbf.setToIdentity();
-    tf_ring_tbf.translate(base_position.x() + 0.0f, base_position.y() - 8.0f, base_position.z());
+    trans = base_position + _ring_b_posb;
+    tf_ring_tbf.translate(trans.x(), trans.y(), trans.z());
     tf_ring_tbf.rotate(5, 1, 0, 0);
-    tf_ring_tbf.scale(ring_scale);
+    tf_ring_tbf.scale(_ring_scale);
     sprogram_general->setUniformValue(attr_sp_general_Transform, tf_camera * tf_ring_tbf);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_tbf_res + 1));
 
@@ -313,9 +346,11 @@ void GLObj_DataRing::drawRingM()
     sprogram_rm->setUniformValue(attr_sp_rm_Active_Zone, ring_m_active_zone);
     QMatrix4x4 tf_ring_m;
     tf_ring_m.setToIdentity();
-    tf_ring_m.translate(base_position.x() + 0.0f,  base_position.y() + 5.0f, base_position.z());
+    QVector3D trans;
+    trans = base_position + _ring_m_posb;
+    tf_ring_m.translate(trans.x(),  trans.y(), trans.z());
     tf_ring_m.rotate(5, 1, 0, 0);
-    tf_ring_m.scale(ring_scale);
+    tf_ring_m.scale(_ring_scale);
     sprogram_rm->setUniformValue(attr_sp_rm_Transform, tf_camera * tf_ring_m);
     glDrawArrays(GL_QUAD_STRIP, 0, 2 * (ring_m_res + 1));
     // Clean
@@ -340,7 +375,93 @@ void GLObj_DataRing::drawRingM()
     }
 }
 
+float GLObj_DataRing::RingScale()
+{ return _ring_scale; }
+float GLObj_DataRing::RingRpm()
+{ return _ring_rpm; }
+QVector3D GLObj_DataRing::RingTPos()
+{ return _ring_t_posb; }
+QVector3D GLObj_DataRing::RingMPos()
+{ return _ring_m_posb; }
+QVector3D GLObj_DataRing::RingBPos()
+{ return _ring_b_posb; }
+
 void GLObj_DataRing::setRingScale(const float scale)
+{ _ring_scale = scale; }
+void GLObj_DataRing::setRingRpm(const float rpm)
+{ _ring_rpm = rpm; }
+void GLObj_DataRing::setRingTPos(const QVector3D& pos)
+{ _ring_t_posb = pos; }
+void GLObj_DataRing::setRingMPos(const QVector3D& pos)
+{ _ring_m_posb = pos; }
+void GLObj_DataRing::setRingBPos(const QVector3D& pos)
+{ _ring_b_posb = pos; }
+
+void GLObj_DataRing::addTask(const QString& task_name, const QVariant& target_state, const double interval, const QEasingCurve::Type curve)
 {
-    ring_scale = scale;
+    if(task_name == "DRAScale" && target_state.canConvert<double>())
+        addTaskPrivate(_qpa[0], _ring_scale, target_state, interval, curve);
+    else if(task_name == "DRARpm" && target_state.canConvert<double>())
+        addTaskPrivate(_qpa[1], _ring_rpm, target_state, interval, curve);
+    else if(task_name == "DRARingTPos" && target_state.canConvert<QVector3D>())
+        addTaskPrivate(_qpa[2], _ring_t_posb, target_state, interval, curve);
+    else if(task_name == "DRARingMPos" && target_state.canConvert<QVector3D>())
+        addTaskPrivate(_qpa[3], _ring_m_posb, target_state, interval, curve);
+    else if(task_name == "DRARingBPos" && target_state.canConvert<QVector3D>())
+        addTaskPrivate(_qpa[4], _ring_b_posb, target_state, interval, curve);
+    else if(task_name == "DRAStartMotion")
+        execStartMotion();
+}
+
+void GLObj_DataRing::execStartMotion()
+{
+    QSequentialAnimationGroup* seqAnimationG1 = new QSequentialAnimationGroup(this);
+    seqAnimationG1->addPause(200);
+
+    QParallelAnimationGroup* paralAnimationG1 = new QParallelAnimationGroup(this);
+    _qpa[0]->setStartValue(0.0f);
+    _qpa[0]->setEndValue(1.0f);
+    _qpa[0]->setDuration(1000);
+    _qpa[0]->setEasingCurve(QEasingCurve::OutCubic);
+    paralAnimationG1->addAnimation(_qpa[0]);
+
+    _qpa[1]->setStartValue(0.0f);
+    _qpa[1]->setEndValue(1.5f);
+    _qpa[1]->setDuration(2000);
+    _qpa[1]->setEasingCurve(QEasingCurve::OutBack);
+    paralAnimationG1->addAnimation(_qpa[1]);
+
+    QSequentialAnimationGroup* seqAnimationG2 = new QSequentialAnimationGroup(this);
+    seqAnimationG2->addPause(600);
+
+    QParallelAnimationGroup* paralAnimationG2 = new QParallelAnimationGroup(this);
+    _qpa[2]->setStartValue(QVector3D(0.0f, 0.0f, 0.0f));
+    _qpa[2]->setEndValue(QVector3D(0.0f, 20.0f, 0.0f));
+    _qpa[2]->setDuration(300);
+    _qpa[2]->setEasingCurve(QEasingCurve::Linear);
+    paralAnimationG2->addAnimation(_qpa[2]);
+
+    _qpa[3]->setStartValue(QVector3D(0.0f, 0.0f, 0.0f));
+    _qpa[3]->setEndValue(QVector3D(0.0f, 5.0f, 0.0f));
+    _qpa[3]->setDuration(300);
+    _qpa[3]->setEasingCurve(QEasingCurve::Linear);
+    paralAnimationG2->addAnimation(_qpa[3]);
+
+    _qpa[4]->setStartValue(QVector3D(0.0f, 0.0f, 0.0f));
+    _qpa[4]->setEndValue(QVector3D(0.0f, -8.0f, 0.0f));
+    _qpa[4]->setDuration(300);
+    _qpa[4]->setEasingCurve(QEasingCurve::Linear);
+    paralAnimationG2->addAnimation(_qpa[4]);
+    seqAnimationG2->addAnimation(paralAnimationG2);
+    paralAnimationG1->addAnimation(seqAnimationG2);
+    seqAnimationG1->addAnimation(paralAnimationG1);
+
+    connect(seqAnimationG1, &QSequentialAnimationGroup::finished, this, [=](){
+        emit this->taskFinished("DRAStartMotion");
+        seqAnimationG1->deleteLater();
+        paralAnimationG1->deleteLater();
+        paralAnimationG2->deleteLater();
+        seqAnimationG2->deleteLater();
+    });
+    seqAnimationG1->start();
 }

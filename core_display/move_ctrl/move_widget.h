@@ -10,7 +10,7 @@ namespace CoreDisplay {
     {
         Q_OBJECT
     public:
-        explicit MoveWidget(QWidget *parent = nullptr);
+        explicit MoveWidget(QWidget *parent);
         ~MoveWidget();
 
     private:
@@ -26,7 +26,7 @@ namespace CoreDisplay {
         void mouseReleaseEvent(QMouseEvent *ev);
 
     signals:
-        void saveGeometry(QString, QVariant);
+        void setParam(const QString, const QVariant);
     };
 }
 }

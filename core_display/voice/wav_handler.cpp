@@ -1,4 +1,5 @@
-﻿#include "app/app_msg_handler.h"
+﻿#include "app/app_param.h"
+#include "app/app_msg_handler.h"
 #include "voice/wav_handler.h"
 #include <cmath>
 #include <cstdint>
@@ -11,7 +12,6 @@ WavHandler::WavHandler(QObject* parent)
     : QObject(parent),
       _pcmData(NULL),
       _sampleOffset(0),
-      _lastRms(0.0f),
       _userTimeSeconds(0.0f)
 {
     _audio_output = new QAudioOutput(this);
@@ -29,31 +29,25 @@ WavHandler::~WavHandler()
 void WavHandler::register_ss()
 {
     AppMsgHandler::getInstance().bindSlot("/voice/play", this, SLOT(play(const QUrl)));
-    AppMsgHandler::getInstance().bindSlot("/voice/rms", this, SLOT(update(const float, float&)), Qt::BlockingQueuedConnection);
+    AppMsgHandler::getInstance().bindSlot("/animate/update", this, SLOT(update()));
+
+    AppMsgHandler::getInstance().regSignal("/voice/rms", this, SIGNAL(publishRms(const double)));
     AppMsgHandler::getInstance().regSignal("/voice/playback_state", _player, SIGNAL(playbackStateChanged(QMediaPlayer::PlaybackState)));
+
     connect(_player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(onPlayerMediaLoaded(const QMediaPlayer::MediaStatus)));
 }
 
-float WavHandler::getRms() const
+void WavHandler::update()
 {
-    return _lastRms;
-}
-
-void WavHandler::update(const float deltaTimeSeconds, float& rms)
-{
-    rms = 0.0f;
+    double rms = 0.0f;
     // Directly return if player is not playing
     if(this->_player->playbackState() != QMediaPlayer::PlayingState)
         return;
 
     uint32_t goalOffset;
-    if ((_pcmData == NULL)
-        || (_sampleOffset >= _wavFileInfo._samplesPerChannel))
-    {
-        _lastRms = 0.0f;
-    }
-
     // 経過時間後の状態を保持
+    double deltaTimeSeconds = 0.0;
+    AppParam::getInstance().getParam("D$clock/delta", deltaTimeSeconds);
     _userTimeSeconds += deltaTimeSeconds;
     goalOffset = static_cast<uint32_t>(_userTimeSeconds * _wavFileInfo._samplingRate);
     if (goalOffset > _wavFileInfo._samplesPerChannel)
@@ -71,9 +65,8 @@ void WavHandler::update(const float deltaTimeSeconds, float& rms)
         }
     }
     rms = sqrt(rms / (_wavFileInfo._numberOfChannels * (goalOffset - _sampleOffset)));
-
-    _lastRms = rms;
     _sampleOffset = goalOffset;
+    AppParam::getInstance().setParam("D$voice/rms", rms);
 }
 
 void WavHandler::play(const QUrl filePath)
@@ -243,7 +236,6 @@ void WavHandler::onPlayerMediaLoaded(const QMediaPlayer::MediaStatus status)
     {
         _sampleOffset = 0;
         _userTimeSeconds = 0.0f;
-        _lastRms = 0.0f;
         _player->play();
     }
 }

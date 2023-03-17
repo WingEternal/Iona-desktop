@@ -1,5 +1,5 @@
-﻿#ifndef IONADESKTOP_CORE_DISPLAY_APP_WIDGET_CONTAINER_H
-#define IONADESKTOP_CORE_DISPLAY_APP_WIDGET_CONTAINER_H
+﻿#ifndef IONADESKTOP_CORE_DISPLAY_APP_CONTENT_H
+#define IONADESKTOP_CORE_DISPLAY_APP_CONTENT_H
 
 #include <QWidget>
 
@@ -19,12 +19,12 @@
 
 namespace IonaDesktop {
 namespace CoreDisplay {
-    class AppWidgetContainer : public QWidget
+    class AppContent : public QWidget
     {
         Q_OBJECT
     public:
-        explicit AppWidgetContainer(QWidget *parent = nullptr);
-        ~AppWidgetContainer();
+        explicit AppContent(QWidget *parent = nullptr);
+        ~AppContent();
 
     private:
         GLWidget* gl_widget;
@@ -51,4 +51,4 @@ namespace CoreDisplay {
 }
 }
 
-#endif // IONADESKTOP_CORE_DISPLAY_APP_WIDGET_CONTAINER_H
+#endif // IONADESKTOP_CORE_DISPLAY_APP_CONTENT_H

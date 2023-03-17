@@ -1,4 +1,4 @@
-﻿#include "app/app_msg_handler.h"
+﻿#include "app/app_param.h"
 #include "iona_gl/l2d_model.h"
 #include <fstream>
 #include <vector>
@@ -34,8 +34,6 @@ L2dModel::L2dModel()
     _idParamEyeBallY = CubismFramework::GetIdManager()->GetId(ParamEyeBallY);
 
     _texManager = new L2dTexManager();
-
-    AppMsgHandler::getInstance().regSignal("/voice/rms", this, SIGNAL(requestWavRms(const float, float&)));
 }
 
 L2dModel::~L2dModel()
@@ -71,8 +69,6 @@ L2dModel::LoadAssets(const Csm::csmChar* dir, const  Csm::csmChar* fileName)
     }
     CreateRenderer();
     SetupTextures();
-
-    L2dPal::UpdateTime();
 }
 
 void
@@ -280,7 +276,8 @@ void L2dModel::ReleaseExpressions()
 
 void L2dModel::Update()
 {
-    const csmFloat32 deltaTimeSeconds = L2dPal::GetDeltaTime();
+    csmFloat32 deltaTimeSeconds = 0.0;
+    AppParam::getInstance().getParam("D$clock/delta", deltaTimeSeconds);
     _userTimeSeconds += deltaTimeSeconds;
 
     _dragManager->Update(deltaTimeSeconds);
@@ -333,12 +330,12 @@ void L2dModel::Update()
     if (_lipSync)
     {
         // リアルタイムでリップシンクを行う場合、システムから音量を取得して0〜1の範囲で値を入力します。
-        csmFloat32 value = 0.0f;
+        csmFloat32 rms_value = 0.0f;
 
         // 状態更新/RMS値取得
-        emit requestWavRms(deltaTimeSeconds, value);
+        AppParam::getInstance().getParam("D$voice/rms", rms_value);
         for (csmUint32 i = 0; i < _lipSyncIds.GetSize(); ++i)
-            _model->AddParameterValue(_lipSyncIds[i], value, 3.0f);
+            _model->AddParameterValue(_lipSyncIds[i], rms_value, 3.0f);
     }
 
     // ポーズの設定

@@ -19,7 +19,7 @@ namespace CoreDisplay {
     {
         Q_OBJECT
     public:
-        explicit GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_,  const QRect& canvas_size);
+        explicit GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_);
         ~GLObj_L2d();
 
         virtual void init() final;

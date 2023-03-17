@@ -9,7 +9,7 @@ namespace CoreDisplay {
     {
         Q_OBJECT
     public:
-        explicit QuickCmdsEntry(QWidget *parent = nullptr);
+        explicit QuickCmdsEntry(QWidget *parent);
         ~QuickCmdsEntry();
 
     private:

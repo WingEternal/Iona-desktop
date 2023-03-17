@@ -2,14 +2,26 @@
 #define IONA_DESKTOP_CORE_DISPLAY_DATA_RING_H
 
 #include "gl_object_base.h"
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <memory>
 
 using namespace IonaDesktop;
+
+// Forward Declaration
+class QSignalMapper;
 
 namespace IonaDesktop {
 namespace CoreDisplay {
     class GLObj_DataRing  : public GLObjectBase
     {
         Q_OBJECT
+        Q_PROPERTY(float RingScale READ RingScale WRITE setRingScale)
+        Q_PROPERTY(float RingRpm READ RingRpm WRITE setRingRpm)
+        Q_PROPERTY(QVector3D RingTPos READ RingTPos WRITE setRingTPos)
+        Q_PROPERTY(QVector3D RingMPos READ RingMPos WRITE setRingMPos)
+        Q_PROPERTY(QVector3D RingBPos READ RingBPos WRITE setRingBPos)
+
     public:
         explicit GLObj_DataRing(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_);
         ~GLObj_DataRing() override;
@@ -26,6 +38,26 @@ namespace CoreDisplay {
         static constexpr GLint ring_tb_res = 52;
         static constexpr GLint ring_tbf_res = 52;
         static constexpr GLint ring_m_res = 52;
+
+        // Property - Getter
+        float RingScale();
+        float RingRpm();
+        QVector3D RingTPos();
+        QVector3D RingMPos();
+        QVector3D RingBPos();
+
+    signals:
+        void taskFinished(const QString task_name);
+
+    public slots:
+        // Property - Setter
+        void setRingScale(const float scale);
+        void setRingRpm(const float rpm);
+        void setRingTPos(const QVector3D& pos);
+        void setRingMPos(const QVector3D& pos);
+        void setRingBPos(const QVector3D& pos);
+
+        void addTask(const QString& task_name, const QVariant& target_state, const double interval, const QEasingCurve::Type curve = QEasingCurve::Linear);
 
     private:
         // Generate model at compile time
@@ -82,18 +114,43 @@ namespace CoreDisplay {
         void drawRingTBF();
         void drawRingM();
 
+        // Position bias
+        QVector3D _ring_t_posb;
+        QVector3D _ring_m_posb;
+        QVector3D _ring_b_posb;
+
         // Spin && roll
-        float ring_spin_rpm;
+        float _ring_rpm;
         float ring_spin_angle; // indicate normalized ring rotation angle [0, 1)
         float ring_tb_roll_spd;
         float ring_tb_roll_dist[2];
         float random_stop_elapsed[2];
 
         // Scale
-        float ring_scale;
+        float _ring_scale;
 
-    public slots:
-        void setRingScale(const float scale);
+        // Animation (Transit)
+        static constexpr int _drqpa_count = 5;
+        /**
+         * 0: RingScale
+         * 1: RingRpm
+         * 2: RingTPos
+         * 3: RingMPos
+         * 4: RingBPos
+        */
+        QPropertyAnimation* _qpa[_drqpa_count];
+        template<typename T>
+        void addTaskPrivate(QPropertyAnimation* _qpa, const T& start_state, const QVariant& end_state, const double interval, const QEasingCurve::Type curve)
+        {
+            if(_qpa->state() == QPropertyAnimation::Running)
+                _qpa->pause();
+            _qpa->setStartValue(start_state);
+            _qpa->setEndValue(end_state);
+            _qpa->setDuration(interval);
+            _qpa->setEasingCurve(curve);
+            _qpa->start();
+        }
+        void execStartMotion();
     };
 }
 }

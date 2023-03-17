@@ -1,5 +1,4 @@
 ﻿#include "quick_cmds/quick_cmds_entry.h"
-#include "app/app_config.h"
 #include <QPainter>
 #include <QPaintEvent>
 
@@ -8,9 +7,7 @@ using namespace IonaDesktop::CoreDisplay;
 QuickCmdsEntry::QuickCmdsEntry(QWidget *parent)
     : QWidget(parent)
 {
-    QPoint geo_pos;
-    AppConfig::getInstance().getParam("/quick_cmds/pos", geo_pos);
-    this->setGeometry(geo_pos.x(), geo_pos.y(), 50, 50);
+    this->setGeometry(0.75 * parent->width(), 0.6 * parent->height(), 50, 50);
     icon.load(":/icon/terminal.png");
 }
 

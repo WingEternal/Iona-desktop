@@ -27,14 +27,6 @@ namespace CoreDisplay {
 
         static void PrintLog(const Csm::csmChar* format, ...);
         static void PrintMessage(const Csm::csmChar* message);
-
-        static Csm::csmFloat32 GetDeltaTime();
-        static void UpdateTime();
-        static double s_currentFrame;
-        static double s_lastFrame;
-        static double s_deltaTime;
-    private:
-        static QElapsedTimer timer;
     };
 }
 }

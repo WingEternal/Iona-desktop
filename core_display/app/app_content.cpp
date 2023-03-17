@@ -1,5 +1,5 @@
-﻿#include "app/app_widget_container.h"
-#include "app/app_config.h"
+﻿#include "app/app_content.h"
+#include "app/app_param.h"
 #include "app/app_msg_handler.h"
 
 #ifdef Q_OS_WIN
@@ -8,7 +8,7 @@
 
 using namespace IonaDesktop::CoreDisplay;
 
-AppWidgetContainer::AppWidgetContainer(QWidget *parent)
+AppContent::AppContent(QWidget *parent)
     : QWidget(parent)
 {
     this->setWindowFlag(Qt::Tool);
@@ -16,9 +16,10 @@ AppWidgetContainer::AppWidgetContainer(QWidget *parent)
     this->setAttribute(Qt::WA_TranslucentBackground);
     this->setWindowFlag(Qt::WindowStaysOnTopHint);
     this->setWindowFlag(Qt::NoDropShadowWindowHint);
-    QRect geo;
-    AppConfig::getInstance().getParam("/window/size", geo);
-    this->setGeometry(geo);
+    QPoint widget_pos;
+    AppParam::getInstance().getParam("S$window/pos", widget_pos);
+    this->setGeometry(QRect(widget_pos, QSize(600, 500)));
+    AppParam::getInstance().setParam("D$window/center", this->geometry().center());
 
     AppMsgHandler::getInstance().bindSlot
         ("/window/hide", this, SLOT(trayRequestHide()));
@@ -35,7 +36,8 @@ AppWidgetContainer::AppWidgetContainer(QWidget *parent)
 
     voice_label = new VoiceLabel(this);
     voice_label->raise();
-    voice_label->show();
+    // voice_label->show();
+    voice_label->hide();
 
     gl_widget = new GLWidget(this);
     gl_widget->lower();
@@ -44,33 +46,31 @@ AppWidgetContainer::AppWidgetContainer(QWidget *parent)
     installHook();
 }
 
-AppWidgetContainer::~AppWidgetContainer()
+AppContent::~AppContent()
 {
     uninstallHook();
 }
 
-void AppWidgetContainer::paintEvent(QPaintEvent* ev)
+void AppContent::paintEvent(QPaintEvent* ev)
 {
     ev->accept();
 }
 
-void AppWidgetContainer::trayRequestHide()
+void AppContent::trayRequestHide()
 {
     if(this->isHidden())
         this->show();
     else this->hide();
 }
 
-void AppWidgetContainer::trayRequestResetGeometry()
+void AppContent::trayRequestResetGeometry()
 {
-    QRect geo;
-    AppConfig::getInstance().getParam("/window/size", geo);
-    this->setGeometry(0, 0, geo.width(), geo.height());
+    this->setGeometry(0, 0, 600, 500);
     update();
 }
 
 #ifdef Q_OS_WIN
-bool AppWidgetContainer::installHook()
+bool AppContent::installHook()
 {
 //    HMODULE hDll = nullptr;
     HWND m_hWnd = (HWND)this->winId();
@@ -83,7 +83,7 @@ bool AppWidgetContainer::installHook()
     return hookMouseState;
 }
 
-bool AppWidgetContainer::uninstallHook()
+bool AppContent::uninstallHook()
 {
     BOOL hookMouseState = Hook::UnInstallMouseHook();
 //    BOOL hookKeybordState = Hook::UnInstallKeybordHook();
