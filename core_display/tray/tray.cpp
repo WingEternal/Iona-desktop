@@ -39,6 +39,7 @@ Tray::Tray(QWidget* parent)
 
 void Tray::terminate()
 {
+    this->deleteLater();
     QCoreApplication::exit(0);
 }
 
