@@ -34,14 +34,10 @@ GLObj_L2d::GLObj_L2d(QOpenGLWidget* parent, const QMatrix4x4& tf_camera_)
     _clearColor[2] = 0.0f;
     _clearColor[3] = 0.0f;
 
-    int virtual_width = 2500;
-    int virtual_height = 2000;
+    int virtual_width = 2000;
+    int virtual_height = 1080;
     QList<QScreen*> L_screen = QApplication::screens();
-    if(L_screen.size() > 1) {
-        virtual_width = 2560;
-        virtual_height = 1440;
-    }
-    else if(L_screen.size() != 0) {
+    if(L_screen.size() == 1) {
         virtual_width = L_screen[0]->geometry().width();
         virtual_height = L_screen[0]->geometry().height();
     }
