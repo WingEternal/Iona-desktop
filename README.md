@@ -1,3 +1,6 @@
+# Archive Note
+* This repo is archived, but a reimplemented version is on the way.
+
 # Project Iona-desktop
 * 基于`Qt`实现的跨平台方案，放一只伊欧娜在桌面上
 * 无技术力警告，目前本质上是优先层最高的~~图片展示器~~现在是`OpenGL`展示器了
