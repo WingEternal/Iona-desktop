@@ -5,28 +5,25 @@
 
 namespace IonaDesktop {
 namespace CoreDisplay {
-    class QuickCmdsEntry : public QWidget
-    {
-        Q_OBJECT
-    public:
-        explicit QuickCmdsEntry(QWidget *parent);
-        ~QuickCmdsEntry();
+class QuickCmdsEntry : public QWidget {
+  Q_OBJECT
+ public:
+  explicit QuickCmdsEntry(QWidget *parent);
+  ~QuickCmdsEntry();
 
-    private:
-        QPixmap icon;
+ private:
+  QPixmap icon;
 
-    protected:
-        void paintEvent(QPaintEvent* ev) override;
-        void mousePressEvent(QMouseEvent *ev) override;
-        void mouseMoveEvent(QMouseEvent *ev) override;
-        void mouseReleaseEvent(QMouseEvent *ev) override;
-    signals:
+ protected:
+  void paintEvent(QPaintEvent *ev) override;
+  void mousePressEvent(QMouseEvent *ev) override;
+  void mouseMoveEvent(QMouseEvent *ev) override;
+  void mouseReleaseEvent(QMouseEvent *ev) override;
+ signals:
 
-    public slots:
+ public slots:
+};
+}  // namespace CoreDisplay
+}  // namespace IonaDesktop
 
-    };
-}
-}
-
-
-#endif // IONADESKTOP_CORE_DISPLAY_QUICK_CMDS_ENTRY_H
+#endif  // IONADESKTOP_CORE_DISPLAY_QUICK_CMDS_ENTRY_H

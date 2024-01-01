@@ -1,86 +1,89 @@
 ﻿#ifndef IONA_DESKTOP_CORE_DISPLAY_L2D_MODEL_H
 #define IONA_DESKTOP_CORE_DISPLAY_L2D_MODEL_H
 
-#include <QObject>
 #include <CubismFramework.hpp>
-#include <Model/CubismUserModel.hpp>
 #include <ICubismModelSetting.hpp>
-#include <Type/csmRectF.hpp>
+#include <Model/CubismUserModel.hpp>
+#include <QObject>
 #include <Rendering/OpenGL/CubismOffscreenSurface_OpenGLES2.hpp>
+#include <Type/csmRectF.hpp>
 
 #include "iona_gl/l2d_tex_manager.h"
 
 namespace IonaDesktop {
 namespace CoreDisplay {
-    class L2dModel : public QObject, public Csm::CubismUserModel
-    {
-        Q_OBJECT
-    public:
-        explicit L2dModel();
-        ~L2dModel();
+class L2dModel : public QObject, public Csm::CubismUserModel {
+  Q_OBJECT
+ public:
+  explicit L2dModel();
+  ~L2dModel();
 
-        /* Initialize */
-    public:
-        void LoadAssets(const Csm::csmChar* dir, const  Csm::csmChar* fileName);
-    private:
-        Csm::csmString _modelHomeDir;
+  /* Initialize */
+ public:
+  void LoadAssets(const Csm::csmChar* dir, const Csm::csmChar* fileName);
 
-        Csm::ICubismModelSetting* _modelSetting;
-        void SetupModel(Csm::ICubismModelSetting* setting);
-        void SetupTextures();
-        L2dTexManager* _texManager;
+ private:
+  Csm::csmString _modelHomeDir;
 
-        /* Paint */
-    public:
-        void ReloadRenderer();
-        void Update();
-        void Draw(Csm::CubismMatrix44& matrix);
+  Csm::ICubismModelSetting* _modelSetting;
+  void SetupModel(Csm::ICubismModelSetting* setting);
+  void SetupTextures();
+  L2dTexManager* _texManager;
 
-        /* Motion && Expression */
-    public:
-        Csm::CubismMotionQueueEntryHandle StartMotion
-            (const Csm::csmChar* group, Csm::csmInt32 no, Csm::csmInt32 priority,
-             Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = nullptr);
-        Csm::CubismMotionQueueEntryHandle StartRandomMotion
-            (const Csm::csmChar* group, Csm::csmInt32 priority,
-             Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler = nullptr);
-        void SetExpression(const Csm::csmChar* expressionID);
-        void SetRandomExpression();
+  /* Paint */
+ public:
+  void ReloadRenderer();
+  void Update();
+  void Draw(Csm::CubismMatrix44& matrix);
 
-    private:
-        void PreloadMotionGroup(const Csm::csmChar* group);
-        void ReleaseMotionGroup(const Csm::csmChar* group) const;
-        void ReleaseMotions();
-        void ReleaseExpressions();
+  /* Motion && Expression */
+ public:
+  Csm::CubismMotionQueueEntryHandle StartMotion(
+      const Csm::csmChar* group, Csm::csmInt32 no, Csm::csmInt32 priority,
+      Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler =
+          nullptr);
+  Csm::CubismMotionQueueEntryHandle StartRandomMotion(
+      const Csm::csmChar* group, Csm::csmInt32 priority,
+      Csm::ACubismMotion::FinishedMotionCallback onFinishedMotionHandler =
+          nullptr);
+  void SetExpression(const Csm::csmChar* expressionID);
+  void SetRandomExpression();
 
-        Csm::csmVector<Csm::CubismIdHandle> _eyeBlinkIds;
-        Csm::csmVector<Csm::CubismIdHandle> _lipSyncIds;
-        Csm::csmMap<Csm::csmString, Csm::ACubismMotion*>   _motions;
-        Csm::csmMap<Csm::csmString, Csm::ACubismMotion*>   _expressions;
+ private:
+  void PreloadMotionGroup(const Csm::csmChar* group);
+  void ReleaseMotionGroup(const Csm::csmChar* group) const;
+  void ReleaseMotions();
+  void ReleaseExpressions();
 
-        /* Event && HitBox */
-    public:
-        virtual void MotionEventFired
-            (const Live2D::Cubism::Framework::csmString& eventValue);
-        virtual Csm::csmBool HitTest
-            (const Csm::csmChar* hitAreaName, Csm::csmFloat32 x, Csm::csmFloat32 y);
-    private:
-        Csm::csmVector<Csm::csmRectF> _hitArea;
-        Csm::csmVector<Csm::csmRectF> _userArea;
-        const Csm::CubismId* _idParamAngleX;
-        const Csm::CubismId* _idParamAngleY;
-        const Csm::CubismId* _idParamAngleZ;
-        const Csm::CubismId* _idParamBodyAngleX;
-        const Csm::CubismId* _idParamEyeBallX;
-        const Csm::CubismId* _idParamEyeBallY;
-    signals:
-        void requestWavRms(const float delatSec, float& rms);
+  Csm::csmVector<Csm::CubismIdHandle> _eyeBlinkIds;
+  Csm::csmVector<Csm::CubismIdHandle> _lipSyncIds;
+  Csm::csmMap<Csm::csmString, Csm::ACubismMotion*> _motions;
+  Csm::csmMap<Csm::csmString, Csm::ACubismMotion*> _expressions;
 
-        /* Utils */
-    private:
-        Csm::csmFloat32 _userTimeSeconds;
-    };
-}
-}
+  /* Event && HitBox */
+ public:
+  virtual void MotionEventFired(
+      const Live2D::Cubism::Framework::csmString& eventValue);
+  virtual Csm::csmBool HitTest(const Csm::csmChar* hitAreaName,
+                               Csm::csmFloat32 x, Csm::csmFloat32 y);
 
-#endif // IONA_DESKTOP_CORE_DISPLAY_L2D_MODEL_H
+ private:
+  Csm::csmVector<Csm::csmRectF> _hitArea;
+  Csm::csmVector<Csm::csmRectF> _userArea;
+  const Csm::CubismId* _idParamAngleX;
+  const Csm::CubismId* _idParamAngleY;
+  const Csm::CubismId* _idParamAngleZ;
+  const Csm::CubismId* _idParamBodyAngleX;
+  const Csm::CubismId* _idParamEyeBallX;
+  const Csm::CubismId* _idParamEyeBallY;
+ signals:
+  void requestWavRms(const float delatSec, float& rms);
+
+  /* Utils */
+ private:
+  Csm::csmFloat32 _userTimeSeconds;
+};
+}  // namespace CoreDisplay
+}  // namespace IonaDesktop
+
+#endif  // IONA_DESKTOP_CORE_DISPLAY_L2D_MODEL_H

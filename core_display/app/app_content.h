@@ -4,7 +4,7 @@
 #include <QWidget>
 
 /* Description:
-* Base widget of all other widgets */
+ * Base widget of all other widgets */
 
 /* DISPLAY INCLUDES */
 #include "iona_gl/gl_widget.h"
@@ -19,36 +19,35 @@
 
 namespace IonaDesktop {
 namespace CoreDisplay {
-    class AppContent : public QWidget
-    {
-        Q_OBJECT
-    public:
-        explicit AppContent(QWidget *parent = nullptr);
-        ~AppContent();
+class AppContent : public QWidget {
+  Q_OBJECT
+ public:
+  explicit AppContent(QWidget* parent = nullptr);
+  ~AppContent();
 
-    private:
-        GLWidget* gl_widget;
-        VoiceLabel* voice_label;
-        Tray* tray;
-        MoveWidget* move_ctrl;
-        QuickCmdsEntry* quick_cmds;
+ private:
+  GLWidget* gl_widget;
+  VoiceLabel* voice_label;
+  Tray* tray;
+  MoveWidget* move_ctrl;
+  QuickCmdsEntry* quick_cmds;
 
-    protected:
-        void paintEvent(QPaintEvent* ev);
+ protected:
+  void paintEvent(QPaintEvent* ev);
 
-    signals:
+ signals:
 
-    public slots:
-        void trayRequestHide();
-        void trayRequestResetGeometry();
+ public slots:
+  void trayRequestHide();
+  void trayRequestResetGeometry();
 
 #ifdef Q_OS_WIN
-        bool installHook();
-        bool uninstallHook();
+  bool installHook();
+  bool uninstallHook();
 #endif
-    };
+};
 
-}
-}
+}  // namespace CoreDisplay
+}  // namespace IonaDesktop
 
-#endif // IONADESKTOP_CORE_DISPLAY_APP_CONTENT_H
+#endif  // IONADESKTOP_CORE_DISPLAY_APP_CONTENT_H

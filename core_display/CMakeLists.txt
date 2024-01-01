@@ -5,7 +5,8 @@ project(core_display VERSION 0.2 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Multimedia OpenGL OpenGLWidgets Core5Compat)
+find_package(Qt6 REQUIRED COMPONENTS 
+    Core Gui Widgets Multimedia OpenGL OpenGLWidgets Core5Compat)
 find_package(OpenGL REQUIRED)
 
 qt_standard_project_setup()
