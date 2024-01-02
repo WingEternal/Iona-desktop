@@ -43,10 +43,16 @@ AppContent::AppContent(QWidget* parent) : QWidget(parent) {
   gl_widget->lower();
   gl_widget->show();
 
+#ifdef Q_OS_WIN
   installHook();
+#endif
 }
 
-AppContent::~AppContent() { uninstallHook(); }
+AppContent::~AppContent() {
+#ifdef Q_OS_WIN
+  uninstallHook();
+#endif
+}
 
 void AppContent::paintEvent(QPaintEvent* ev) { ev->accept(); }
 

@@ -34,12 +34,6 @@ class HOOKSHARED_EXPORT Hook {
   static HWND hwnd;
   static const UINT WM_IONAGL_LOOKAT;
 #endif
-
-#ifdef Q_OS_LINUX
-  enum EVENT {};
- signals:
-  void MouseEvent();
-#endif
 };
 
 #endif  // IONADESKTOP_HOOK_H
